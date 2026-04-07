@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestMatch — Project Log</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface-2: #1e2128;
+    --border: #2a2d35;
+    --text: #e8e9ed;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    --accent: #e8c547;
+    --accent-dim: #c9a83a;
+    --green: #4ade80;
+    --green-dim: #166534;
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --red: #f87171;
+    --red-dim: #7f1d1d;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    background: linear-gradient(180deg, #13141a 0%, var(--bg) 100%);
+  }
+
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .project-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(232, 197, 71, 0.08);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    padding: 6px 12px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 300;
+    max-width: 480px;
+  }
+
+  .header-meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .meta-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  /* ── Section headers ── */
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Stack overview ── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+
+  .stack-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .stack-layer {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .stack-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── Log entries ── */
+  .log-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 56px;
+  }
+
+  .log-entry {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .log-entry::before {
+    content: '';
+    position: absolute;
+    left: 179px;
+    top: 24px;
+    bottom: -24px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .log-entry:last-child::before {
+    display: none;
+  }
+
+  .log-date-col {
+    padding: 20px 24px 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .log-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .log-session {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .log-content-col {
+    padding: 20px 0 20px 24px;
+    border-left: none;
+    position: relative;
+  }
+
+  /* Timeline dot */
+  .log-content-col::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 28px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+  }
+
+  .log-entry.status-done .log-content-col::before {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .log-entry.status-active .log-content-col::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(232, 197, 71, 0.4);
+  }
+
+  .log-entry.status-pending .log-content-col::before {
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+
+  .log-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .log-entry.status-active .log-card {
+    border-color: rgba(232, 197, 71, 0.25);
+    background: rgba(232, 197, 71, 0.03);
+  }
+
+  .log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .log-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .status-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+
+  .status-badge.done {
+    color: var(--green);
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+  }
+
+  .status-badge.active {
+    color: var(--accent);
+    background: rgba(232, 197, 71, 0.08);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+  }
+
+  .status-badge.pending {
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+
+  .log-description {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.65;
+  }
+
+  /* Items list */
+  .log-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .log-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .log-item .icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  .log-item.done-item { color: var(--text-dim); }
+  .log-item.done-item .icon { color: var(--green); }
+  .log-item.pending-item { color: var(--text-muted); }
+  .log-item.pending-item .icon { color: var(--border); }
+
+  /* Code blocks */
+  .code-block {
+    margin-top: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .code-block .comment { color: var(--text-muted); }
+  .code-block .success { color: var(--green); }
+  .code-block .path { color: var(--blue); }
+  .code-block .highlight { color: var(--accent); }
+
+  /* ── Decision log ── */
+  .decisions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+
+  .decision-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .decision-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding-top: 2px;
+  }
+
+  .decision-content {}
+
+  .decision-q {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .decision-a {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .decision-a strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── Next up ── */
+  .next-up {
+    background: var(--surface);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 56px;
+  }
+
+  .next-up-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .next-steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .next-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 20px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 32px;
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .footer-domain {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="project-badge">
+      <div class="dot"></div>
+      Active Development
+    </div>
+    <h1>NestMatch<br><em>Project Log</em></h1>
+    <p class="subtitle">Buyer-side real estate matching engine for Sydney. Built step by step from ground zero.</p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <span class="meta-label">Domain</span>
+        <span class="meta-value">nestmatch.com.au</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Started</span>
+        <span class="meta-value">6 April 2026</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Builder</span>
+        <span class="meta-value">Brian + Claude</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Phase</span>
+        <span class="meta-value">1 — Local Full Stack</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Stack -->
+  <p class="section-title">Technology Stack</p>
+  <div class="stack-grid">
+    <div class="stack-card">
+      <div class="stack-layer">Frontend</div>
+      <div class="stack-value">Next.js 16 + TypeScript + Tailwind</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">Backend</div>
+      <div class="stack-value">Python + FastAPI</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">Database</div>
+      <div class="stack-value">PostgreSQL</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">Hosting (planned)</div>
+      <div class="stack-value">Vercel + Render + Neon</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">Dev Machine</div>
+      <div class="stack-value">Windows 11 / C:\dev\</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">Node.js</div>
+      <div class="stack-value">v24.14.1 LTS (Krypton)</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <p class="section-title">Development Log</p>
+  <div class="log-entries">
+
+    <!-- Session 1 -->
+    <div class="log-entry status-done">
+      <div class="log-date-col">
+        <span class="log-date">6 Apr 2026</span>
+        <span class="log-session">Session 01</span>
+      </div>
+      <div class="log-content-col">
+        <div class="log-card">
+          <div class="log-header">
+            <span class="log-title">Idea → Working Engine</span>
+            <span class="status-badge done">✓ Complete</span>
+          </div>
+          <p class="log-description">
+            NestMatch began as a morning idea. A ChatGPT conversation produced a product brief and architecture doc. Claude reviewed the brief, assessed the market gap, and built the matching engine from scratch.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>Product brief reviewed and validated</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Market gap analysis: Sydney buyer-side intelligence layer</li>
+            <li class="log-item done-item"><span class="icon">✓</span>FastAPI backend built (app/main.py, engine.py, models.py, seed_data.py)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Matching engine: hard filters → feature scores → weighted rank → explanations</li>
+            <li class="log-item done-item"><span class="icon">✓</span>10 Sydney seed properties across 8 suburbs</li>
+            <li class="log-item done-item"><span class="icon">✓</span>PostgreSQL schema written (schema.sql)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>24 unit + integration tests — all passing</li>
+            <li class="log-item done-item"><span class="icon">✓</span>C:\dev\ established as single project home</li>
+            <li class="log-item done-item"><span class="icon">✓</span>API running locally at http://127.0.0.1:8000</li>
+            <li class="log-item done-item"><span class="icon">✓</span>/health endpoint confirmed: {"status":"ok","properties_loaded":10}</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Scoring weights (engine.py)</span>
+<span class="highlight">price_fit</span>       0.30  <span class="comment"># strongest signal</span>
+<span class="highlight">commute_score</span>   0.20
+<span class="highlight">size_score</span>      0.15
+<span class="highlight">transport_score</span> 0.15
+<span class="highlight">school_score</span>    0.10
+<span class="highlight">lifestyle_fit</span>   0.10
+<span class="comment">─────────────────────</span>
+<span class="success">24 tests passed in 0.28s ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session 2 -->
+    <div class="log-entry status-done">
+      <div class="log-date-col">
+        <span class="log-date">6 Apr 2026</span>
+        <span class="log-session">Session 02</span>
+      </div>
+      <div class="log-content-col">
+        <div class="log-card">
+          <div class="log-header">
+            <span class="log-title">Search Validated + Frontend Live</span>
+            <span class="status-badge done">✓ Complete</span>
+          </div>
+          <p class="log-description">
+            Confirmed the /search endpoint returns correct ranked results via Swagger UI. Installed Node.js and built a full Next.js frontend — search form and results page — wired to the live backend. NestMatch is now fully usable in a browser without touching the terminal.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>Tested POST /search via Swagger UI — fixed field name mismatches</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Ranking validated: Ashfield (82) > Burwood (78) > Mascot (76) for 35-min CBD commute</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Commute busters correctly penalised: Parramatta, Epping flagged with ⚠ tradeoffs</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Node.js v24.14.1 LTS installed</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Next.js 16.2.2 frontend scaffolded at C:\dev\nestmatch-frontend</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Search form built: budget, property type, bedrooms, commute dropdowns</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Results page built: match score, highlights (green), tradeoffs (amber)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Frontend wired to backend — full end-to-end working at localhost:3000</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Session 02 stack confirmed</span>
+<span class="highlight">Frontend</span>   localhost:3000  <span class="comment"># Next.js</span>
+<span class="highlight">Backend</span>    localhost:8000  <span class="comment"># FastAPI + uvicorn</span>
+<span class="comment">─────────────────────────────────</span>
+<span class="success">Full end-to-end search working ✓</span>
+<span class="success">6 ranked results returned in browser ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session 3 -->
+    <div class="log-entry status-done">
+      <div class="log-date-col">
+        <span class="log-date">7 Apr 2026</span>
+        <span class="log-session">Session 03</span>
+      </div>
+      <div class="log-content-col">
+        <div class="log-card">
+          <div class="log-header">
+            <span class="log-title">Real Data + Cloud Database Live</span>
+            <span class="status-badge done">✓ Complete</span>
+          </div>
+          <p class="log-description">
+            Replaced 10 hardcoded seed properties with 22 real Sydney listings sourced from realestate.com.au sold data. Provisioned Neon PostgreSQL in Sydney (ap-southeast-2). Built a full data pipeline: Excel template → import script → cloud DB → live backend. Refined the schema and engine based on real data entry friction. NestMatch now searches real properties from a cloud database.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>Neon PostgreSQL provisioned — AWS ap-southeast-2 (Sydney)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>schema.sql run against Neon — tables created: properties, property_features</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Excel data template built (nestmatch_listings_template.xlsx) — 21 columns, 3 reference sheets</li>
+            <li class="log-item done-item"><span class="icon">✓</span>import_listings.py built — reads Excel, loads into Neon with full error handling</li>
+            <li class="log-item done-item"><span class="icon">✓</span>22 real Sydney listings imported from realestate.com.au sold data</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Schema evolved: added bathrooms, renovation_status, land_size_sqm, development_zone, distance_to_bus_stop_m, distance_to_hospital_m</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Removed is_new_build — replaced by renovation_status (original / partially_renovated / fully_renovated / new_build)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Renamed lifestyle_family_score to suburb_lifestyle_score — clearer intent</li>
+            <li class="log-item done-item"><span class="icon">✓</span>distance_to_station_m made nullable — supports bus-only suburbs</li>
+            <li class="log-item done-item"><span class="icon">✓</span>engine.py updated: bathroom scoring, renovation boost, NULL-safe station distance</li>
+            <li class="log-item done-item"><span class="icon">✓</span>models.py updated: min_bathrooms, renovation_preference fields</li>
+            <li class="log-item done-item"><span class="icon">✓</span>main.py rewired — queries Neon instead of seed_data.py</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Frontend updated: bathrooms dropdown, renovation status on result cards</li>
+            <li class="log-item done-item"><span class="icon">✓</span>End-to-end search working: real Neon data → ranked results in browser</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Product principle established: NestMatch shows facts, not judgments</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Scoring weights v2 (engine.py)</span>
+<span class="highlight">price_fit</span>       0.28  <span class="comment"># strongest signal</span>
+<span class="highlight">commute_score</span>   0.20
+<span class="highlight">size_score</span>      0.14
+<span class="highlight">transport_score</span> 0.14
+<span class="highlight">school_score</span>    0.10
+<span class="highlight">bathroom_score</span>  0.07  <span class="comment"># new</span>
+<span class="highlight">lifestyle_fit</span>   0.07  <span class="comment"># includes renovation boost</span>
+<span class="comment">─────────────────────────────────────</span>
+<span class="success">22 real Sydney listings in Neon ✓</span>
+<span class="success">properties_loaded: 36 (incl. seed) ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session 4 -->
+    <div class="log-entry status-active">
+      <div class="log-date-col">
+        <span class="log-date">8 Apr 2026</span>
+        <span class="log-session">Session 04</span>
+      </div>
+      <div class="log-content-col">
+        <div class="log-card">
+          <div class="log-header">
+            <span class="log-title">Product Structure Defined + Deploy</span>
+            <span class="status-badge active">In Progress</span>
+          </div>
+          <p class="log-description">
+            Before deploying, a key product architecture decision was made: NestMatch launches with two distinct buyer modes — Residential and Investment — reflecting that buyers have fundamentally different decision criteria. The residential mode explicitly addresses both the living question and the wealth question. Deployment to Render + Vercel follows.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>Product structure decided: two-mode entry point — Residential and Investment</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Residential mode scope defined: living criteria + suburb trajectory (wealth question)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Investment mode criteria: parked for Session 5 — DemandPilot.com.au earmarked</li>
+            <li class="log-item done-item"><span class="icon">✓</span>suburb_trajectory field confirmed for DB: rising / stable / cooling</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Neon PostgreSQL — already live (done in Session 03)</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Add suburb_trajectory column to schema + data entry template</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Continue adding listings to reach 50+ properties</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Deploy backend to Render</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Deploy frontend to Vercel</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Connect nestmatch.com.au domain</li>
+            <li class="log-item pending-item"><span class="icon">○</span>End-to-end test on live URL</li>
+            <li class="log-item pending-item"><span class="icon">○</span>5 real buyer test sessions</li>
+            <li class="log-item pending-item"><span class="icon">○</span>Iterate on scoring weights based on feedback</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Key decisions -->
+  <p class="section-title">Key Decisions</p>
+  <div class="decisions">
+    <div class="decision-card">
+      <span class="decision-num">D01</span>
+      <div class="decision-content">
+        <div class="decision-q">Why not scrape realestate.com.au for listings?</div>
+        <div class="decision-a">Against their ToS and creates a brittle pipeline. <strong>Decision: manual curation first, PropTrack API later.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D02</span>
+      <div class="decision-content">
+        <div class="decision-q">Why no ML or LLM for ranking?</div>
+        <div class="decision-a">Explainability is the core product value. <strong>Decision: deterministic weighted scoring only in v1.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D03</span>
+      <div class="decision-content">
+        <div class="decision-q">Why C:\dev\ instead of OneDrive?</div>
+        <div class="decision-a">OneDrive interferes with Python venvs and Node.js. <strong>Decision: all code in C:\dev\, one source of truth.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D04</span>
+      <div class="decision-content">
+        <div class="decision-q">NestMatch vs DemandPilot as product name?</div>
+        <div class="decision-a">NestMatch is the buyer-facing product name. <strong>Decision: nestmatch.com.au registered. DemandPilot.com.au held for future platform layer.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D05</span>
+      <div class="decision-content">
+        <div class="decision-q">No auth, no maps, no AI chat in v1?</div>
+        <div class="decision-a">These add complexity before validating core value. <strong>Decision: input → ranked output → clear explanation. Nothing else.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D06</span>
+      <div class="decision-content">
+        <div class="decision-q">Why dropdowns instead of free-text inputs on the search form?</div>
+        <div class="decision-a">Free text requires parsing and validation complexity. <strong>Decision: constrained dropdowns in v1 — faster to build, impossible to break.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D07</span>
+      <div class="decision-content">
+        <div class="decision-q">Why remove is_new_build and replace with renovation_status?</div>
+        <div class="decision-a">A boolean is too blunt — a 1940s terrace fully renovated is more valuable than a 1990s apartment untouched. <strong>Decision: renovation_status with 4 values captures condition, not just age.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D08</span>
+      <div class="decision-content">
+        <div class="decision-q">NestMatch shows facts, not judgments — what does this mean in practice?</div>
+        <div class="decision-a">Scores power the ranking engine invisibly. What buyers see is always a fact: distances, commute times, sizes, zones. Never a score or a label like "great suburb". <strong>Decision: scores are internal only. All buyer-facing output is factual and verifiable.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D09</span>
+      <div class="decision-content">
+        <div class="decision-q">Why keep noise_score and suburb_lifestyle_score despite being subjective?</div>
+        <div class="decision-a">They differentiate properties that look identical on paper. Made optional — blank = engine ignores them. <strong>Decision: keep in schema, optional in data entry, invisible to buyers.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D10</span>
+      <div class="decision-content">
+        <div class="decision-q">Future idea: free-text buyer intake powered by Claude API?</div>
+        <div class="decision-a">"My daughter is becoming a teenager, needs train access independently" could auto-fill search criteria. Powerful differentiator. <strong>Decision: parked for Session 5 — validate core ranking first.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D11</span>
+      <div class="decision-content">
+        <div class="decision-q">Should NestMatch serve both residential and investment buyers, or focus on one?</div>
+        <div class="decision-a">The two types have fundamentally different decision criteria. Mixing them into one form creates a compromise product for both. <strong>Decision: two-mode entry point at launch — Residential and Investment — each with distinct search criteria and scoring logic.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D12</span>
+      <div class="decision-content">
+        <div class="decision-q">Residential buyers only care about lifestyle — do they need investment signals?</div>
+        <div class="decision-a">A residential buyer asks two questions simultaneously: "Will I love living here?" and "Will I be better off financially when I eventually sell?" NestMatch must answer both. <strong>Decision: residential mode includes suburb_trajectory (rising / stable / cooling), development_zone, and land_size_sqm as first-class signals — not afterthoughts.</strong></div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <span class="decision-num">D13</span>
+      <div class="decision-content">
+        <div class="decision-q">What happens to the Investment mode and DemandPilot.com.au?</div>
+        <div class="decision-a">Investment criteria (rental yield, vacancy rates, depreciation, employment hub proximity) are distinct enough to warrant a separate product. DemandPilot.com.au is the natural home for this. <strong>Decision: Investment mode criteria to be designed in Session 5. DemandPilot.com.au reserved as the investment-facing product name.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next up -->
+  <p class="section-title">Next Session</p>
+  <div class="next-up">
+    <div class="next-up-label">▸ Start here next time</div>
+    <ol class="next-steps">
+      <li class="next-step">
+        <span class="step-num">01</span>
+        Start backend: cd C:\dev\nestmatch → venv\Scripts\activate → uvicorn app.main:app --host 0.0.0.0 --port 8080
+      </li>
+      <li class="next-step">
+        <span class="step-num">02</span>
+        Start frontend: cd C:\dev\nestmatch-frontend → npm run dev
+      </li>
+      <li class="next-step">
+        <span class="step-num">03</span>
+        Confirm search returns results at localhost:3000 before touching anything
+      </li>
+      <li class="next-step">
+        <span class="step-num">04</span>
+        Add suburb_trajectory column to schema (rising / stable / cooling) — ALTER TABLE + update import template + engine.py
+      </li>
+      <li class="next-step">
+        <span class="step-num">05</span>
+        Add more listings to nestmatch_listings_template.xlsx — target 50+ total, run python import_listings.py
+      </li>
+      <li class="next-step">
+        <span class="step-num">06</span>
+        Deploy backend to Render — connect to Neon DATABASE_URL via environment variable
+      </li>
+      <li class="next-step">
+        <span class="step-num">07</span>
+        Deploy frontend to Vercel — update API URL from localhost:8080 to Render URL
+      </li>
+      <li class="next-step">
+        <span class="step-num">08</span>
+        Connect nestmatch.com.au domain to Vercel deployment
+      </li>
+      <li class="next-step">
+        <span class="step-num">09</span>
+        Design Investment mode criteria (Session 5 prep) — rental yield, vacancy rate, employment hub proximity, strata vs freehold
+      </li>
+    </ol>
+  </div>
+
+</main>
+
+<footer>
+  <span class="footer-text">NestMatch Project Log — updated after Session 04 start · 8 Apr 2026</span>
+  <span class="footer-domain">nestmatch.com.au</span>
+</footer>
+
+</body>
+</html>
