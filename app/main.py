@@ -35,7 +35,12 @@ app.add_middleware(
 
 
 def load_properties() -> list[dict]:
-    """Load all properties from Neon, joined with their features."""
+    """Load all properties from Neon, joined with features and suburb trajectories.
+
+    Townhouses inherit the house trajectory for their suburb — townhouse
+    transaction volumes are too thin in most suburbs for a reliable
+    independent series (Decision D19).
+    """
     conn = psycopg2.connect(os.getenv("DATABASE_URL"))
     cur  = conn.cursor()
 
@@ -61,21 +66,31 @@ def load_properties() -> list[dict]:
             f.transport_score,
             f.school_score,
             f.noise_score,
-            f.suburb_lifestyle_score
+            f.suburb_lifestyle_score,
+            st.trajectory          AS suburb_trajectory,
+            st.median_price_change AS suburb_median_price_change,
+            st.reference_period    AS suburb_reference_period
         FROM properties p
         JOIN property_features f ON f.property_id = p.id
+        LEFT JOIN suburb_trajectories st
+            ON st.suburb = p.suburb
+            AND st.property_type = CASE
+                WHEN p.property_type = 'townhouse' THEN 'house'
+                ELSE p.property_type
+            END
         ORDER BY p.suburb, p.title
     """)
 
     cols = [desc[0] for desc in cur.description]
     rows = [dict(zip(cols, row)) for row in cur.fetchall()]
 
-    # Convert numeric/uuid types to plain Python types
     for row in rows:
         row["id"] = str(row["id"])
         for key in ("transport_score", "school_score", "noise_score", "suburb_lifestyle_score"):
             if row[key] is not None:
                 row[key] = float(row[key])
+        if row.get("suburb_median_price_change") is not None:
+            row["suburb_median_price_change"] = float(row["suburb_median_price_change"])
 
     cur.close()
     conn.close()

@@ -13,15 +13,23 @@ from app.models import SearchRequest, PropertyResult
 
 
 # ── Weights (must sum to 1.0) ─────────────────────────────────────────────────
+# v2.1: added trajectory_score 0.06
+#       bathroom_score  0.07 → 0.06
+#       lifestyle_fit   0.07 → 0.06
+#       total: 0.28+0.20+0.14+0.14+0.10+0.06+0.06+0.06 = 1.04 ← recheck
+# Correct redistribution:
+#       price_fit 0.26, commute 0.20, size 0.13, transport 0.13,
+#       school 0.10, bathroom 0.06, lifestyle 0.06, trajectory 0.06 = 1.00
 
 WEIGHTS = {
-    "price_fit":       0.28,
-    "commute_score":   0.20,
-    "size_score":      0.14,
-    "transport_score": 0.14,
-    "school_score":    0.10,
-    "bathroom_score":  0.07,
-    "lifestyle_fit":   0.07,
+    "price_fit":        0.26,
+    "commute_score":    0.20,
+    "size_score":       0.13,
+    "transport_score":  0.13,
+    "school_score":     0.10,
+    "bathroom_score":   0.06,
+    "lifestyle_fit":    0.06,
+    "trajectory_score": 0.06,
 }
 
 SIZE_TOLERANCE_SQM  = 10
@@ -33,6 +41,12 @@ RENOVATION_BOOST = {
     "fully_renovated":     0.08,
     "partially_renovated": 0.03,
     "original":            0.00,
+}
+
+TRAJECTORY_SCORES = {
+    "rising":  1.0,
+    "stable":  0.6,
+    "cooling": 0.2,
 }
 
 
@@ -108,16 +122,27 @@ def score_school(prop: dict, req: SearchRequest) -> float:
 
 
 def score_bathrooms(prop: dict, req: SearchRequest) -> float:
-    """Small boost when property has more bathrooms than buyer's minimum."""
     actual  = prop["bathrooms"]
     minimum = req.property.min_bathrooms
     if actual < minimum:
         return 0.0
     if actual == minimum:
-        return 0.7       # meets requirement — decent base score
+        return 0.7
     if actual == minimum + 1:
-        return 0.9       # one extra — good
-    return 1.0           # two or more extra
+        return 0.9
+    return 1.0
+
+
+def score_trajectory(prop: dict, req: SearchRequest) -> float:
+    """
+    Suburb growth trajectory — optional field, falls back to neutral.
+    rising  → 1.0  (strong capital gain signal)
+    stable  → 0.6  (holding value, low risk)
+    cooling → 0.2  (price pressure, caution)
+    NULL    → 0.5  (no data — engine ignores effectively)
+    """
+    trajectory = prop.get("suburb_trajectory")
+    return TRAJECTORY_SCORES.get(trajectory, 0.5)
 
 
 def score_lifestyle(prop: dict, req: SearchRequest) -> float:
@@ -128,7 +153,6 @@ def score_lifestyle(prop: dict, req: SearchRequest) -> float:
     noise_score  = prop.get("noise_score")
     family_score = prop.get("suburb_lifestyle_score")
 
-    # Renovation boost (always present)
     reno  = prop.get("renovation_status", "original")
     boost = RENOVATION_BOOST.get(reno, 0.0)
 
@@ -148,7 +172,7 @@ def score_lifestyle(prop: dict, req: SearchRequest) -> float:
         components.append(family_score)
 
     if not components:
-        base = 0.6      # neutral when no optional data provided
+        base = 0.6
     else:
         base = sum(components) / len(components)
 
@@ -214,7 +238,7 @@ def generate_explanation(
     # Transport
     dist = prop.get("distance_to_station_m")
     if dist is None:
-        tradeoffs.append("No nearby train station - bus or car dependent")
+        tradeoffs.append("No nearby train station — bus or car dependent")
     elif dist <= 400:
         highlights.append(f"{dist}m to station — excellent walkability")
     elif dist <= 700:
@@ -263,6 +287,16 @@ def generate_explanation(
             if NOISE_MODERATE_MIN <= noise <= NOISE_QUIET_MIN:
                 highlights.append("Balanced street energy — not too quiet, not too busy")
 
+    # Suburb trajectory (optional — fact, not judgment)
+    trajectory = prop.get("suburb_trajectory")
+    if trajectory == "rising":
+        highlights.append(f"{prop['suburb']} suburb prices trending upward")
+    elif trajectory == "cooling":
+        tradeoffs.append(f"{prop['suburb']} suburb prices under downward pressure")
+    elif trajectory == "stable":
+        highlights.append(f"{prop['suburb']} suburb prices holding steady")
+    # NULL → no mention, engine stays silent
+
     # Development zone warning
     zone = prop.get("development_zone", "")
     if zone and any(x in zone for x in ["R4", "B4", "B6", "High Density", "Mixed Use"]):
@@ -284,13 +318,14 @@ def run_search(
 
     for prop in passed:
         scores = {
-            "price_fit":       score_price_fit(prop, req),
-            "commute_score":   score_commute(prop, req),
-            "size_score":      score_size(prop, req),
-            "transport_score": score_transport(prop, req),
-            "school_score":    score_school(prop, req),
-            "bathroom_score":  score_bathrooms(prop, req),
-            "lifestyle_fit":   score_lifestyle(prop, req),
+            "price_fit":        score_price_fit(prop, req),
+            "commute_score":    score_commute(prop, req),
+            "size_score":       score_size(prop, req),
+            "transport_score":  score_transport(prop, req),
+            "school_score":     score_school(prop, req),
+            "bathroom_score":   score_bathrooms(prop, req),
+            "lifestyle_fit":    score_lifestyle(prop, req),
+            "trajectory_score": score_trajectory(prop, req),
         }
 
         match_score = compute_match_score(scores)
