@@ -44,6 +44,11 @@ class PropertyResult(BaseModel):
     match_score: int                            # 0–100
     highlights: list[str]
     tradeoffs: list[str]
+    # Suburb trajectory — sourced from suburb_trajectories lookup table (D19, D20)
+    # Displayed with source facts on result card per D24 (labels are not enough)
+    suburb_trajectory: Optional[str] = None            # "rising" | "stable" | "cooling" | None
+    suburb_median_price_change: Optional[float] = None # YoY % e.g. 6.32
+    suburb_reference_period: Optional[str] = None      # e.g. "Q1 2026"
 
 class SearchResponse(BaseModel):
     search_id: str

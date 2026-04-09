@@ -347,6 +347,9 @@ def run_search(
             match_score=match_score,
             highlights=highlights,
             tradeoffs=tradeoffs,
+            suburb_trajectory=prop.get("suburb_trajectory"),
+            suburb_median_price_change=prop.get("suburb_median_price_change"),
+            suburb_reference_period=prop.get("suburb_reference_period"),
         )
         results.append((match_score, result))
 
