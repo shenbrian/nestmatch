@@ -1,7 +1,12 @@
 """
-NestMatch — import_listings.py (v3)
+NestMatch — import_listings.py (v4)
 Reads C:\\dev\\nestmatch-data\\nestmatch_listings_template.xlsx
 and loads all listings into the Neon PostgreSQL database.
+
+Key fix (v4): property ID is now a deterministic UUID derived from
+title + suburb using uuid5. This means re-running the script never
+creates duplicates — the same listing always gets the same ID, and
+ON CONFLICT DO UPDATE upserts cleanly.
 
 Usage:
     python import_listings.py
@@ -20,6 +25,9 @@ DATA_START_ROW = 3
 load_dotenv(r"C:\dev\nestmatch\.env")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Stable namespace for NestMatch property IDs
+NESTMATCH_NS = uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+
 COLUMNS = [
     "id", "property_type", "suburb", "title",
     "land_size_sqm", "bedrooms", "bathrooms", "parking_spaces",
@@ -30,6 +38,11 @@ COLUMNS = [
 ]
 
 VALID_RENOVATION = {"original", "partially_renovated", "fully_renovated", "new_build"}
+
+def make_property_id(title: str, suburb: str) -> str:
+    """Deterministic UUID from title + suburb. Same input → same ID always."""
+    key = f"{title.strip().lower()}|{suburb.strip().lower()}"
+    return str(uuid.uuid5(NESTMATCH_NS, key))
 
 def parse_int(val):
     if val is None or str(val).strip() in ("", "NULL"):
@@ -60,13 +73,12 @@ def load_excel(path):
     return rows
 
 def normalise_renovation(val):
-    """Accept common variations and map to valid values."""
     if val is None:
         return "original"
     mapping = {
         "original":              "original",
         "partially_renovated":   "partially_renovated",
-        "partically_renovated":  "partially_renovated",   # typo tolerance
+        "partically_renovated":  "partially_renovated",
         "partial renovated":     "partially_renovated",
         "partially renovated":   "partially_renovated",
         "partically renovated":  "partially_renovated",
@@ -81,8 +93,10 @@ def normalise_renovation(val):
     return normalised
 
 def insert_row(cur, data):
-    prop_id     = str(uuid.uuid4())
-    renovation  = normalise_renovation(parse_str(data["renovation_status"]))
+    title   = str(data["title"]).strip()
+    suburb  = str(data["suburb"]).strip()
+    prop_id = make_property_id(title, suburb)
+    renovation = normalise_renovation(parse_str(data["renovation_status"]))
 
     cur.execute("""
         INSERT INTO properties
@@ -90,11 +104,23 @@ def insert_row(cur, data):
              internal_size_sqm, property_type, parking_spaces,
              land_size_sqm, development_zone, renovation_status)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (id) DO NOTHING
+        ON CONFLICT (id) DO UPDATE SET
+            title             = EXCLUDED.title,
+            suburb            = EXCLUDED.suburb,
+            price_min         = EXCLUDED.price_min,
+            price_max         = EXCLUDED.price_max,
+            bedrooms          = EXCLUDED.bedrooms,
+            bathrooms         = EXCLUDED.bathrooms,
+            internal_size_sqm = EXCLUDED.internal_size_sqm,
+            property_type     = EXCLUDED.property_type,
+            parking_spaces    = EXCLUDED.parking_spaces,
+            land_size_sqm     = EXCLUDED.land_size_sqm,
+            development_zone  = EXCLUDED.development_zone,
+            renovation_status = EXCLUDED.renovation_status
     """, (
         prop_id,
-        str(data["title"]).strip(),
-        str(data["suburb"]).strip(),
+        title,
+        suburb,
         parse_int(data["price_min"]),
         parse_int(data["price_max"]),
         parse_int(data["bedrooms"]),
@@ -113,11 +139,19 @@ def insert_row(cur, data):
              transport_score, school_score, noise_score, suburb_lifestyle_score,
              distance_to_bus_stop_m, distance_to_hospital_m)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (property_id) DO NOTHING
+        ON CONFLICT (property_id) DO UPDATE SET
+            commute_cbd_mins       = EXCLUDED.commute_cbd_mins,
+            distance_to_station_m  = EXCLUDED.distance_to_station_m,
+            transport_score        = EXCLUDED.transport_score,
+            school_score           = EXCLUDED.school_score,
+            noise_score            = EXCLUDED.noise_score,
+            suburb_lifestyle_score = EXCLUDED.suburb_lifestyle_score,
+            distance_to_bus_stop_m = EXCLUDED.distance_to_bus_stop_m,
+            distance_to_hospital_m = EXCLUDED.distance_to_hospital_m
     """, (
         prop_id,
         parse_int(data["commute_cbd_mins"]),
-        parse_int(data["distance_to_station_m"]),   # now nullable
+        parse_int(data["distance_to_station_m"]),
         parse_float(data["transport_score"]),
         parse_float(data["school_score"]),
         parse_float(data["noise_score"]),
