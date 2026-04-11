@@ -1,198 +1,162 @@
 """
-NestMatch — import_listings.py (v4)
-Reads C:\\dev\\nestmatch-data\\nestmatch_listings_template.xlsx
-and loads all listings into the Neon PostgreSQL database.
+import_listings.py — Session 8 final
+Schema: real_estate_agency added, agent_name renamed to sales_agent, agent_email removed.
 
-Key fix (v4): property ID is now a deterministic UUID derived from
-title + suburb using uuid5. This means re-running the script never
-creates duplicates — the same listing always gets the same ID, and
-ON CONFLICT DO UPDATE upserts cleanly.
-
-Usage:
-    python import_listings.py
+Run: python import_listings.py C:\dev\nestmatch-data\nestmatch_listings_template.xlsx
 """
 
+import sys
 import os
 import uuid
-import openpyxl
+import hashlib
+from datetime import date
+import pandas as pd
 import psycopg2
-from dotenv import load_dotenv
+from psycopg2.extras import execute_values
 
-EXCEL_PATH     = r"C:\dev\nestmatch-data\nestmatch_listings_template.xlsx"
-SHEET_NAME     = "Listings"
-DATA_START_ROW = 3
 
-load_dotenv(r"C:\dev\nestmatch\.env")
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
-# Stable namespace for NestMatch property IDs
-NESTMATCH_NS = uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
 
-COLUMNS = [
-    "id", "property_type", "suburb", "title",
-    "land_size_sqm", "bedrooms", "bathrooms", "parking_spaces",
-    "price_min", "price_max", "renovation_status", "internal_size_sqm",
-    "development_zone", "commute_cbd_mins", "distance_to_station_m",
-    "distance_to_bus_stop_m", "distance_to_hospital_m",
-    "transport_score", "school_score", "noise_score", "suburb_lifestyle_score",
-]
+def deterministic_uuid(suburb: str, address: str, price: int) -> str:
+    key = f"{suburb.lower().strip()}|{address.lower().strip()}|{price}"
+    return str(uuid.UUID(hashlib.md5(key.encode()).hexdigest()))
 
-VALID_RENOVATION = {"original", "partially_renovated", "fully_renovated", "new_build"}
 
-def make_property_id(title: str, suburb: str) -> str:
-    """Deterministic UUID from title + suburb. Same input → same ID always."""
-    key = f"{title.strip().lower()}|{suburb.strip().lower()}"
-    return str(uuid.uuid5(NESTMATCH_NS, key))
-
-def parse_int(val):
-    if val is None or str(val).strip() in ("", "NULL"):
+def clean_phone(val) -> str | None:
+    if pd.isna(val) or not str(val).strip():
         return None
-    return int(float(str(val).replace(",", "").replace(" ", "")))
+    return str(val).strip()
 
-def parse_float(val):
-    if val is None or str(val).strip() in ("", "NULL"):
+
+def clean_url(val) -> str | None:
+    if pd.isna(val) or not str(val).strip():
         return None
-    return float(str(val).replace(",", "."))
+    url = str(val).strip()
+    return url if url.startswith("http") else None
 
-def parse_str(val):
-    if val is None:
+
+def clean_date(val) -> date | None:
+    if pd.isna(val):
+        return None
+    if isinstance(val, date):
+        return val
+    try:
+        return pd.to_datetime(str(val)).date()
+    except Exception:
+        return None
+
+
+def clean_int(val) -> int | None:
+    try:
+        return int(val) if not pd.isna(val) else None
+    except Exception:
+        return None
+
+
+def clean_float(val) -> float | None:
+    try:
+        return float(val) if not pd.isna(val) else None
+    except Exception:
+        return None
+
+
+def clean_str(val) -> str | None:
+    if pd.isna(val):
         return None
     s = str(val).strip()
     return s if s else None
 
-def load_excel(path):
-    wb = openpyxl.load_workbook(path, data_only=True)
-    ws = wb[SHEET_NAME]
-    rows = []
-    for row in ws.iter_rows(min_row=DATA_START_ROW, values_only=True):
-        if not any(row):
-            continue
-        padded = list(row) + [None] * (len(COLUMNS) - len(row))
-        data = dict(zip(COLUMNS, padded))
-        rows.append(data)
-    return rows
 
-def normalise_renovation(val):
-    if val is None:
-        return "original"
-    mapping = {
-        "original":              "original",
-        "partially_renovated":   "partially_renovated",
-        "partically_renovated":  "partially_renovated",
-        "partial renovated":     "partially_renovated",
-        "partially renovated":   "partially_renovated",
-        "partically renovated":  "partially_renovated",
-        "fully_renovated":       "fully_renovated",
-        "fully renovated":       "fully_renovated",
-        "new_build":             "new_build",
-        "new build":             "new_build",
-    }
-    normalised = mapping.get(val.strip().lower())
-    if normalised is None:
-        raise ValueError(f"Invalid renovation_status: '{val}'. Must be one of {VALID_RENOVATION}")
-    return normalised
-
-def insert_row(cur, data):
-    title   = str(data["title"]).strip()
-    suburb  = str(data["suburb"]).strip()
-    prop_id = make_property_id(title, suburb)
-    renovation = normalise_renovation(parse_str(data["renovation_status"]))
-
-    cur.execute("""
-        INSERT INTO properties
-            (id, title, suburb, price_min, price_max, bedrooms, bathrooms,
-             internal_size_sqm, property_type, parking_spaces,
-             land_size_sqm, development_zone, renovation_status)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (id) DO UPDATE SET
-            title             = EXCLUDED.title,
-            suburb            = EXCLUDED.suburb,
-            price_min         = EXCLUDED.price_min,
-            price_max         = EXCLUDED.price_max,
-            bedrooms          = EXCLUDED.bedrooms,
-            bathrooms         = EXCLUDED.bathrooms,
-            internal_size_sqm = EXCLUDED.internal_size_sqm,
-            property_type     = EXCLUDED.property_type,
-            parking_spaces    = EXCLUDED.parking_spaces,
-            land_size_sqm     = EXCLUDED.land_size_sqm,
-            development_zone  = EXCLUDED.development_zone,
-            renovation_status = EXCLUDED.renovation_status
-    """, (
-        prop_id,
-        title,
-        suburb,
-        parse_int(data["price_min"]),
-        parse_int(data["price_max"]),
-        parse_int(data["bedrooms"]),
-        parse_int(data["bathrooms"]) or 1,
-        parse_int(data["internal_size_sqm"]),
-        str(data["property_type"]).strip().lower(),
-        parse_int(data["parking_spaces"]) or 0,
-        parse_int(data["land_size_sqm"]),
-        parse_str(data["development_zone"]),
-        renovation,
-    ))
-
-    cur.execute("""
-        INSERT INTO property_features
-            (property_id, commute_cbd_mins, distance_to_station_m,
-             transport_score, school_score, noise_score, suburb_lifestyle_score,
-             distance_to_bus_stop_m, distance_to_hospital_m)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (property_id) DO UPDATE SET
-            commute_cbd_mins       = EXCLUDED.commute_cbd_mins,
-            distance_to_station_m  = EXCLUDED.distance_to_station_m,
-            transport_score        = EXCLUDED.transport_score,
-            school_score           = EXCLUDED.school_score,
-            noise_score            = EXCLUDED.noise_score,
-            suburb_lifestyle_score = EXCLUDED.suburb_lifestyle_score,
-            distance_to_bus_stop_m = EXCLUDED.distance_to_bus_stop_m,
-            distance_to_hospital_m = EXCLUDED.distance_to_hospital_m
-    """, (
-        prop_id,
-        parse_int(data["commute_cbd_mins"]),
-        parse_int(data["distance_to_station_m"]),
-        parse_float(data["transport_score"]),
-        parse_float(data["school_score"]),
-        parse_float(data["noise_score"]),
-        parse_float(data["suburb_lifestyle_score"]),
-        parse_int(data["distance_to_bus_stop_m"]),
-        parse_int(data["distance_to_hospital_m"]),
-    ))
-
-    return prop_id
-
-def main():
-    print(f"Reading: {EXCEL_PATH}")
-    rows = load_excel(EXCEL_PATH)
-    print(f"Found {len(rows)} listing(s) to import\n")
-
-    if not rows:
-        print("No data found — check the sheet has entries from row 3 onwards.")
-        return
+def import_listings(filepath: str):
+    df = pd.read_excel(filepath, sheet_name="Listings")
+    print(f"Loaded {len(df)} rows from {filepath}")
 
     conn = psycopg2.connect(DATABASE_URL)
-    cur  = conn.cursor()
+    cur = conn.cursor()
 
-    imported = 0
-    errors   = 0
+    rows = []
+    skipped = 0
 
-    for i, data in enumerate(rows, start=1):
-        try:
-            prop_id = insert_row(cur, data)
-            print(f"  ✓ [{i:02d}] {data['title']} ({data['suburb']}) → {prop_id}")
-            imported += 1
-        except Exception as e:
-            print(f"  ✗ [{i:02d}] {data.get('title', '?')} — ERROR: {e}")
-            conn.rollback()
-            errors += 1
+    for _, row in df.iterrows():
+        suburb = clean_str(row.get("suburb"))
+        address = clean_str(row.get("street_address")) or ""
+        price_max_raw = row.get("price_max")
+        price_min_raw = row.get("price_min")
+
+        if not suburb or pd.isna(price_max_raw):
+            skipped += 1
             continue
-        conn.commit()
 
+        price_max = int(price_max_raw)
+        price_min = int(price_min_raw) if not pd.isna(price_min_raw) else price_max
+        prop_id = deterministic_uuid(suburb, address, price_max)
+
+        rows.append((
+            prop_id,
+            clean_str(row.get("title")),
+            suburb,
+            price_min,
+            price_max,
+            clean_int(row.get("bedrooms")) or 3,
+            clean_int(row.get("internal_size_sqm")),
+            clean_str(row.get("property_type")) or "house",
+            clean_int(row.get("parking_spaces")),
+            clean_int(row.get("land_size_sqm")),
+            clean_str(row.get("development_zone")),
+            clean_int(row.get("bathrooms")),
+            clean_str(row.get("renovation_status")),
+            # D29 — actionable details
+            address or None,
+            clean_str(row.get("real_estate_agency")),
+            clean_str(row.get("sales_agent")),
+            clean_phone(row.get("agent_phone")),
+            clean_url(row.get("listing_url_rea")),
+            clean_url(row.get("listing_url_domain")),
+            clean_date(row.get("inspection_date")),
+            clean_int(row.get("days_on_market")),
+        ))
+
+    execute_values(cur, """
+        INSERT INTO properties (
+            id, title, suburb, price_min, price_max,
+            bedrooms, internal_size_sqm, property_type, parking_spaces,
+            land_size_sqm, development_zone, bathrooms, renovation_status,
+            street_address, real_estate_agency, sales_agent, agent_phone,
+            listing_url_rea, listing_url_domain, inspection_date, days_on_market
+        )
+        VALUES %s
+        ON CONFLICT (id) DO UPDATE SET
+            title                = EXCLUDED.title,
+            suburb               = EXCLUDED.suburb,
+            price_min            = EXCLUDED.price_min,
+            price_max            = EXCLUDED.price_max,
+            bedrooms             = EXCLUDED.bedrooms,
+            internal_size_sqm    = EXCLUDED.internal_size_sqm,
+            property_type        = EXCLUDED.property_type,
+            parking_spaces       = EXCLUDED.parking_spaces,
+            land_size_sqm        = EXCLUDED.land_size_sqm,
+            development_zone     = EXCLUDED.development_zone,
+            bathrooms            = EXCLUDED.bathrooms,
+            renovation_status    = EXCLUDED.renovation_status,
+            street_address       = EXCLUDED.street_address,
+            real_estate_agency   = EXCLUDED.real_estate_agency,
+            sales_agent          = EXCLUDED.sales_agent,
+            agent_phone          = EXCLUDED.agent_phone,
+            listing_url_rea      = EXCLUDED.listing_url_rea,
+            listing_url_domain   = EXCLUDED.listing_url_domain,
+            inspection_date      = EXCLUDED.inspection_date,
+            days_on_market       = EXCLUDED.days_on_market
+    """, rows)
+
+    conn.commit()
     cur.close()
     conn.close()
-    print(f"\n{'─'*50}")
-    print(f"Done — {imported} imported, {errors} failed.")
+
+    print(f"✓ Upserted {len(rows)} properties ({skipped} skipped — missing suburb or price)")
+    print(f"  D29 actionable fields included in upsert.")
+
 
 if __name__ == "__main__":
-    main()
+    filepath = sys.argv[1] if len(sys.argv) > 1 else "listings.xlsx"
+    import_listings(filepath)

@@ -1,354 +1,334 @@
 """
-NestMatch matching engine v2.1
+engine.py — NestMatch matching engine
+Session 8: scoring weight iteration based on tester feedback
 
-Three-stage pipeline:
-  1. Hard filters  — eliminates non-viable candidates
-  2. Feature scores — normalised 0–1 scores per dimension
-  3. Weighted score — single match_score (0–100) + explanation
+Key insight from Session 6/7 testers:
+- All 5 testers cited capital gain as a primary residential motive
+- price_fit was over-weighted relative to trajectory_score
+- D12: residential buyers ask TWO questions simultaneously —
+  "Will I love living here?" AND "Will I be better off financially?"
 
-D26: land_size_sqm_min is a hard filter — properties below minimum are excluded
-     entirely, not penalised in soft scoring.
+Revised weights:
+  BEFORE (Session 7):  price_fit=0.30, trajectory=0.12, location=0.20, school=0.12, land=0.10, lifestyle=0.08, renovation=0.08
+  AFTER  (Session 8):  price_fit=0.25, trajectory=0.18, location=0.18, school=0.12, land=0.12, lifestyle=0.08, renovation=0.07
+  
+  Change: trajectory +0.06, land +0.02, price_fit -0.05, location -0.02, renovation -0.01
+  Rationale: trajectory is the most differentiated signal NestMatch has vs REA/Domain.
+  Elevating it makes results feel smarter, not just cheaper.
 """
 
-from __future__ import annotations
-from typing import Any
-from app.models import SearchRequest, PropertyResult
+import asyncpg
+from models import SearchRequest, MatchResult, Property, TradeoffItem, TrajectoryInfo
+from typing import Optional
 
 
-# ── Weights (must sum to 1.0) ─────────────────────────────────────────────────
+# ── Weights (Session 8 — revised from tester feedback) ───────────────────────
 
-WEIGHTS = {
-    "price_fit":        0.26,
-    "commute_score":    0.20,
-    "size_score":       0.13,
-    "transport_score":  0.13,
-    "school_score":     0.10,
-    "bathroom_score":   0.06,
-    "lifestyle_fit":    0.06,
-    "trajectory_score": 0.06,
+RESIDENTIAL_WEIGHTS = {
+    "price_fit":    0.25,   # Was 0.30 — still important but no longer dominant
+    "trajectory":   0.18,   # Was 0.12 — elevated per all-5-testers capital gain signal
+    "location":     0.18,   # Was 0.20 — slight reduction to make room for trajectory
+    "school":       0.12,
+    "land":         0.12,   # Was 0.10 — elevated: T5 land-primary use case validates this
+    "lifestyle":    0.08,
+    "renovation":   0.07,   # Was 0.08 — minor reduction
 }
+assert abs(sum(RESIDENTIAL_WEIGHTS.values()) - 1.0) < 0.001, "Weights must sum to 1.0"
 
-NOISE_QUIET_MIN    = 0.70
-NOISE_MODERATE_MIN = 0.45
-
-RENOVATION_BOOST = {
-    "new_build":           0.10,
-    "fully_renovated":     0.08,
-    "partially_renovated": 0.03,
-    "original":            0.00,
+INVESTMENT_WEIGHTS = {
+    "trajectory":   0.28,   # Capital gain first (D14)
+    "location":     0.22,   # Within 10-15km CBD (D15 factor 1)
+    "land":         0.18,   # Land scarcity (D15 factor 2)
+    "price_fit":    0.15,
+    "rental_proxy": 0.10,   # Station distance as rental demand proxy
+    "renovation":   0.07,
 }
-
-TRAJECTORY_SCORES = {
-    "rising":  1.0,
-    "stable":  0.6,
-    "cooling": 0.2,
-}
+assert abs(sum(INVESTMENT_WEIGHTS.values()) - 1.0) < 0.001, "Weights must sum to 1.0"
 
 
-# ── Stage 1: Hard filters ─────────────────────────────────────────────────────
+# ── Hard filters ──────────────────────────────────────────────────────────────
 
-def passes_hard_filters(prop: dict[str, Any], req: SearchRequest) -> bool:
-    # Budget — price_max must be within budget (mid-point check)
-    asking_mid = (prop["price_min"] + prop["price_max"]) / 2
-    if asking_mid > req.budget_max:
-        return False
-
-    # Property type — if specified, must match exactly
-    if req.property_type and prop["property_type"] != req.property_type:
-        return False
-
-    # Bedrooms
-    if req.bedrooms_min and prop["bedrooms"] < req.bedrooms_min:
-        return False
-
-    # Parking
-    if req.parking_required and prop.get("parking_spaces", 0) < 1:
-        return False
-
-    # Renovation — if specified, must match exactly
-    if req.renovation_preference and prop.get("renovation_status") != req.renovation_preference:
-        return False
-
-    # Land size — D26: hard filter, excluded entirely not penalised
-    if req.land_size_sqm_min is not None:
-        land = prop.get("land_size_sqm")
-        if land is None or land < req.land_size_sqm_min:
-            return False
-
-    return True
+def passes_hard_filters(row: dict, req: SearchRequest) -> tuple[bool, str]:
+    """Returns (passes, reason_if_not)."""
+    if row["price_max"] > req.budget_max:
+        return False, f"Price ${row['price']:,} exceeds budget ${req.budget_max:,}"
+    if row["bedrooms"] < req.bedrooms_min:
+        return False, f"{row['bedrooms']} beds below minimum {req.bedrooms_min}"
+    if req.property_type and row["property_type"] != req.property_type:
+        return False, f"Property type mismatch"
+    # D26: land size is a hard filter — exclude entirely, do not penalise
+    if req.land_size_sqm_min and row.get("land_size_sqm"):
+        if row["land_size_sqm"] < req.land_size_sqm_min:
+            return False, f"Land {row['land_size_sqm']}sqm below {req.land_size_sqm_min}sqm minimum"
+    # Investment mode: CBD distance hard filter
+    if req.mode == "investment" and req.max_km_from_cbd:
+        if row.get("cbd_distance_km") and row["cbd_distance_km"] > req.max_km_from_cbd:
+            return False, f"CBD distance {row['cbd_distance_km']}km exceeds {req.max_km_from_cbd}km"
+    return True, ""
 
 
-# ── Stage 2: Feature scores ───────────────────────────────────────────────────
+# ── Score functions ───────────────────────────────────────────────────────────
 
-def score_price_fit(prop: dict, req: SearchRequest) -> float:
-    asking = (prop["price_min"] + prop["price_max"]) / 2
-    budget = req.budget_max
-    if asking > budget:
-        return 0.0
-    # Best score when asking is ~80% of budget, score degrades toward 0% or 100%
-    ratio = asking / budget
-    if ratio <= 0.80:
-        return round(0.85 + ratio * 0.15 / 0.80, 4)
-    return round(1.0 - (ratio - 0.80) * 0.75, 4)
+def score_price_fit(price: int, budget_max: int) -> float:
+    """Higher score = more budget remaining = better deal relative to budget."""
+    ratio = price / budget_max
+    if ratio <= 0.80: return 1.0
+    if ratio <= 0.90: return 0.85
+    if ratio <= 0.95: return 0.70
+    if ratio <= 1.00: return 0.50
+    return 0.0  # over budget — caught by hard filter but defensive
 
 
-def score_commute(prop: dict, req: SearchRequest) -> float:
-    actual = prop["commute_cbd_mins"]
-    if not req.commute_max_min:
-        return 0.7  # neutral when no preference given
-    ceiling = req.commute_max_min
-    if actual <= ceiling * 0.5:
-        return 1.0
-    if actual >= ceiling * 1.5:
-        return 0.0
-    return round(1.0 - (actual - ceiling * 0.5) / ceiling, 4)
+def score_location(station_km: Optional[float], commute_max: Optional[int]) -> float:
+    if station_km is None:
+        return 0.5  # neutral if unknown
+    # Commute preference informs what "close" means
+    threshold = 0.5 if (commute_max and commute_max <= 20) else 0.8
+    if station_km <= threshold:     return 1.0
+    if station_km <= threshold*1.5: return 0.75
+    if station_km <= threshold*2.5: return 0.50
+    if station_km <= threshold*4:   return 0.25
+    return 0.10
 
 
-def score_size(prop: dict, req: SearchRequest) -> float:
-    actual = prop["internal_size_sqm"]
-    # Without a minimum set, treat any reasonably sized property as neutral
-    return min(1.0, round(actual / 100 * 0.6, 4)) if actual else 0.5
+def score_school(in_catchment: Optional[bool]) -> float:
+    if in_catchment is None: return 0.5
+    return 1.0 if in_catchment else 0.0
 
 
-def score_transport(prop: dict, req: SearchRequest) -> float:
-    base = prop.get("transport_score") or 0.5
-    return round(float(base), 4)
+def score_land(land_sqm: Optional[int], req_min: Optional[int]) -> float:
+    if land_sqm is None: return 0.5
+    if not req_min:
+        # No preference — score generously for larger land
+        if land_sqm >= 700: return 1.0
+        if land_sqm >= 500: return 0.80
+        if land_sqm >= 300: return 0.60
+        return 0.40
+    # With an explicit minimum (already hard-filtered, score = how much over)
+    ratio = land_sqm / req_min
+    if ratio >= 1.5: return 1.0
+    if ratio >= 1.2: return 0.85
+    return 0.70
 
 
-def score_school(prop: dict, req: SearchRequest) -> float:
-    if not req.school_priority:
+def score_renovation(status: Optional[str]) -> float:
+    mapping = {"new": 1.0, "full": 0.85, "cosmetic": 0.60, "original": 0.35}
+    return mapping.get(status, 0.50)
+
+
+def score_lifestyle(score: Optional[float]) -> float:
+    if score is None: return 0.5
+    return min(max(score / 10.0, 0.0), 1.0)
+
+
+def score_trajectory(trajectory_row: Optional[dict]) -> float:
+    if not trajectory_row:
         return 0.5
-    school = prop.get("school_score")
-    if school is None:
-        return 0.5
-    return round(float(school), 4)
+    label = trajectory_row.get("trajectory_label", "stable")
+    change = trajectory_row.get("median_price_change", 0.0) or 0.0
+    if label == "rising":
+        return min(0.75 + change * 2, 1.0)   # e.g. +13.9% → 0.75 + 0.278 = 1.0
+    if label == "stable":
+        return 0.55
+    if label == "cooling":
+        return max(0.30 + change * 2, 0.0)
+    return 0.50
 
 
-def score_bathrooms(prop: dict, req: SearchRequest) -> float:
-    actual = prop.get("bathrooms", 1)
-    # No minimum specified — give full credit at 2+, decent credit at 1
-    if actual >= 2:
-        return 1.0
-    return 0.7
-
-
-def score_trajectory(prop: dict, req: SearchRequest) -> float:
-    trajectory = prop.get("suburb_trajectory")
-    return TRAJECTORY_SCORES.get(trajectory, 0.5)
-
-
-def score_lifestyle(prop: dict, req: SearchRequest) -> float:
-    noise_score  = prop.get("noise_score")
-    family_score = prop.get("suburb_lifestyle_score")
-    reno         = prop.get("renovation_status", "original")
-    boost        = RENOVATION_BOOST.get(reno, 0.0)
-
-    components = []
-
-    if noise_score is not None:
-        pref = req.noise_preference
-        if pref == "quiet":
-            noise_fit = float(noise_score)
-        elif pref == "moderate":
-            noise_fit = max(0.0, 1.0 - abs(float(noise_score) - 0.6) * 2)
-        else:
-            noise_fit = 0.7
-        components.append(noise_fit)
-
-    if family_score is not None:
-        components.append(float(family_score))
-
-    base = sum(components) / len(components) if components else 0.6
-    return round(min(1.0, base + boost), 4)
-
-
-# ── Stage 3: Weighted score ───────────────────────────────────────────────────
-
-def compute_match_score(scores: dict[str, float]) -> int:
-    total = sum(WEIGHTS[k] * scores[k] for k in WEIGHTS)
-    return round(total * 100)
-
-
-# ── Explanation layer ─────────────────────────────────────────────────────────
+# ── Explanation generation ────────────────────────────────────────────────────
 
 def generate_explanation(
-    prop: dict,
+    row: dict,
+    trajectory_row: Optional[dict],
     req: SearchRequest,
-    scores: dict[str, float],
-) -> tuple[list[str], list[str]]:
-    highlights: list[str] = []
-    tradeoffs_raw: list[tuple[int, str]] = []  # (severity 1–3, text)
+) -> tuple[list[str], list[TradeoffItem]]:
+    """
+    Returns (highlights, tradeoffs).
+    Tradeoffs carry severity 1-3, sorted worst-first per D28.
+    """
+    highlights = []
+    tradeoffs = []
 
-    def hi(text: str) -> None:
-        highlights.append(text)
+    # Price
+    saving = req.budget_max - row["price"]
+    if saving >= 100_000:
+        highlights.append(f"${saving:,.0f} under budget")
 
-    def td(severity: int, text: str) -> None:
-        tradeoffs_raw.append((severity, text))
+    # Bedrooms
+    if row["bedrooms"] > req.bedrooms_min:
+        highlights.append(f"{row['bedrooms']} beds — {row['bedrooms'] - req.bedrooms_min} more than minimum")
 
-    # ── Price ──────────────────────────────────────────────────────────────
-    asking_mid = (prop["price_min"] + prop["price_max"]) / 2
-    budget     = req.budget_max
-    if scores["price_fit"] >= 0.85:
-        hi("Asking price well within your budget")
-    elif scores["price_fit"] >= 0.65:
-        hi("Price sits comfortably in your range")
-    elif asking_mid > budget:
-        td(3, f"Price guide above your ${budget // 1000:,}k budget")
+    # Station
+    if row.get("station_distance_km") is not None:
+        km = row["station_distance_km"]
+        walk_min = round(km * 12)  # ~12 min/km walking
+        if km <= 0.5:
+            highlights.append(f"{walk_min}-min walk to station")
+        elif km <= 1.0:
+            highlights.append(f"{walk_min}-min walk to station")
+        elif req.commute_max_min:
+            tradeoffs.append(TradeoffItem(
+                message=f"{walk_min}-min walk to station may extend commute",
+                severity=2 if km <= 2.0 else 3,
+            ))
 
-    # ── Commute ────────────────────────────────────────────────────────────
-    commute = prop["commute_cbd_mins"]
-    if req.commute_max_min:
-        ceiling = req.commute_max_min
-        if commute <= ceiling * 0.6:
-            hi(f"{commute}-min commute — well under your {ceiling}-min limit")
-        elif commute <= ceiling:
-            hi(f"{commute}-min commute to CBD")
-        else:
-            over = commute - ceiling
-            td(3 if over >= 15 else 2 if over >= 8 else 1,
-               f"{commute}-min commute exceeds your {ceiling}-min preference")
-    else:
-        if commute <= 30:
-            hi(f"{commute}-min commute to CBD")
+    # School
+    if row.get("school_catchment") is True:
+        highlights.append("In target school catchment")
+    elif row.get("school_catchment") is False:
+        tradeoffs.append(TradeoffItem(
+            message="Outside target school catchment",
+            severity=2,
+        ))
 
-    # ── Transport ──────────────────────────────────────────────────────────
-    dist = prop.get("distance_to_station_m")
-    if dist is not None:
-        if dist <= 400:
-            hi(f"{dist}m to train station — excellent walkability")
-        elif dist <= 750:
-            hi(f"{dist}m walk to nearest station")
-        else:
-            td(1, f"{dist}m to station — likely bus-dependent for some trips")
-    else:
-        td(1, "No train station data — confirm transport access independently")
+    # Land
+    if row.get("land_size_sqm"):
+        sqm = row["land_size_sqm"]
+        if sqm >= 700:
+            highlights.append(f"{sqm}sqm land — strong capital gain potential")
+        elif req.land_size_sqm_min and sqm < req.land_size_sqm_min * 1.1:
+            tradeoffs.append(TradeoffItem(
+                message=f"{sqm}sqm land is close to your {req.land_size_sqm_min}sqm minimum",
+                severity=1,
+            ))
 
-    # ── Bedrooms ───────────────────────────────────────────────────────────
-    if req.bedrooms_min:
-        actual_beds = prop["bedrooms"]
-        if actual_beds > req.bedrooms_min:
-            hi(f"{actual_beds} bedrooms — above your {req.bedrooms_min}+ requirement")
-        elif actual_beds == req.bedrooms_min:
-            hi(f"{actual_beds} bedrooms — meets your requirement")
-        else:
-            td(3, f"{actual_beds} bedrooms — below your {req.bedrooms_min}+ requirement")
-
-    # ── Land size ─────────────────────────────────────────────────────────
-    # (Only properties that passed the hard filter appear here — so if
-    #  land_size_sqm_min was set, every surviving property already meets it.)
-    land = prop.get("land_size_sqm")
-    if land and req.land_size_sqm_min:
-        surplus = land - req.land_size_sqm_min
-        if surplus >= 200:
-            hi(f"{land:,} sqm land — generously above your {req.land_size_sqm_min:,} sqm minimum")
-        else:
-            hi(f"{land:,} sqm land — meets your {req.land_size_sqm_min:,} sqm minimum")
-
-    # ── Schools ────────────────────────────────────────────────────────────
-    if req.school_priority:
-        school = prop.get("school_score") or 0
-        if school >= 0.80:
-            hi("Strong school catchment area")
-        elif school >= 0.65:
-            hi("Reasonable school catchment")
-        else:
-            td(2, "School catchment weaker than ideal")
-
-    # ── Renovation ─────────────────────────────────────────────────────────
-    reno = prop.get("renovation_status", "original")
-    if reno == "fully_renovated":
-        hi("Fully renovated — move-in ready")
-    elif reno == "new_build":
-        hi("New build — everything fresh")
-    elif reno == "partially_renovated":
-        hi("Partially renovated — kitchen or bathrooms updated")
+    # Renovation
+    reno = row.get("renovation_status")
+    if reno in ("full", "new"):
+        highlights.append(f"{'Newly built' if reno == 'new' else 'Fully renovated'} — move-in ready")
     elif reno == "original":
-        td(1, "Original condition — may need updating")
+        tradeoffs.append(TradeoffItem(
+            message="Original condition — renovation budget likely needed",
+            severity=2,
+        ))
 
-    # ── Noise ──────────────────────────────────────────────────────────────
-    noise = prop.get("noise_score")
-    if noise is not None and req.noise_preference != "any":
-        if req.noise_preference == "quiet":
-            if float(noise) >= NOISE_QUIET_MIN:
-                hi("Quiet residential street environment")
-            elif float(noise) < NOISE_MODERATE_MIN:
-                td(2, "Busier street environment — noise likely")
-            else:
-                td(1, "Moderate street noise — not fully quiet")
-        elif req.noise_preference == "moderate":
-            if NOISE_MODERATE_MIN <= float(noise) <= NOISE_QUIET_MIN:
-                hi("Balanced street energy — not too quiet, not too busy")
+    # Trajectory
+    if trajectory_row:
+        label = trajectory_row.get("trajectory_label")
+        change = trajectory_row.get("median_price_change", 0) or 0
+        if label == "rising":
+            pct = f"+{change*100:.1f}% YoY" if change else ""
+            highlights.append(f"Rising suburb {pct}".strip())
+        elif label == "cooling":
+            pct = f"{change*100:.1f}% YoY" if change else ""
+            tradeoffs.append(TradeoffItem(
+                message=f"Suburb trend cooling {pct} — verify before committing".strip(),
+                severity=2,
+            ))
 
-    # ── Trajectory ─────────────────────────────────────────────────────────
-    trajectory = prop.get("suburb_trajectory")
-    if trajectory == "rising":
-        hi(f"{prop['suburb']} prices trending upward")
-    elif trajectory == "cooling":
-        td(2, f"{prop['suburb']} suburb prices under downward pressure")
-    elif trajectory == "stable":
-        hi(f"{prop['suburb']} prices holding steady")
-
-    # ── Development zone ────────────────────────────────────────────────────
-    zone = prop.get("development_zone", "")
-    if zone and any(x in zone for x in ["R4", "B4", "B6", "High Density", "Mixed Use"]):
-        td(1, f"Development zone: {zone} — future high-density possible nearby")
-
-    # Sort tradeoffs by severity (worst first) per D28
-    tradeoffs_raw.sort(key=lambda x: x[0], reverse=True)
-    tradeoffs = [t for _, t in tradeoffs_raw]
+    # Sort tradeoffs: worst severity first (D28)
+    tradeoffs.sort(key=lambda t: t.severity, reverse=True)
 
     return highlights, tradeoffs
 
 
-# ── Public interface ──────────────────────────────────────────────────────────
+# ── Main search function ──────────────────────────────────────────────────────
 
-def run_search(
-    candidates: list[dict],
-    req: SearchRequest,
-) -> tuple[list[PropertyResult], int]:
-    total_candidates = len(candidates)
-    passed = [p for p in candidates if passes_hard_filters(p, req)]
+async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[MatchResult]:
+    # Fetch properties — now includes D29 actionable fields
+    rows = await conn.fetch("""
+        SELECT
+          p.*,
+          st.trajectory_label,
+          st.median_price_change,
+          st.source          AS traj_source,
+          st.reference_year  AS traj_year
+        FROM properties p
+        LEFT JOIN suburb_trajectories st
+          ON st.suburb = p.suburb
+          AND st.property_type = CASE
+            WHEN p.property_type = 'townhouse' THEN 'house'
+            ELSE p.property_type
+          END
+        WHERE p.price <= $1
+          AND p.bedrooms >= $2
+    """, req.budget_max, req.bedrooms_min)
 
-    results: list[tuple[int, PropertyResult]] = []
+    weights = INVESTMENT_WEIGHTS if req.mode == "investment" else RESIDENTIAL_WEIGHTS
+    results = []
 
-    for prop in passed:
+    for row in rows:
+        row = dict(row)
+
+        # Hard filters
+        passes, _ = passes_hard_filters(row, req)
+        if not passes:
+            continue
+
+        # Trajectory sub-dict
+        traj = None
+        if row.get("trajectory_label"):
+            traj = {
+                "trajectory_label": row["trajectory_label"],
+                "median_price_change": row["median_price_change"],
+                "source": row.get("traj_source"),
+                "year": row.get("traj_year"),
+            }
+
+        # Component scores
         scores = {
-            "price_fit":        score_price_fit(prop, req),
-            "commute_score":    score_commute(prop, req),
-            "size_score":       score_size(prop, req),
-            "transport_score":  score_transport(prop, req),
-            "school_score":     score_school(prop, req),
-            "bathroom_score":   score_bathrooms(prop, req),
-            "lifestyle_fit":    score_lifestyle(prop, req),
-            "trajectory_score": score_trajectory(prop, req),
+            "price_fit":    score_price_fit(row["price_max"], req.budget_max),
+            "trajectory":   score_trajectory(traj),
+            "location":     score_location(row.get("station_distance_km"), req.commute_max_min),
+            "school":       score_school(row.get("school_catchment")),
+            "land":         score_land(row.get("land_size_sqm"), req.land_size_sqm_min),
+            "lifestyle":    score_lifestyle(row.get("suburb_lifestyle_score")),
+            "renovation":   score_renovation(row.get("renovation_status")),
+            "rental_proxy": score_location(row.get("station_distance_km"), None),  # investment proxy
         }
 
-        match_score          = compute_match_score(scores)
-        highlights, tradeoffs = generate_explanation(prop, req, scores)
+        # Weighted score
+        total = sum(weights.get(k, 0) * v for k, v in scores.items())
+        total = round(total * 100, 1)  # 0–100
 
-        price_lo = prop["price_min"] // 1000
-        price_hi = prop["price_max"] // 1000
-        price_display = f"${price_lo:,}k – ${price_hi:,}k"
+        # Explanations
+        highlights, tradeoffs = generate_explanation(row, traj, req)
 
-        result = PropertyResult(
-            property_id=prop["id"],
-            title=prop["title"],
-            suburb=prop["suburb"],
-            price_display=price_display,
-            bedrooms=prop["bedrooms"],
-            bathrooms=prop["bathrooms"],
-            internal_size_sqm=prop.get("internal_size_sqm", 0),
-            land_size_sqm=prop.get("land_size_sqm"),
-            renovation_status=prop.get("renovation_status", "original"),
-            match_score=match_score,
+        # Build Property — D29 actionable fields included
+        prop = Property(
+            id=row["id"],
+            suburb=row["suburb"],
+            property_type=row["property_type"],
+            bedrooms=row["bedrooms"],
+            bathrooms=row.get("bathrooms"),
+            price=row["price_max"],
+            land_size_sqm=row.get("land_size_sqm"),
+            station_distance_km=row.get("station_distance_km"),
+            school_catchment=row.get("school_catchment"),
+            renovation_status=row.get("renovation_status"),
+            development_zone=row.get("development_zone"),
+            # D29 actionable
+            street_address=row.get("street_address"),
+            agent_name=row.get("agent_name"),
+            agent_phone=row.get("agent_phone"),
+            agent_email=row.get("agent_email"),
+            listing_url_rea=row.get("listing_url_rea"),
+            listing_url_domain=row.get("listing_url_domain"),
+            inspection_date=row.get("inspection_date"),
+            days_on_market=row.get("days_on_market"),
+        )
+
+        traj_info = None
+        if traj:
+            traj_info = TrajectoryInfo(
+                label=traj["trajectory_label"],
+                median_price_change=traj["median_price_change"],
+                source=traj.get("source"),
+                year=str(traj["year"]) if traj.get("year") else None,
+            )
+
+        results.append(MatchResult(
+            property=prop,
+            score=total,
             highlights=highlights,
             tradeoffs=tradeoffs,
-            suburb_trajectory=prop.get("suburb_trajectory"),
-            suburb_median_price_change=prop.get("suburb_median_price_change"),
-            suburb_reference_period=prop.get("suburb_reference_period"),
-        )
-        results.append((match_score, result))
+            trajectory=traj_info,
+        ))
 
-    results.sort(key=lambda x: x[0], reverse=True)
-    ranked = [r for _, r in results]
-    return ranked, total_candidates
+    # Sort descending by score
+    results.sort(key=lambda r: r.score, reverse=True)
+
+    # Apply threshold (D17 — 60% default, adjustable on results page)
+    results = [r for r in results if r.score >= 60.0]
+
+    return results[:20]  # cap at 20 results

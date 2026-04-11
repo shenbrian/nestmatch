@@ -1,114 +1,109 @@
 """
-NestMatch API — entry point.
-
-Run locally:
-    uvicorn app.main:app --reload
-
-Docs available at:
-    http://localhost:8000/docs
+main.py — NestMatch FastAPI backend
+Session 8: D29 actionable details in response + D23 outcome endpoint
 """
 
-import uuid
 import os
-import psycopg2
-from dotenv import load_dotenv
-from fastapi import FastAPI
+import uuid
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import asyncpg
 
-from app.models import SearchRequest, SearchResponse
-from app.engine import run_search
+from models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
+from engine import run_search
 
-load_dotenv()
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+pool: asyncpg.Pool | None = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global pool
+    pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
+    yield
+    await pool.close()
+
 
 app = FastAPI(
     title="NestMatch API",
-    version="1.0.0",
-    description="Buyer-side real estate matching engine for Sydney.",
+    version="0.8.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["https://nestmatch.com.au", "http://localhost:3000"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 
-def load_properties() -> list[dict]:
-    """Load all properties from Neon, joined with features and suburb trajectories.
-
-    Townhouses inherit the house trajectory for their suburb — townhouse
-    transaction volumes are too thin in most suburbs for a reliable
-    independent series (Decision D19).
-    """
-    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
-    cur  = conn.cursor()
-
-    cur.execute("""
-        SELECT
-            p.id,
-            p.title,
-            p.suburb,
-            p.price_min,
-            p.price_max,
-            p.bedrooms,
-            p.bathrooms,
-            p.internal_size_sqm,
-            p.property_type,
-            p.parking_spaces,
-            p.land_size_sqm,
-            p.development_zone,
-            p.renovation_status,
-            f.commute_cbd_mins,
-            f.distance_to_station_m,
-            f.distance_to_bus_stop_m,
-            f.distance_to_hospital_m,
-            f.transport_score,
-            f.school_score,
-            f.noise_score,
-            f.suburb_lifestyle_score,
-            st.trajectory          AS suburb_trajectory,
-            st.median_price_change AS suburb_median_price_change,
-            st.reference_period    AS suburb_reference_period
-        FROM properties p
-        JOIN property_features f ON f.property_id = p.id
-        LEFT JOIN suburb_trajectories st
-            ON st.suburb = p.suburb
-            AND st.property_type = CASE
-                WHEN p.property_type = 'townhouse' THEN 'house'
-                ELSE p.property_type
-            END
-        ORDER BY p.suburb, p.title
-    """)
-
-    cols = [desc[0] for desc in cur.description]
-    rows = [dict(zip(cols, row)) for row in cur.fetchall()]
-
-    for row in rows:
-        row["id"] = str(row["id"])
-        for key in ("transport_score", "school_score", "noise_score", "suburb_lifestyle_score"):
-            if row[key] is not None:
-                row[key] = float(row[key])
-        if row.get("suburb_median_price_change") is not None:
-            row["suburb_median_price_change"] = float(row["suburb_median_price_change"])
-
-    cur.close()
-    conn.close()
-    return rows
-
+# ── Health ────────────────────────────────────────────────────────────────────
 
 @app.get("/health")
-def health():
-    props = load_properties()
-    return {"status": "ok", "properties_loaded": len(props)}
+async def health():
+    async with pool.acquire() as conn:
+        count = await conn.fetchval("SELECT COUNT(*) FROM properties")
+    return {"status": "ok", "properties_loaded": count}
 
 
-@app.post("/search", response_model=SearchResponse)
-def search(req: SearchRequest) -> SearchResponse:
-    properties = load_properties()
-    ranked, total_candidates = run_search(properties, req)
-    return SearchResponse(
-        search_id=str(uuid.uuid4()),
-        total_candidates=total_candidates,
-        results=ranked,
-    )
+# ── Search ────────────────────────────────────────────────────────────────────
+
+@app.post("/search", response_model=list[MatchResult])
+async def search(req: SearchRequest):
+    async with pool.acquire() as conn:
+        results = await run_search(conn, req)
+    return results
+
+
+# ── Outcome reporting (D23 — begins the feedback loop) ───────────────────────
+
+@app.post("/outcome", response_model=OutcomeResponse)
+async def report_outcome(report: OutcomeReport):
+    """
+    Called when a buyer takes an action on a result card:
+    'I inspected this', 'I bought this', 'Shortlist', 'Not for me'.
+
+    Even at low volume (5% of users), this begins seeding the outcome
+    data that becomes NestMatch's durable moat per D23.
+    """
+    try:
+        async with pool.acquire() as conn:
+            await conn.execute(
+                """
+                INSERT INTO buyer_outcomes
+                  (session_id, property_id, search_criteria, match_score, outcome_type)
+                VALUES ($1, $2, $3, $4, $5)
+                """,
+                report.session_id,
+                report.property_id,
+                str(report.search_criteria) if report.search_criteria else None,
+                report.match_score,
+                report.outcome_type,
+            )
+        return OutcomeResponse(success=True, message="Outcome recorded. Thank you.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Outcome stats (internal — not buyer-facing yet) ──────────────────────────
+
+@app.get("/admin/outcomes/summary")
+async def outcomes_summary():
+    """Quick read on how the feedback loop is going."""
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT
+              outcome_type,
+              COUNT(*) as count,
+              AVG(match_score) as avg_score,
+              MIN(outcome_date) as first_seen
+            FROM buyer_outcomes
+            GROUP BY outcome_type
+            ORDER BY count DESC
+            """
+        )
+    return [dict(r) for r in rows]
