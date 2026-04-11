@@ -18,7 +18,7 @@ Revised weights:
 """
 
 import asyncpg
-from models import SearchRequest, MatchResult, Property, TradeoffItem, TrajectoryInfo
+from app.models import SearchRequest, MatchResult, Property, TradeoffItem, TrajectoryInfo
 from typing import Optional
 
 

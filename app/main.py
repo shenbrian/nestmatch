@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
 
-from models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
+from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
 from engine import run_search
 
 
