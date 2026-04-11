@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
 
 from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
-from engine import run_search
+from app.engine import run_search
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
