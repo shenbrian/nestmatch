@@ -116,7 +116,7 @@ def score_trajectory(trajectory_row: Optional[dict]) -> float:
     if not trajectory_row:
         return 0.5
     label = trajectory_row.get("trajectory_label", "stable")
-    change = trajectory_row.get("median_price_change", 0.0) or 0.0
+    change = float(trajectory_row.get("median_price_change") or 0.0)
     if label == "rising":
         return min(0.75 + change * 2, 1.0)
     if label == "stable":
