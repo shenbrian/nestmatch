@@ -231,8 +231,8 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
           p.*,
           st.trajectory AS trajectory_label,
           st.median_price_change,
-          st.source          AS traj_source,
-          st.reference_year  AS traj_year
+          st.data_source     AS traj_source,
+          st.reference_period AS traj_year
         FROM properties p
         LEFT JOIN suburb_trajectories st
           ON st.suburb = p.suburb
