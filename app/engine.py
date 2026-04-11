@@ -229,7 +229,7 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
     rows = await conn.fetch("""
         SELECT
           p.*,
-          st.trajectory_label,
+          st.trajectory AS trajectory_label,
           st.median_price_change,
           st.source          AS traj_source,
           st.reference_year  AS traj_year
