@@ -240,7 +240,7 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             WHEN p.property_type = 'townhouse' THEN 'house'
             ELSE p.property_type
           END
-        WHERE p.price <= $1
+        WHERE p.price_max <= $1
           AND p.bedrooms >= $2
     """, req.budget_max, req.bedrooms_min)
 
