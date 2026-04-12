@@ -18,8 +18,12 @@ from psycopg2.extras import execute_values
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
-def deterministic_uuid(suburb: str, address: str, price: int) -> str:
-    key = f"{suburb.lower().strip()}|{address.lower().strip()}|{price}"
+def deterministic_uuid(suburb: str, property_type: str, bedrooms: int, price: int) -> str:
+    """
+    Stable ID from 4 fields. street_address excluded — varies between sources.
+    suburb + property_type + bedrooms + price_max is stable and sufficiently unique.
+    """
+    key = f"{suburb.lower().strip()}|{property_type.lower().strip()}|{int(bedrooms)}|{int(price)}"
     return str(uuid.UUID(hashlib.md5(key.encode()).hexdigest()))
 
 
@@ -90,7 +94,12 @@ def import_listings(filepath: str):
 
         price_max = int(price_max_raw)
         price_min = int(price_min_raw) if not pd.isna(price_min_raw) else price_max
-        prop_id = deterministic_uuid(suburb, address, price_max)
+        prop_id = deterministic_uuid(
+            suburb,
+            clean_str(row.get("property_type")) or "house",
+            clean_int(row.get("bedrooms")) or 3,
+            price_max
+        )
 
         rows.append((
             prop_id,
