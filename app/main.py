@@ -12,6 +12,7 @@ import asyncpg
 
 from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
 from app.engine import run_search
+from app.outcome_agent import run_outcome_agent
 
 # — Session logging (D23 — outcome data flywheel) ————————————————
 
@@ -129,4 +130,43 @@ async def outcomes_summary():
             ORDER BY count DESC
             """
         )
+    return [dict(r) for r in rows]    
+
+# — Outcome agent (D32 — weekly cron trigger) ————————————————————
+
+@app.post("/internal/run-outcome-agent")
+async def trigger_outcome_agent():
+    """Called by Render cron every Monday. Not buyer-facing."""
+    result = await run_outcome_agent(pool)
+    return result
+
+
+# — Outcome candidates review (admin) ————————————————————————————
+
+@app.get("/internal/outcomes/candidates")
+async def list_outcome_candidates():
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT o.*, s.raw_input, s.mode, s.created_at as search_date
+            FROM outcome_records o
+            JOIN search_sessions s ON s.id = o.session_id
+            WHERE o.status = 'candidate'
+            ORDER BY o.created_at DESC
+            """
+        )
     return [dict(r) for r in rows]
+
+
+@app.post("/internal/outcomes/{outcome_id}/review")
+async def review_outcome(outcome_id: str, action: str):
+    """action = 'confirm' or 'discard'"""
+    status = "confirmed" if action == "confirm" else "discarded"
+    async with pool.acquire() as conn:
+        await conn.execute(
+            "UPDATE outcome_records SET status=$1, reviewed_at=now() WHERE id=$2",
+            status, outcome_id
+        )
+    return {"ok": True, "status": status}
+        
+    
