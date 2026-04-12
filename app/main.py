@@ -13,6 +13,28 @@ import asyncpg
 from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
 from app.engine import run_search
 
+# — Session logging (D23 — outcome data flywheel) ————————————————
+
+async def log_search_session(conn, req, results: list) -> None:
+    """Logs every completed search to search_sessions table."""
+    import json
+    raw_summary = (
+        f"{req.mode} | budget ${req.budget_max:,} | "
+        f"{req.bedrooms_min}bd | {req.property_type or 'any type'}"
+    )
+    await conn.execute(
+        """
+        INSERT INTO search_sessions
+            (mode, raw_input, extracted_params, results_returned, user_fingerprint)
+        VALUES ($1, $2, $3, $4, $5)
+        """,
+        req.mode,
+        raw_summary,
+        json.dumps(req.dict()),
+        json.dumps([r.dict() for r in results]),
+        "anon"
+    )
+
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 pool: asyncpg.Pool | None = None
@@ -55,6 +77,7 @@ async def health():
 async def search(req: SearchRequest):
     async with pool.acquire() as conn:
         results = await run_search(conn, req)
+        await log_search_session(conn, req, results)
     return results
 
 
