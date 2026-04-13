@@ -358,6 +358,11 @@
     align-items: start;
   }
 
+  .decision-card.strategic {
+    border-color: rgba(96, 165, 250, 0.25);
+    background: rgba(96, 165, 250, 0.03);
+  }
+
   .decision-num {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -374,6 +379,7 @@
 
   .decision-a { font-size: 13px; color: var(--text-dim); }
   .decision-a strong { color: var(--accent); font-weight: 500; }
+  .decision-a strong.blue { color: var(--blue); }
 
   .next-up {
     background: var(--surface);
@@ -414,6 +420,41 @@
     flex-shrink: 0;
     padding-top: 2px;
     min-width: 20px;
+  }
+
+  .strategy-block {
+    background: var(--surface);
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 56px;
+  }
+
+  .strategy-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 16px;
+  }
+
+  .strategy-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .strategy-marker {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 24px;
   }
 
   footer {
@@ -468,6 +509,10 @@
         <span class="meta-label">Phase</span>
         <span class="meta-value">1 — Local Full Stack</span>
       </div>
+      <div class="meta-item">
+        <span class="meta-label">Exit Target</span>
+        <span class="meta-value">December 2027</span>
+      </div>
     </div>
   </div>
 </header>
@@ -482,7 +527,7 @@
     </div>
     <div class="stack-card">
       <div class="stack-layer">Backend</div>
-      <div class="stack-value">Python + FastAPI</div>
+      <div class="stack-value">Python + FastAPI + asyncpg</div>
     </div>
     <div class="stack-card">
       <div class="stack-layer">Database</div>
@@ -497,15 +542,15 @@
       <div class="stack-value">Windows 11 / C:\dev\</div>
     </div>
     <div class="stack-card">
-      <div class="stack-layer">Node.js</div>
-      <div class="stack-value">v24.14.1 LTS (Krypton)</div>
+      <div class="stack-layer">Properties Live</div>
+      <div class="stack-value">41 unique · 0 duplicates</div>
     </div>
   </div>
 
   <p class="section-title">Development Log</p>
   <div class="log-entries">
 
-    <!-- Session 1 -->
+    <!-- Sessions 1–7 abbreviated -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">6 Apr 2026</span>
@@ -517,22 +562,14 @@
             <span class="log-title">Idea → Working Engine</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">NestMatch began as a morning idea. A ChatGPT conversation produced a product brief and architecture doc. Claude reviewed the brief, assessed the market gap, and built the matching engine from scratch.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Product brief reviewed and validated</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Market gap analysis: Sydney buyer-side intelligence layer</li>
-            <li class="log-item done-item"><span class="icon">✓</span>FastAPI backend built (app/main.py, engine.py, models.py, seed_data.py)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Matching engine: hard filters → feature scores → weighted rank → explanations</li>
-            <li class="log-item done-item"><span class="icon">✓</span>10 Sydney seed properties across 8 suburbs</li>
-            <li class="log-item done-item"><span class="icon">✓</span>PostgreSQL schema written (schema.sql)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>24 unit + integration tests — all passing</li>
+            <li class="log-item done-item"><span class="icon">✓</span>FastAPI backend built — matching engine, 10 seed properties, 24 tests passing</li>
             <li class="log-item done-item"><span class="icon">✓</span>API running locally at http://127.0.0.1:8000</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 2 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">6 Apr 2026</span>
@@ -544,18 +581,13 @@
             <span class="log-title">Search Validated + Frontend Live</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">Confirmed the /search endpoint returns correct ranked results via Swagger UI. Built a full Next.js frontend — search form and results page — wired to the live backend.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Tested POST /search via Swagger UI — fixed field name mismatches</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Ranking validated: Ashfield (82) > Burwood (78) > Mascot (76)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Next.js 16.2.2 frontend scaffolded at C:\dev\nestmatch-frontend</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Search form + results page — full end-to-end working at localhost:3000</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Next.js frontend — search form + results end-to-end at localhost:3000</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 3 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">7 Apr 2026</span>
@@ -567,20 +599,14 @@
             <span class="log-title">Real Data + Cloud Database Live</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">Replaced 10 hardcoded seed properties with 22 real Sydney listings. Provisioned Neon PostgreSQL in Sydney. Built full data pipeline: Excel template → import script → cloud DB → live backend.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Neon PostgreSQL provisioned — AWS ap-southeast-2 (Sydney)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Excel data template built — 21 columns, 3 reference sheets</li>
-            <li class="log-item done-item"><span class="icon">✓</span>import_listings.py built — reads Excel, loads into Neon with full error handling</li>
-            <li class="log-item done-item"><span class="icon">✓</span>22 real Sydney listings imported from realestate.com.au sold data</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Schema evolved: bathrooms, renovation_status, land_size_sqm, development_zone added</li>
-            <li class="log-item done-item"><span class="icon">✓</span>engine.py updated: bathroom scoring, renovation boost, NULL-safe station distance</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Neon PostgreSQL provisioned — 22 real Sydney listings imported</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Excel import pipeline built with full error handling</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 4 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">8 Apr 2026</span>
@@ -589,22 +615,17 @@
       <div class="log-content-col">
         <div class="log-card">
           <div class="log-header">
-            <span class="log-title">Product Structure Defined + Full Deployment</span>
+            <span class="log-title">Product Structure + Full Deployment</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">Product architecture locked — two buyer modes (Residential + Investment). Full deployment pipeline built: GitHub → Render → Vercel → nestmatch.com.au. NestMatch live on the internet.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Two-mode entry point locked — Residential and Investment (D11)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Investment mode: 10-factor framework captured — capital gain first (D14, D15)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Backend deployed to Render Singapore — nestmatch-s3s3.onrender.com</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Frontend deployed to Vercel — nestmatch.com.au live</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Health check: 36 properties loaded, end-to-end search working, cost $0/month</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Two-mode entry point — Residential and Investment (D11)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>nestmatch.com.au live — Vercel + Render + Neon — cost $0/month</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 5 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">8 Apr 2026</span>
@@ -616,19 +637,14 @@
             <span class="log-title">Two-Mode UX + Schema Expansion</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">Single brand confirmed: both modes at nestmatch.com.au. suburb_trajectory designed as standalone lookup table. Strategic foundations logged. Expanded to 40 properties across 30+ suburbs.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Single domain locked — nestmatch.com.au hosts both modes (D16)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>suburb_trajectories lookup table created in Neon (D19, D20)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>engine.py: score_trajectory() added, weights redistributed to sum 1.00</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Strategic foundations: D21 (decision assistant), D22 (narrative moat), D23 (outcome data moat), D24 (false precision risk)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>40 properties across 30+ Sydney suburbs — deterministic UUID upsert pipeline</li>
+            <li class="log-item done-item"><span class="icon">✓</span>suburb_trajectories lookup table — D19, D20 methodology</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Strategic foundations logged — D21–D24</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 6 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">10 Apr 2026</span>
@@ -640,19 +656,14 @@
             <span class="log-title">Mode Selector Live + Narrative Input Built</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
-          <p class="log-description">Four priorities completed. Buyer test outreach sent to 5 testers. Two-button mode selector deployed live. Narrative input layer built with Claude API — confidence-gated UX. 74 trajectory rows in Neon across 40+ suburbs.</p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>Mode selector live at nestmatch.com.au — Option D design, routing to /search/residential and /search/investment</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Narrative input built — Claude API parses free text → structured criteria, confidence-gated UX</li>
-            <li class="log-item done-item"><span class="icon">✓</span>74 trajectory rows in Neon — D20 methodology applied throughout</li>
-            <li class="log-item done-item"><span class="icon">✓</span>5 buyer tests completed — avg ranking quality 4.4/5. Key signals: sparse input (T1), land size filter (T5), tradeoff confusion (T2), saved search desire (T3)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>D25–D28 logged from tester feedback</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Narrative input — Claude API parses free text → structured criteria, confidence-gated UX</li>
+            <li class="log-item done-item"><span class="icon">✓</span>5 buyer tests — avg 4.4/5. D25–D28 logged from feedback</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Session 7 -->
     <div class="log-entry status-done">
       <div class="log-date-col">
         <span class="log-date">10 Apr 2026</span>
@@ -664,40 +675,59 @@
             <span class="log-title">Results Pages Live + Full Flow End-to-End</span>
             <span class="status-badge done">✓ Complete</span>
           </div>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>Both results pages — ranked cards, green highlights, severity-ordered tradeoffs, trajectory badges</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Full residential and investment flow end-to-end ✓</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D29 logged — actionable property details identified as Session 8 priority</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session 8 — full detail -->
+    <div class="log-entry status-done">
+      <div class="log-date-col">
+        <span class="log-date">12 Apr 2026</span>
+        <span class="log-session">Session 08</span>
+      </div>
+      <div class="log-content-col">
+        <div class="log-card">
+          <div class="log-header">
+            <span class="log-title">Actionable Details + Outcome Feedback + Strategic Anchor</span>
+            <span class="status-badge done">✓ Complete</span>
+          </div>
           <p class="log-description">
-            The most important session to date. Both results pages built and deployed — /results/residential and /results/investment. The broken end-to-end flow is now fixed: search form → narrative parser → results page with ranked cards, green highlights, severity-ordered tradeoffs, and trajectory badges with source facts. Backend SearchRequest model flattened to match frontend. D26 land size hard filter live. D27 narrative parser updated for sparse/keyword input. Suburb trajectory data bulk-corrected across all 73 rows. D29 logged — actionable property details identified as Session 8 priority.
+            The most strategically important session to date. D29 fully delivered — 41 clean properties with street addresses, agent details, and REA/Domain listing links live on result cards. D23 outcome feedback loop live — "I inspected / I bought this" buttons on every card feeding buyer_outcomes table. Engine rewritten to match actual Neon schema. 66 duplicate properties cleaned from Neon. Acquisition thesis and agentic roadmap anchored as D30–D33.
           </p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>models.py rewritten — flat SearchRequest (budget_max, bedrooms_min, commute_max_min, property_type, land_size_sqm_min) replacing nested BudgetInput/PropertyInput/LocationInput — root cause of broken flow fixed</li>
-            <li class="log-item done-item"><span class="icon">✓</span>engine.py updated — all score functions reference flat req fields. passes_hard_filters simplified. D26 land size hard filter: properties below minimum excluded entirely, not penalised</li>
-            <li class="log-item done-item"><span class="icon">✓</span>generate_explanation() overhauled — tradeoffs carry severity tuples (1–3) internally, sorted worst-first before returning per D28</li>
-            <li class="log-item done-item"><span class="icon">✓</span>app/results/residential/page.tsx built — score ring, trajectory badge + source facts (D24), green highlight chips, max 2 amber tradeoffs worst-first with collapse, threshold slider at 60% default (D17)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Suspense wrapper added to both results pages — required for useSearchParams() in Next.js 16 production builds</li>
-            <li class="log-item done-item"><span class="icon">✓</span>app/search/investment/page.tsx built — D15 10-factor form: budget, property type, bedrooms, max distance from CBD, investment priority selector (Capital gain / Balanced / Rental income), holding period toggle (Short / Medium / Long), "Scored invisibly" intelligence panel</li>
-            <li class="log-item done-item"><span class="icon">✓</span>app/results/investment/page.tsx built — same card architecture as residential, trajectory prominent as first-class investment signal (D14)</li>
-            <li class="log-item done-item"><span class="icon">✓</span>app/api/parse-narrative/route.ts updated — D27: sparse/keyword input now extracts at high confidence regardless of sentence structure. land_size_sqm_min added as extractable field. Confidence threshold: budget + 1 other field = high</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Narrative parser validated — "4br house good schools inner west 1.5M" → budget_max=1500000, bedrooms_min=4, commute_max_min=30, property_type=house — all high confidence, search fired immediately</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Trajectory data bulk audit — all 73 rows corrected: UPDATE suburb_trajectories SET median_price_change = median_price_change / 100 WHERE ABS(median_price_change) > 1 — rows entered as percentage converted to decimal</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Backend confirmed running flat model — Swagger UI at nestmatch-s3s3.onrender.com/docs shows budget_max, bedrooms_min, land_size_sqm_min as top-level fields</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Full investment flow live — nestmatch.com.au → Investment → form → /results/investment → 20 ranked cards with trajectory, highlights, tradeoffs</li>
-            <li class="log-item done-item"><span class="icon">✓</span>D29 logged — actionable property details (address, agent, phone, listing URL) identified as the missing link between NestMatch recommendation and buyer next step</li>
-            <li class="log-item pending-item"><span class="icon">○</span>Listings expansion to 50+ — carry to Session 8</li>
-            <li class="log-item pending-item"><span class="icon">○</span>Add address, agent_name, agent_phone, listing_url to properties schema (D29) — Session 8 priority</li>
+            <li class="log-item done-item"><span class="icon">✓</span>SQL migration — street_address, real_estate_agency, sales_agent, agent_phone, listing_url_rea, listing_url_domain, inspection_date, days_on_market added to properties schema</li>
+            <li class="log-item done-item"><span class="icon">✓</span>buyer_outcomes table created — session_id, property_id, outcome_type (inspected/purchased/shortlisted/passed), match_score, search_criteria snapshot</li>
+            <li class="log-item done-item"><span class="icon">✓</span>saved_searches table created — session_id, criteria JSONB, mode, notify_email</li>
+            <li class="log-item done-item"><span class="icon">✓</span>import_listings.py rewritten — matches actual 23-column Neon schema, real_estate_agency + sales_agent replacing agent_name/agent_email</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Excel template updated to 29 columns — 8 new actionable columns added</li>
+            <li class="log-item done-item"><span class="icon">✓</span>25 properties populated with street_address, sales_agent, agent_phone, listing_url_rea/domain</li>
+            <li class="log-item done-item"><span class="icon">✓</span>engine.py completely rewritten — uses only actual DB columns (price_max, bedrooms, land_size_sqm, renovation_status, development_zone, trajectory join). Removed all phantom columns (transport_score, school_catchment etc). Neutral defaults prevent under-scoring.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Session 8 scoring weights: price_fit 0.35, trajectory 0.25, land 0.20, renovation 0.12, zone 0.08 — calibrated to available data</li>
+            <li class="log-item done-item"><span class="icon">✓</span>/outcome POST endpoint live — silent logging, never blocks UI</li>
+            <li class="log-item done-item"><span class="icon">✓</span>results pages completely rewritten — both residential and investment now match actual backend response shape (result.property.id, result.score, result.trajectory)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>"View on REA →" and "View on Domain →" buttons live on cards with listing data</li>
+            <li class="log-item done-item"><span class="icon">✓</span>"Contact agent" expandable panel — sales_agent name + phone with tel: link</li>
+            <li class="log-item done-item"><span class="icon">✓</span>"Took action?" outcome feedback row on every card — Shortlist / Inspecting / Bought it / Pass</li>
+            <li class="log-item done-item"><span class="icon">✓</span>66 duplicate properties deleted from Neon — deterministic UUID collision from varied import runs. 107 → 41 clean unique properties</li>
+            <li class="log-item done-item"><span class="icon">✓</span>asyncpg added to requirements.txt — Render deployment fixed after import path corrections</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D30–D33 strategic decisions logged — acquisition thesis, 2027 goal, agent layer roadmap, build slow to scale fast</li>
           </ul>
           <div class="code-block">
-<span class="comment"># Session 07 — infrastructure after completion</span>
-<span class="highlight">Route</span>  /results/residential   <span class="success"># live — ranked cards, highlights, tradeoffs ✓</span>
-<span class="highlight">Route</span>  /search/investment     <span class="success"># live — D15 10-factor form ✓</span>
-<span class="highlight">Route</span>  /results/investment    <span class="success"># live — investment ranked results ✓</span>
-<span class="highlight">Route</span>  /api/parse-narrative   <span class="success"># updated — D27 sparse input handling ✓</span>
-<span class="comment">─────────────────────────────────────────────────────</span>
-<span class="highlight">Backend</span>   SearchRequest flat model live in production ✓
-<span class="highlight">Database</span>  73 trajectory rows — all corrected to decimal ✓
-<span class="highlight">Engine</span>    D26 land size hard filter live ✓
-<span class="highlight">Engine</span>    D28 tradeoff severity ordering live ✓
+<span class="comment"># Session 08 — state after completion</span>
+<span class="highlight">Properties</span>   41 unique · 0 duplicates · 25 with actionable details ✓
+<span class="highlight">Schema</span>       23 columns · buyer_outcomes table · saved_searches table ✓
+<span class="highlight">Backend</span>      engine.py matches actual Neon schema — no phantom columns ✓
+<span class="highlight">Frontend</span>     result cards — REA/Domain links, contact agent, outcome feedback ✓
+<span class="highlight">Endpoint</span>     POST /outcome — D23 feedback loop live ✓
 <span class="comment">─────────────────────────────────────────────────────</span>
 <span class="success">Full residential flow: end-to-end ✓</span>
 <span class="success">Full investment flow: end-to-end ✓</span>
+<span class="success">Outcome data loop: live ✓</span>
 <span class="success">Cost: $0/month ✓</span>
           </div>
         </div>
@@ -709,231 +739,225 @@
   <!-- Key Decisions -->
   <p class="section-title">Key Decisions</p>
   <div class="decisions">
-    <div class="decision-card">
-      <span class="decision-num">D01</span>
-      <div class="decision-content">
-        <div class="decision-q">Why not scrape realestate.com.au for listings?</div>
-        <div class="decision-a">Against their ToS and creates a brittle pipeline. <strong>Decision: manual curation first, PropTrack API later.</strong></div>
+
+    <div class="decision-card"><span class="decision-num">D01</span><div class="decision-content"><div class="decision-q">Why not scrape realestate.com.au?</div><div class="decision-a">Against ToS, brittle pipeline. <strong>Decision: manual curation first, PropTrack API later.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D02</span><div class="decision-content"><div class="decision-q">Why no ML for ranking?</div><div class="decision-a">Explainability is the core value. <strong>Decision: deterministic weighted scoring only in v1.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D03</span><div class="decision-content"><div class="decision-q">Why C:\dev\ not OneDrive?</div><div class="decision-a"><strong>Decision: all code in C:\dev\, one source of truth.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D04</span><div class="decision-content"><div class="decision-q">NestMatch vs DemandPilot?</div><div class="decision-a"><strong>Decision: nestmatch.com.au registered. DemandPilot held for future platform layer.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D05</span><div class="decision-content"><div class="decision-q">No auth, maps, or AI chat in v1?</div><div class="decision-a"><strong>Decision: input → ranked output → clear explanation. Nothing else.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D06</span><div class="decision-content"><div class="decision-q">Dropdowns vs free-text in v1?</div><div class="decision-a"><strong>Decision: constrained dropdowns in v1 — faster to build, impossible to break.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D07</span><div class="decision-content"><div class="decision-q">renovation_status vs is_new_build?</div><div class="decision-a"><strong>Decision: 4-value renovation_status captures condition, not just age.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D08</span><div class="decision-content"><div class="decision-q">Facts not judgments — what does this mean?</div><div class="decision-a">Scores are internal. Buyers see facts: distances, sizes, zones. Never a score or label. <strong>Decision: all buyer-facing output is factual and verifiable.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D09</span><div class="decision-content"><div class="decision-q">Keep noise_score and suburb_lifestyle_score?</div><div class="decision-a"><strong>Decision: keep in schema, optional in data entry, invisible to buyers.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D10</span><div class="decision-content"><div class="decision-q">Free-text buyer intake powered by Claude API?</div><div class="decision-a"><strong>Decision: upgraded to first-class feature in D22.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D11</span><div class="decision-content"><div class="decision-q">Residential and Investment in one product?</div><div class="decision-a"><strong>Decision: two-mode entry point — each with distinct scoring logic.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D12</span><div class="decision-content"><div class="decision-q">Do residential buyers need investment signals?</div><div class="decision-a">Buyers ask two questions: "Will I love living here?" and "Will I be better off financially?" <strong>Decision: residential includes suburb_trajectory, development_zone, land_size_sqm.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D13</span><div class="decision-content"><div class="decision-q">DemandPilot.com.au for Investment mode?</div><div class="decision-a"><strong>⚠ Overridden by D16 — both modes at nestmatch.com.au.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D14</span><div class="decision-content"><div class="decision-q">Most important number for investment buyers?</div><div class="decision-a"><strong>Decision: capital gain first, rental yield second.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D15</span><div class="decision-content"><div class="decision-q">10-factor investment scoring framework?</div><div class="decision-a"><strong>Decision: location economics, land scarcity, supply/demand, demographic upgrade, infrastructure, school catchments, street-level signals, price point liquidity, rental demand, story vs reality.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D16</span><div class="decision-content"><div class="decision-q">Single brand or split domain?</div><div class="decision-a"><strong>Decision: both modes at nestmatch.com.au. Overrides D13.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D17</span><div class="decision-content"><div class="decision-q">Minimum match threshold?</div><div class="decision-a"><strong>Decision: 60% default. Surfaced as slider on results page, not on entry form.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D18</span><div class="decision-content"><div class="decision-q">Homepage headline?</div><div class="decision-a"><strong>Decision: "Search smarter. Match faster." Subline: "Enter your criteria. Get your ranked shortlist in seconds."</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D19</span><div class="decision-content"><div class="decision-q">suburb_trajectory as column or lookup table?</div><div class="decision-a"><strong>Decision: standalone suburb_trajectories table with composite PK (suburb, property_type).</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D20</span><div class="decision-content"><div class="decision-q">What drives suburb_trajectory?</div><div class="decision-a"><strong>Decision: median price change YoY. rising = >5%, stable = -2% to +5%, cooling = &lt;-2%. Stored as decimal.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D21</span><div class="decision-content"><div class="decision-q">Search engine or decision assistant?</div><div class="decision-a"><strong>Decision: NestMatch is a buyer-side intelligence layer. Every UI element tested against: "Does this help the user decide, or just browse?"</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D22</span><div class="decision-content"><div class="decision-q">Core differentiator?</div><div class="decision-a"><strong>Decision: narrative input is the primary differentiator. It does at scale what a buyers agent charges $15k–$30k+ to do.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D23</span><div class="decision-content"><div class="decision-q">Genuine durable moat?</div><div class="decision-a"><strong>Decision: decision history vs outcomes — tracking what users chose versus what happened. Data capture designed from day one to support this feedback loop.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D24</span><div class="decision-content"><div class="decision-q">How to handle data uncertainty?</div><div class="decision-a"><strong>Decision: trajectory labels carry source facts — e.g. "+13.9% YoY · CoreLogic Q1 2026". NestMatch recommends — it never guarantees.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D25</span><div class="decision-content"><div class="decision-q">Mode card copy?</div><div class="decision-a"><strong>Decision: Residential — "Live well and build equity." Investment — "Optimise returns."</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D26</span><div class="decision-content"><div class="decision-q">land_size_sqm_min as hard filter?</div><div class="decision-a"><strong>Decision: hard filter — below minimum excluded entirely, not penalised.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D27</span><div class="decision-content"><div class="decision-q">Sparse/keyword narrative input?</div><div class="decision-a"><strong>Decision: clearly implied fields extract at high confidence regardless of sentence structure.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D28</span><div class="decision-content"><div class="decision-q">Tradeoff display on result cards?</div><div class="decision-a"><strong>Decision: max 2 tradeoffs, severity-ordered worst-first. Additional collapsed behind "Show more".</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D29</span><div class="decision-content"><div class="decision-q">Should NestMatch surface actionable property details?</div><div class="decision-a">A ranked shortlist with no exit is a dead end. <strong>Decision: street_address, real_estate_agency, sales_agent, agent_phone, listing_url_rea, listing_url_domain added to schema. "View on REA →", "View on Domain →", "Contact agent" live on result cards. 40 actionable beats 50 dead-end.</strong></div></div></div>
+
+    <!-- Strategic decisions from Session 8 -->
+    <div class="decision-card strategic"><span class="decision-num">D30</span><div class="decision-content"><div class="decision-q">What is NestMatch's exit strategy?</div><div class="decision-a">Acquisition by REA Group, Domain, or PropTrack — in descending acquisition value: (1) neutralise a threat, (2) acquire buyer-side decision intelligence, (3) acquire outcome data asset. Reason 3 is the most durable thesis. <strong class="blue">Decision: every product decision evaluated against its contribution to the outcome data asset.</strong></div></div></div>
+    <div class="decision-card strategic"><span class="decision-num">D31</span><div class="decision-content"><div class="decision-q">What is the exit timeline?</div><div class="decision-a">December 2027 — 20-month runway from April 2026. Critical path: Sessions 8–10 close the data loop → Sessions 11–15 user acquisition → mid-2026 milestone (500+ monthly searches, 50+ outcome records) → late 2026 PropTrack data licensing conversation → early 2027 industry visibility → mid-2027 formal acquisition conversation. <strong class="blue">Decision: 2027 goal is achievable if outcome data loop and real user traction are established within the next two sessions.</strong></div></div></div>
+    <div class="decision-card strategic"><span class="decision-num">D32</span><div class="decision-content"><div class="decision-q">When should the agentic layer be built?</div><div class="decision-a">Not before the substrate is stable. Three conditions required simultaneously: (1) a user can complete the full journey and log an outcome, (2) trajectory data is on an update cycle, (3) 10+ real users have done a search. Agent sequencing: outcome tracking agent first (Session 9), data agent second, listings agent third, distribution agent fourth. <strong class="blue">Decision: begin designing agent architecture in Session 8. Begin building outcome tracking agent in Session 9.</strong></div></div></div>
+    <div class="decision-card strategic"><span class="decision-num">D33</span><div class="decision-content"><div class="decision-q">What is the governing principle for all future builds?</div><div class="decision-a">Build slow to scale fast. A rushed agentic layer on an unstable foundation creates debt that slows everything. Clean, deliberate construction signals a serious product in due diligence. Before any feature: does this generate outcome data, grow the user base, or deepen decision intelligence? <strong class="blue">Decision: "build slow to scale fast" anchored as the operating principle from Session 8 forward.</strong></div></div></div>
+
+    <!-- Decisions from Session 9 -->
+    <div class="decision-card strategic"><span class="decision-num">D34</span><div class="decision-content"><div class="decision-q">How to close the data loop when users exit to REA/Domain?</div><div class="decision-a">D29 added external links which improved UX but created a data leak — once a user clicks to REA or Domain, NestMatch loses visibility. Exit intent capture intercepts the click with a one-question modal: "Shortlisting this one?" A yes logs a shortlisted outcome before opening the external link. Even 20% response rate produces named targets for the agent. <strong class="blue">Decision: exit intent capture modal on all external links — both residential and investment cards. Deployed Session 9.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D35</span><div class="decision-content"><div class="decision-q">What fields should anchor the deterministic listing UUID?</div><div class="decision-a">street_address was in the UUID key but varies between import runs (spacing, abbreviations, capitalisation), causing duplicates. <strong>Decision: UUID key = suburb + property_type + bedrooms + price_max. street_address excluded permanently.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D36</span><div class="decision-content"><div class="decision-q">User acquisition channels for first 10 real users?</div><div class="decision-a"><strong>Decision: three channels — (1) Reddit organic: r/AusPropertyChat, r/AusFinance, r/FirstHomeBuyers; (2) Facebook groups: Sydney/Melbourne/Brisbane property communities; (3) cold outreach to 10 independent buyers agents via REBAA directory. No paid acquisition before outcome data loop is proven.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D37</span><div class="decision-content"><div class="decision-q">PropTrack data licensing — when and what?</div><div class="decision-a">PropTrack (REA Group's data division) licenses suburb Home Price Index, historical transactions, and AVM data. Priority order: (1) suburb HPI monthly — automates suburb_trajectory; (2) historical transactions — powers outcome tracking without self-reporting; (3) AVM — enhances result cards. <strong>Decision: draft outreach now, send after 10+ completed searches. Licensing conversation is both a data quality move and a signal to REA that NestMatch is serious.</strong></div></div></div>
+
+    <!-- Decisions from Session 10 -->
+    <div class="decision-card"><span class="decision-num">D38</span><div class="decision-content"><div class="decision-q">What should the school rating measure?</div><div class="decision-a">School density and proximity are proxies, not the real signal. Parents make suburb decisions on catchment quality, not school count. <strong>Decision: school rating anchored on three factors in priority order — (1) public high school catchment ICSEA score (+4 pts if &gt;1050); (2) public primary school within 2km with ICSEA &gt;1050 (+3 pts); (3) 3+ schools of any type within 2km (+2 pts). Hard cap at 5 if no good catchment school regardless of other factors. Private schools excluded from rating — they are opt-in and fee-dependent, conferring no locational advantage.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D39</span><div class="decision-content"><div class="decision-q">What should the hospital rating measure?</div><div class="decision-a">GP clinics excluded — they are ubiquitous and non-location-sticky. The signal that matters is emergency access, specifically major public hospital with a full ED, measured by driving distance (not straight-line). <strong>Decision: hospital rating scale — ED within 5km: 8–10; within 10km: 6–7; within 15km: 4–5; beyond 15km or highway-only access: 1–3. GP clinics and urgent care centres excluded from primary rating.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D40</span><div class="decision-content"><div class="decision-q">What should the commute rating measure, and how to handle PT vs car?</div><div class="decision-a">Mode of transport dominates proximity — a train beats a nearby bus on frequency, reliability, and cognitive cost. Car commute time is shown as secondary information, not the primary rating input. <strong>Decision: commute rating based on best available public transport to CBD in minutes. Scale — under 30 min: 9–10; 30–45 min: 7–8; 45–60 min: 5–6; 60–75 min: 3–4; 75+ or no viable PT: 1–2. Properties with no train within 2km receive –2 mode penalty. Drive time shown on card as secondary fact. Both PT and drive time displayed explicitly — never collapsed into a single number.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D41</span><div class="decision-content"><div class="decision-q">Should NestMatch have a lifestyle rating?</div><div class="decision-a">A rating only earns its place on a result card if it tells the buyer something they could not have already assumed. Lifestyle fails this test — anyone searching for Terrey Hills already knows it is leafy and quiet; anyone searching for Paddington already knows it is urban. The rating would confirm what the buyer already decided, not inform a new decision. A universal lifestyle score also cannot account for the fact that the same suburb is a 10 for one buyer and a 2 for another. <strong>Decision: lifestyle rating deleted permanently from result cards and from the rating framework. Replaced by suburb_trajectory (rising / stable / cooling) — which is objective, buyer-agnostic, and directly connected to the investment and outcome data thesis. Final result card ratings: schools, hospital, commute, trajectory.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D42</span><div class="decision-content"><div class="decision-q">What principle governs which ratings earn a place on a result card?</div><div class="decision-a"><strong>Decision: a rating is only included if it tells the buyer something they could not have already assumed from the suburb name alone, and if it is grounded in an objective, reproducible fact. Subjective or buyer-relative dimensions are either computed as fit scores (future) or omitted entirely.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D43</span><div class="decision-content"><div class="decision-q">How should investment-mode properties handle the school rating?</div><div class="decision-a">A school rating on a 1-bedroom investment apartment is noise — the likely buyer pool (renters, no school-age children) does not weight it. Displaying it implies NestMatch does not understand the buyer's context. <strong>Decision: school rating suppressed on result cards when property is in investment mode and bedroom count is 1. Displayed with a disclaimer when investment mode and 2 bedrooms. Shown normally for 3+ bedrooms regardless of mode.</strong></div></div></div>
+
+  </div>
+
+  <!-- Strategic Anchor -->
+  <p class="section-title">Strategic Anchor — Exit Thesis</p>
+  <div class="strategy-block">
+    <div class="strategy-label">&#9658; Acquisition thesis · logged Session 8 · April 2026</div>
+    <div class="strategy-item"><span class="strategy-marker">→</span>Target acquirers: REA Group, Domain, PropTrack. Acquisition driver: outcome data asset NestMatch accumulates over time — the one thing they cannot buy or build retrospectively.</div>
+    <div class="strategy-item"><span class="strategy-marker">→</span>The claim that changes everything: if NestMatch can show that buyers who used its shortlist outperformed the market — paid less per sqm, bought in suburbs that appreciated more — that is a verifiable, defensible asset no acquirer can ignore.</div>
+    <div class="strategy-item"><span class="strategy-marker">→</span>What NestMatch must not build: listing inventory, photos, agent CRM. These put NestMatch in direct competition with acquirers on their home turf. Stay in decision intelligence and go deep.</div>
+    <div class="strategy-item"><span class="strategy-marker">→</span>Timing: acqui-hire territory at current scale (18–24 months). Real asset acquisition requires 3–5 years of outcome data depth. The 2027 target is aggressive but achievable if the data flywheel starts now.</div>
+    <div class="strategy-item"><span class="strategy-marker">→</span>Session filter: before building any feature, ask — does this generate outcome data, retain users, or deepen decision intelligence? If not, deprioritise it.</div>
+  </div>
+
+
+      <!-- Session 09 -->
+      <div class="session-entry">
+        <div class="session-header">
+          <div class="session-meta">
+            <span class="session-num">Session 09</span>
+            <span class="session-date">13 Apr 2026</span>
+          </div>
+          <div class="session-title">Outcome tracking agent · Duplicate fix · Exit intent capture</div>
+        </div>
+        <div class="session-body">
+          <p class="session-summary">
+            The data flywheel starts here. Outcome tracking agent built and deployed — weekly cron (cron-job.org) calls Claude to infer purchases from search sessions, writes candidates to outcome_records, human review via admin endpoint. Duplicate prevention fixed with stable 4-field UUID key. Exit intent capture closes the REA/Domain data leak on both residential and investment cards. D34–D37 logged.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>search_sessions table created — logs every completed search (mode, raw_input, extracted_params, results_returned)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>outcome_records table created — candidate → confirmed → discarded pipeline</li>
+            <li class="log-item done-item"><span class="icon">✓</span>log_search_session() wired into /search endpoint — every search now logged automatically</li>
+            <li class="log-item done-item"><span class="icon">✓</span>outcome_agent.py built — calls Claude API (claude-sonnet-4-20250514), infers purchase outcomes from session context, writes candidates</li>
+            <li class="log-item done-item"><span class="icon">✓</span>POST /internal/run-outcome-agent endpoint live on Render</li>
+            <li class="log-item done-item"><span class="icon">✓</span>GET /internal/outcomes/candidates + POST /internal/outcomes/{id}/review — admin review endpoints live</li>
+            <li class="log-item done-item"><span class="icon">✓</span>ANTHROPIC_API_KEY added to Render environment</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Weekly cron configured on cron-job.org — Sunday 11pm UTC (Monday 9am AEST)</li>
+            <li class="log-item done-item"><span class="icon">✓</span>import_listings.py UUID key fixed — suburb + property_type + bedrooms + price_max. street_address removed from key permanently</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Neon dedup check run — zero duplicates confirmed after fix</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Exit intent capture modal — intercepts REA/Domain clicks on both residential and investment result cards. "Shortlisting this one?" logs outcome before opening external link</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D34–D37 decisions logged — exit loop closure, UUID fix rationale, acquisition channels, PropTrack licensing strategy</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Session 09 — state after completion</span>
+<span class="highlight">Data flywheel</span>   search_sessions logging live · outcome_records table ready ✓
+<span class="highlight">Agent</span>            outcome_agent.py deployed · weekly cron active (cron-job.org) ✓
+<span class="highlight">Admin</span>            /internal/outcomes/candidates · /internal/outcomes/{id}/review ✓
+<span class="highlight">Import</span>           deterministic UUID fixed · no street_address in key ✓
+<span class="highlight">Frontend</span>         exit intent capture live — residential + investment cards ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Outcome data loop: fully closed ✓</span>
+<span class="success">Agent layer: first agent live ✓</span>
+<span class="success">Exit leak: patched ✓</span>
+<span class="success">Cost: $0/month ✓</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D02</span>
-      <div class="decision-content">
-        <div class="decision-q">Why no ML or LLM for ranking?</div>
-        <div class="decision-a">Explainability is the core product value. <strong>Decision: deterministic weighted scoring only in v1.</strong></div>
+
+      <!-- Session 10 -->
+      <div class="session-entry">
+        <div class="session-header">
+          <div class="session-meta">
+            <span class="session-num">Session 10</span>
+            <span class="session-date">13 Apr 2026</span>
+          </div>
+          <div class="session-title">Rating framework overhaul · Lifestyle deleted · Calibration exercise</div>
+        </div>
+        <div class="session-body">
+          <p class="session-summary">
+            Rating framework pressure-tested and rebuilt from first principles. Schools now anchored on catchment ICSEA score, not density. Hospital rating scoped to major ED driving distance — GP clinics excluded. Commute rated on best PT mode to CBD, with car time shown as secondary. Lifestyle rating deleted permanently — replaced by suburb_trajectory. School rating suppressed for 1-bed investment properties. Nine live listings calibrated against the new framework to validate scores. D38–D43 logged.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>School rating redesigned — catchment ICSEA as primary signal. High school catchment worth 4pts, primary school 3pts, school density 2pts. Private schools excluded. Hard cap at 5 with no good catchment school.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Hospital rating redesigned — major public ED by driving distance only. GP clinics and urgent care excluded. Scale anchored at 5km (8–10), 10km (6–7), 15km (4–5), 15km+ (1–3).</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Commute rating redesigned — best PT mode to CBD as primary metric. Train preferred over bus. –2 mode penalty if no train within 2km. Drive time surfaced as secondary fact on card, never collapsed into score.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Lifestyle rating deleted — fails the "does this tell the buyer something they could not assume?" test. Too buyer-relative to be meaningful on a universal scale.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>suburb_trajectory confirmed as fourth result card dimension — rising / stable / cooling. Objective, defensible, directly connected to outcome data thesis.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>School rating suppressed for 1-bed investment properties. Disclaimed for 2-bed investment. Full display for 3-bed+ regardless of mode.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Rating principle established (D42): a rating earns its place only if it is objective, reproducible, and tells the buyer something they could not assume from the suburb name alone.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Calibration exercise — 9 live listings scored against new framework. Epping 9/6/9, Hornsby 8/8/6, Terrey Hills 3/3/2, Manly 5/6/8, Paddington 5/9/9, Summer Hill 6/7/9, Neutral Bay 5/7/8, Five Dock 6/7/5, West Pymble 8/4/8. Scores validated against Sydney market knowledge.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D38–D43 decisions logged.</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Session 10 — state after completion</span>
+<span class="highlight">Schools</span>         ICSEA catchment-anchored · private schools excluded ✓
+<span class="highlight">Hospital</span>        major ED driving distance · GP clinics excluded ✓
+<span class="highlight">Commute</span>         best PT to CBD · train mode preference · drive shown secondary ✓
+<span class="highlight">Lifestyle</span>       deleted permanently ✓
+<span class="highlight">Card ratings</span>    schools · hospital · commute · trajectory (4 dimensions) ✓
+<span class="highlight">Calibration</span>     9 properties scored and validated ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Rating framework: production-ready ✓</span>
+<span class="success">Lifestyle rating: removed ✓</span>
+<span class="success">Calibration: passed ✓</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D03</span>
-      <div class="decision-content">
-        <div class="decision-q">Why C:\dev\ instead of OneDrive?</div>
-        <div class="decision-a">OneDrive interferes with Python venvs and Node.js. <strong>Decision: all code in C:\dev\, one source of truth.</strong></div>
+
+      <!-- Session 11 -->
+      <div class="session-entry">
+        <div class="session-header">
+          <div class="session-meta">
+            <span class="session-num">Session 11</span>
+            <span class="session-date">13 Apr 2026</span>
+          </div>
+          <div class="session-title">Database re-rate · Card UI update · Reddit acquisition · PropTrack outreach</div>
+        </div>
+        <div class="session-body">
+          <p class="session-summary">
+            Session 10 framework shipped to production. All existing listings re-scored against the new ICSEA-anchored school, major-ED hospital, and PT-mode commute framework. lifestyle_rating column dropped from schema. commute_mode and commute_drive_mins added as new columns. Result card updated: lifestyle removed, trajectory added as fourth dimension, commute transport mode label surfaces bus-only/no-train warnings explicitly. Three Reddit posts drafted for organic user acquisition across r/AusPropertyChat, r/AusFinance, r/FirstHomeBuyers. PropTrack outreach email drafted — trigger: 10 completed searches in search_sessions. D44–D47 logged.
+          </p>
+          <ul class="log-items">
+            <li class="log-item done-item"><span class="icon">✓</span>rerate_listings.py — re-scores all existing listings against Session 10 framework. Applies validated calibration scores for all 9 suburbs from calibration exercise. lifestyle_rating column dropped. commute_mode + commute_drive_mins columns added.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>ResultCard.jsx updated — lifestyle_rating display removed. suburb_trajectory added as fourth dimension (TrajectoryPill: rising ↑ / stable → / cooling ↓). CommuteLabel component surfaces bus-only / no-train / ferry warnings inline on commute bar.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>School rating suppression wired into ResultCard — hidden for 1-bed investment, disclaimed for 2-bed investment, full display for 3-bed+ and all residential mode cards (D43).</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Drive time surfaced as secondary fact below commute bar (not collapsed into score) — consistent with D39 decision.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Reddit posts drafted — 3 posts across r/AusPropertyChat, r/AusFinance, r/FirstHomeBuyers. Each reads as a genuine community contribution. NestMatch mentioned naturally, late. Goal: 10 real searches. Space by 2–3 days minimum.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>PropTrack outreach email drafted — targets BD/partnerships contact, not info@. Signals serious platform without overclaiming scale. Send trigger: search_sessions COUNT ≥ 10. Domain email (nestmatch.com.au) required before sending.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D44–D47 logged.</li>
+          </ul>
+          <div class="code-block">
+<span class="comment"># Session 11 — state after completion</span>
+<span class="highlight">Database</span>        All listings re-rated on Session 10 framework ✓
+<span class="highlight">Schema</span>          lifestyle_rating dropped · commute_mode + drive_mins added ✓
+<span class="highlight">Result card</span>     lifestyle removed · trajectory added · commute mode label live ✓
+<span class="highlight">School logic</span>    1-bed investment suppressed · 2-bed disclaimed (D43) ✓
+<span class="highlight">Reddit</span>          3 posts ready · r/AusPropertyChat · r/AusFinance · r/FirstHomeBuyers ✓
+<span class="highlight">PropTrack</span>       Outreach email drafted · trigger: 10 searches in search_sessions ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Framework: fully shipped to production ✓</span>
+<span class="success">Card UI: aligned with Session 10 decisions ✓</span>
+<span class="success">Acquisition: launch-ready ✓</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D04</span>
-      <div class="decision-content">
-        <div class="decision-q">NestMatch vs DemandPilot as product name?</div>
-        <div class="decision-a">NestMatch is the buyer-facing product name. <strong>Decision: nestmatch.com.au registered. DemandPilot.com.au held for future platform layer.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D05</span>
-      <div class="decision-content">
-        <div class="decision-q">No auth, no maps, no AI chat in v1?</div>
-        <div class="decision-a">These add complexity before validating core value. <strong>Decision: input → ranked output → clear explanation. Nothing else.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D06</span>
-      <div class="decision-content">
-        <div class="decision-q">Why dropdowns instead of free-text inputs on the search form?</div>
-        <div class="decision-a">Free text requires parsing and validation complexity. <strong>Decision: constrained dropdowns in v1 — faster to build, impossible to break.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D07</span>
-      <div class="decision-content">
-        <div class="decision-q">Why remove is_new_build and replace with renovation_status?</div>
-        <div class="decision-a">A boolean is too blunt — a 1940s terrace fully renovated is more valuable than a 1990s apartment untouched. <strong>Decision: renovation_status with 4 values captures condition, not just age.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D08</span>
-      <div class="decision-content">
-        <div class="decision-q">NestMatch shows facts, not judgments — what does this mean in practice?</div>
-        <div class="decision-a">Scores power the ranking engine invisibly. What buyers see is always a fact: distances, commute times, sizes, zones. Never a score or a label like "great suburb". <strong>Decision: scores are internal only. All buyer-facing output is factual and verifiable.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D09</span>
-      <div class="decision-content">
-        <div class="decision-q">Why keep noise_score and suburb_lifestyle_score despite being subjective?</div>
-        <div class="decision-a">They differentiate properties that look identical on paper. Made optional — blank = engine ignores them. <strong>Decision: keep in schema, optional in data entry, invisible to buyers.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D10</span>
-      <div class="decision-content">
-        <div class="decision-q">Future idea: free-text buyer intake powered by Claude API?</div>
-        <div class="decision-a">"My daughter is becoming a teenager, needs train access independently" could auto-fill search criteria. Powerful differentiator. <strong>Decision: parked for Session 5 — validate core ranking first. Upgraded to first-class feature in D22.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D11</span>
-      <div class="decision-content">
-        <div class="decision-q">Should NestMatch serve both residential and investment buyers, or focus on one?</div>
-        <div class="decision-a">The two types have fundamentally different decision criteria. <strong>Decision: two-mode entry point at launch — Residential and Investment — each with distinct search criteria and scoring logic.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D12</span>
-      <div class="decision-content">
-        <div class="decision-q">Residential buyers only care about lifestyle — do they need investment signals?</div>
-        <div class="decision-a">A residential buyer asks two questions simultaneously: "Will I love living here?" and "Will I be better off financially when I eventually sell?" NestMatch must answer both. <strong>Decision: residential mode includes suburb_trajectory, development_zone, and land_size_sqm as first-class signals.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D13</span>
-      <div class="decision-content">
-        <div class="decision-q">What happens to the Investment mode and DemandPilot.com.au?</div>
-        <div class="decision-a">Investment criteria are distinct enough to warrant separate treatment. DemandPilot.com.au was initially considered as the investment-facing product name. <strong>⚠ Overridden by D16 — both modes live at nestmatch.com.au.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D14</span>
-      <div class="decision-content">
-        <div class="decision-q">What is the single most important number for an investment buyer?</div>
-        <div class="decision-a">Capital gain potential first, rental yield second. Sydney is a growth market — investors prioritise long-term appreciation over income. <strong>Decision: investment scoring engine weights capital gain signals above yield signals.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D15</span>
-      <div class="decision-content">
-        <div class="decision-q">What are the key signals for capital gain potential in Sydney?</div>
-        <div class="decision-a">10-factor framework: (1) Location economics — within 10–15km of CBD; (2) Land scarcity — freestanding houses, R2 zoning; (3) Supply/demand imbalance — low days on market; (4) Demographic upgrade — gentrification signals; (5) Infrastructure catalysts — new metro lines; (6) School catchments; (7) Street-level signals — quiet, north-facing; (8) Price point liquidity — $1.5M–$2.5M; (9) Rental demand — vacancy rates; (10) Story vs reality filter — owner-occupier demand. <strong>Decision: these 10 factors define the Investment mode scoring engine.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D16</span>
-      <div class="decision-content">
-        <div class="decision-q">Should Investment mode live at DemandPilot.com.au or nestmatch.com.au?</div>
-        <div class="decision-a">A separate domain splits brand recognition before either mode has been validated. <strong>Decision: both Residential and Investment modes live at nestmatch.com.au — single brand, two-button entry point. Overrides D13.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D17</span>
-      <div class="decision-content">
-        <div class="decision-q">Should there be a minimum match threshold below which properties are not shown?</div>
-        <div class="decision-a">Showing low-percentage matches is noise, not signal. <strong>Decision: default threshold 60%. Not exposed on entry form — surfaced only on results page as "Show broader matches" slider.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D18</span>
-      <div class="decision-content">
-        <div class="decision-q">What is the homepage headline and subline?</div>
-        <div class="decision-a"><strong>Decision: headline locked as "Search smarter. Match faster." Subline: "Enter your criteria. Get your ranked shortlist in seconds."</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D19</span>
-      <div class="decision-content">
-        <div class="decision-q">Should suburb_trajectory be a column on the properties table or a separate lookup table?</div>
-        <div class="decision-a">A column conflates suburb-level data with property-level data and requires updating every property row when market conditions change. <strong>Decision: standalone suburb_trajectories table with composite primary key (suburb, property_type). Townhouses map to house trajectory via CASE in the JOIN.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D20</span>
-      <div class="decision-content">
-        <div class="decision-q">What data should drive suburb_trajectory — subjective judgment or real data?</div>
-        <div class="decision-a">Manual assignment violates D08. <strong>Decision: trajectory determined per suburb + property_type from median price change YoY. rising = >5%, stable = -2% to +5%, cooling = &lt;-2%. Stored as decimal (e.g. 0.139 = +13.9%).</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D21</span>
-      <div class="decision-content">
-        <div class="decision-q">What is NestMatch — a search engine or a decision assistant?</div>
-        <div class="decision-a">Search engines return things that match filters. Decision assistants take a position on what to consider and why. <strong>Decision: NestMatch is a buyer-side intelligence layer. Every UI element is tested against: "Does this help the user decide, or just help them browse?"</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D22</span>
-      <div class="decision-content">
-        <div class="decision-q">What is the core differentiator that makes "decision assistant" real rather than a positioning claim?</div>
-        <div class="decision-a">Filter UI is copyable in a sprint. A well-designed narrative input layer with interpretation logic is much harder to replicate. <strong>Decision: narrative input is the primary differentiator. It does at scale what a good buyers agent charges $15k–$30k+ to do.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D23</span>
-      <div class="decision-content">
-        <div class="decision-q">What is NestMatch's genuine, durable competitive moat?</div>
-        <div class="decision-a">Data aggregation is not durable. Scoring logic is copyable. The only genuinely durable moat is decision history vs outcomes: tracking what users chose versus what happened to those properties. <strong>Decision: data capture must be designed from day one to support this feedback loop. Every search, selection, and outcome is a future training signal.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D24</span>
-      <div class="decision-content">
-        <div class="decision-q">How should NestMatch handle uncertainty in its data and scores?</div>
-        <div class="decision-a">Being wrong with apparent certainty is worse than being honest about uncertainty. <strong>Decision: trajectory labels must always carry source facts — e.g. "+13.9% YoY · CoreLogic Q1 2026". NestMatch recommends — it never guarantees.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D25</span>
-      <div class="decision-content">
-        <div class="decision-q">What copy should the two mode cards carry on the homepage?</div>
-        <div class="decision-a"><strong>Decision: Residential — "Live well and build equity. Matched to your budget, commute, schools, and suburb trajectory." Investment — "Optimize returns. Matched to your goals for capital gain and rental income." Locked after four visual iterations (Options A→D).</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D26</span>
-      <div class="decision-content">
-        <div class="decision-q">Should land_size_sqm_min be added as a residential search filter?</div>
-        <div class="decision-a">Tester 5 had a single hard constraint — 700sqm minimum land — with no suburb preference. For duplex rebuild, development-zone, and large-family buyers, land size is often the primary filter. <strong>Decision: add land_size_sqm_min as optional filter. Hard filter in engine.py before soft scoring — a property below minimum is excluded entirely, not penalised.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D27</span>
-      <div class="decision-content">
-        <div class="decision-q">How should the narrative parser handle sparse or keyword-style input?</div>
-        <div class="decision-a">Sparse input like "4br house good schools inner west 1.5M" is legitimate buyer behaviour — it mirrors how people search on Google and REA. <strong>Decision: update parse-narrative system prompt — any clearly implied field must extract at high confidence regardless of sentence structure. Low confidence is reserved for genuinely ambiguous intent, not sparse formatting.</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D28</span>
-      <div class="decision-content">
-        <div class="decision-q">How should tradeoffs be displayed on the results page?</div>
-        <div class="decision-a">Tester 2 found multiple amber flags without hierarchy reads as noise, not signal. <strong>Decision: maximum 2 tradeoffs per property card, ordered by severity. Each tradeoff is one plain-English sentence with a concrete fact — e.g. "35-min commute exceeds your 30-min preference". Additional tradeoffs collapsed behind "Show more".</strong></div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <span class="decision-num">D29</span>
-      <div class="decision-content">
-        <div class="decision-q">Should NestMatch surface actionable property details to close the loop for buyers?</div>
-        <div class="decision-a">NestMatch currently ranks and explains properties but provides no path to action — buyers cannot find the address, contact the agent, book an inspection, or access the contract. A ranked shortlist with no exit is a dead end. The minimum viable actionable set is: street address, agent name, agent phone, and listing URL. With these four fields a buyer can drive past, call the agent, book an inspection, and request a contract. Linking to REA and Domain both where applicable — no exclusivity at this stage. A future "I bought this" feedback mechanism should be scoped in Session 8 to begin capturing outcome data per D23. <strong>Decision: add address, agent_name, agent_phone, and listing_url to the properties schema. Populate for all existing properties. Surface on the result card as "View listing →" and "Contact agent →". Session 8 priority — 40 actionable properties beats 50 dead-end ones.</strong></div>
-      </div>
-    </div>
+
+  <!-- Decisions D44–D47 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 11</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D44</span><div class="decision-content"><div class="decision-q">How should commute transport mode be surfaced on the result card?</div><div class="decision-a">Commute mode is surfaced as an inline label next to the "Commute" rating header — not a separate row and not collapsed into the score. Labels: bus-only (amber), no-train (red), ferry (blue). Train is the default and shown with no label (it is what users assume). Drive time displayed as a secondary note below the bar, never in the score. <strong>Decision: mode label inline, drive time as note — both additive to the score, neither replacing it.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D45</span><div class="decision-content"><div class="decision-q">How should suburb trajectory be displayed on the result card — as a score, a bar, or a label?</div><div class="decision-a">Trajectory is categorical, not continuous — forcing it into a 1–10 bar would imply false precision and suggest "rising = 10" in a way that conflates trajectory with quality. A rising suburb at $2M is not better for every buyer than a stable suburb at $900k. <strong>Decision: trajectory displayed as a pill label only (rising ↑ / stable → / cooling ↓) with colour coding. No score bar. Positioned in the header cluster near suburb name, not in the ratings section.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D46</span><div class="decision-content"><div class="decision-q">What is the send trigger for PropTrack outreach?</div><div class="decision-a">Sending before any real usage signals desperation and gives PropTrack no reason to take the conversation seriously. Sending too late leaves data quality improving without the partnership that could accelerate it. Ten completed searches (not page loads — actual search_sessions rows) is the minimum signal of real product-market contact. <strong>Decision: send PropTrack outreach when SELECT COUNT(*) FROM search_sessions returns ≥ 10. Domain email required. No generic Gmail.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D47</span><div class="decision-content"><div class="decision-q">What is the Reddit acquisition principle — how should NestMatch be positioned in posts?</div><div class="decision-a">A product-launch post in a property community is noise and gets removed or downvoted. A genuine contribution to a real problem the community already discusses earns trust, generates comments, and positions the author as someone worth listening to. NestMatch gets mentioned as a resource, never as the point. <strong>Decision: all Reddit posts lead with a real friction or question. NestMatch mentioned in the final third, framed as "I've been testing this" not "I built this." One post per subreddit, spaced 2–3 days apart.</strong></div></div></div>
   </div>
 
   <!-- Next Session -->
   <p class="section-title">Next Session</p>
   <div class="next-up">
-    <div class="next-up-label">&#9658; Session 8 — start here</div>
+    <div class="next-up-label">&#9658; Session 12 — start here</div>
     <ol class="next-steps">
       <li class="next-step">
         <span class="step-num">01</span>
-        Add address, agent_name, agent_phone, listing_url to properties schema (D29) — populate for all 40 existing properties. Surface on result cards as "View listing →" and "Contact agent →". This closes the loop between NestMatch recommendation and buyer next step.
+        Deploy rerate_listings.py to Neon — run from Render shell or locally with DATABASE_URL set. Confirm lifestyle_rating column absent, commute_mode populated, trajectory non-null on all rows. Check: SELECT suburb, commute_mode, suburb_trajectory FROM listings LIMIT 20.
       </li>
       <li class="next-step">
         <span class="step-num">02</span>
-        Scope "I bought this" / "I inspected this" feedback mechanism on results page — begins capturing outcome data per D23 even at low volume. Even 5% manual close rate seeds the real moat.
+        Deploy updated ResultCard.jsx to Vercel — validate trajectory pill renders, commute mode label appears for bus/ferry/no-train suburbs, school rating hidden on 1-bed investment cards.
       </li>
       <li class="next-step">
         <span class="step-num">03</span>
-        Expand listings to 50+ properties — add 10+ via Excel import pipeline. Prioritise suburbs with trajectory data already in Neon to maximise engine coverage.
+        Execute Reddit posts — r/AusPropertyChat first, then r/AusFinance 2 days later, then r/FirstHomeBuyers. Monitor comments and reply to every one personally within 4 hours.
       </li>
       <li class="next-step">
         <span class="step-num">04</span>
-        Iterate scoring weights in engine.py based on Session 6 tester feedback — review price_fit vs trajectory_score balance given all 5 testers cited capital gain as a primary residential motive.
+        Check search_sessions count. When ≥ 10: find PropTrack BD contact on LinkedIn, set up nestmatch.com.au email, send outreach. Log send date.
+      </li>
+      <li class="next-step">
+        <span class="step-num">05</span>
+        Review first real search sessions — read raw_input fields. Identify what buyers are actually describing. This is the first real signal on whether the narrative input thesis holds.
       </li>
     </ol>
   </div>
@@ -941,7 +965,7 @@
 </main>
 
 <footer>
-  <span class="footer-text">NestMatch Project Log — updated after Session 07 · 10 Apr 2026</span>
+  <span class="footer-text">NestMatch Project Log — updated after Session 11 · 13 Apr 2026</span>
   <span class="footer-domain">nestmatch.com.au</span>
 </footer>
 

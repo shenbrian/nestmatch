@@ -42,6 +42,13 @@ class Property(BaseModel):
     noise_score: Optional[float] = None
     suburb_lifestyle_score: Optional[float] = None
 
+    # Session 11 — rating framework fields
+    school_rating: Optional[int] = None
+    hospital_rating: Optional[int] = None
+    commute_rating: Optional[int] = None
+    commute_mode: Optional[str] = None
+    commute_drive_mins: Optional[int] = None
+
     # D29 — actionable details (Session 8)
     street_address: Optional[str] = None
     agent_name: Optional[str] = None

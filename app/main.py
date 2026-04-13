@@ -32,7 +32,7 @@ async def log_search_session(conn, req, results: list) -> None:
         req.mode,
         raw_summary,
         json.dumps(req.dict()),
-        json.dumps([r.dict() for r in results]),
+        json.dumps([r.dict() for r in results], default=str),
         "anon"
     )
 
