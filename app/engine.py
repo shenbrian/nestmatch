@@ -1,17 +1,20 @@
 """
 engine.py — NestMatch matching engine
 Session 8: matches actual 23-column Neon schema exactly.
+Session 13: passes Session 12 investment signal fields through to Property model.
 
 Actual properties columns:
   id, title, suburb, price_min, price_max, bedrooms, internal_size_sqm,
   property_type, parking_spaces, created_at, updated_at, land_size_sqm,
   development_zone, bathrooms, renovation_status, street_address,
   sales_agent, agent_phone, listing_url_rea, listing_url_domain,
-  inspection_date, days_on_market, real_estate_agency
+  inspection_date, days_on_market, real_estate_agency,
+  school_rating, hospital_rating, commute_rating, commute_mode,
+  commute_drive_mins, capital_gain_pct, land_to_asset_ratio,
+  median_weekly_rent, commute_source, land_value_source
 
 Scoring uses: price_max, bedrooms, land_size_sqm, renovation_status,
               development_zone, trajectory (from suburb_trajectories join).
-No transport_score / school_score / lifestyle_score in DB.
 """
 
 import asyncpg
@@ -247,6 +250,12 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             listing_url_domain=row.get("listing_url_domain"),
             inspection_date=row.get("inspection_date"),
             days_on_market=row.get("days_on_market"),
+            # Session 12 investment signal fields
+            capital_gain_pct=row.get("capital_gain_pct"),
+            land_to_asset_ratio=row.get("land_to_asset_ratio"),
+            median_weekly_rent=row.get("median_weekly_rent"),
+            commute_source=row.get("commute_source"),
+            land_value_source=row.get("land_value_source"),
         )
 
         traj_info = None

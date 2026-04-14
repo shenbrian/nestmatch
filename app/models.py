@@ -1,6 +1,7 @@
 """
 models.py — NestMatch data models
 Session 8: added D29 actionable fields + outcome tracking
+Session 13: added Session 12 investment signal fields to Property
 """
 
 from pydantic import BaseModel, Field
@@ -25,7 +26,7 @@ class SearchRequest(BaseModel):
     holding_period: Optional[str] = None       # short | medium | long
 
 
-# ── Property (DB row → API response) ─────────────────────────────────────────
+# ── Property (DB row → API response) ────────────────────────────────────────────
 
 class Property(BaseModel):
     id: UUID
@@ -58,6 +59,13 @@ class Property(BaseModel):
     listing_url_domain: Optional[str] = None
     inspection_date: Optional[date] = None
     days_on_market: Optional[int] = None
+
+    # Session 12 — investment signal fields (D46–D51)
+    capital_gain_pct: Optional[float] = None        # 12-month suburb median % e.g. 7.2
+    land_to_asset_ratio: Optional[float] = None     # 0–1 e.g. 0.58 — houses only
+    median_weekly_rent: Optional[int] = None        # AUD — apartments only
+    commute_source: Optional[str] = None            # gtfs_auto | manual
+    land_value_source: Optional[str] = None         # vg_suburb_median | not_applicable_apartment
 
 
 # ── Match result ──────────────────────────────────────────────────────────────
