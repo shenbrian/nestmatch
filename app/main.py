@@ -169,4 +169,63 @@ async def review_outcome(outcome_id: str, action: str):
         )
     return {"ok": True, "status": status}
         
-    
+# ── Pre-portal listings (D80/D81) ─────────────────────────────────────────────
+
+@app.get("/pre-portal")
+async def pre_portal(suburbs: str = ""):
+    """
+    Returns agent_outbound records where is_pre_portal = true.
+    Optionally filtered by comma-separated suburb list (D80).
+    Unnests listings_raw array so each listing is a flat object.
+    """
+    suburb_list = [s.strip().lower() for s in suburbs.split(",") if s.strip()]
+
+    async with pool.acquire() as conn:
+        if suburb_list:
+            rows = await conn.fetch(
+                """
+                SELECT
+                    ao.id,
+                    ao.agency_name,
+                    ao.agent_name,
+                    ao.received_at,
+                    ao.is_pre_portal,
+                    listing->>'street_address' AS street_address,
+                    listing->>'suburb'         AS suburb,
+                    listing->>'property_type'  AS property_type,
+                    listing->>'price_guide'    AS price_guide,
+                    listing->>'bedrooms'       AS bedrooms,
+                    listing->>'bathrooms'      AS bathrooms
+                FROM agent_outbound ao,
+                     jsonb_array_elements(ao.listings_raw) AS listing
+                WHERE ao.is_pre_portal = true
+                  AND ao.listings_raw IS NOT NULL
+                  AND LOWER(listing->>'suburb') = ANY($1::text[])
+                ORDER BY ao.received_at DESC
+                """,
+                suburb_list,
+            )
+        else:
+            rows = await conn.fetch(
+                """
+                SELECT
+                    ao.id,
+                    ao.agency_name,
+                    ao.agent_name,
+                    ao.received_at,
+                    ao.is_pre_portal,
+                    listing->>'street_address' AS street_address,
+                    listing->>'suburb'         AS suburb,
+                    listing->>'property_type'  AS property_type,
+                    listing->>'price_guide'    AS price_guide,
+                    listing->>'bedrooms'       AS bedrooms,
+                    listing->>'bathrooms'      AS bathrooms
+                FROM agent_outbound ao,
+                     jsonb_array_elements(ao.listings_raw) AS listing
+                WHERE ao.is_pre_portal = true
+                  AND ao.listings_raw IS NOT NULL
+                ORDER BY ao.received_at DESC
+                """
+            )
+
+    return [dict(r) for r in rows]    
