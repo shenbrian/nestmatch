@@ -38,7 +38,7 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # Nester email → nester ID mapping
 NESTER_MAP = {
-    "jam.nguyen@gmail.com":       "N01",
+    "jam.nguyen73@proton.me":     "N01",
     "clawson1503@outlook.com":    "N02",
     "r.haines52@outlook.com":     "N03",
     "mpark_home@proton.me":       "N04",
