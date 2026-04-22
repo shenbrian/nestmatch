@@ -18,6 +18,7 @@ class SearchRequest(BaseModel):
     commute_max_min: Optional[int] = None
     property_type: Optional[str] = None       # house | apartment | townhouse | unit
     land_size_sqm_min: Optional[int] = None   # D26 hard filter
+    suburbs: list[str] = []
 
     # Investment-mode fields
     mode: Literal["residential", "investment"] = "residential"
