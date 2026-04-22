@@ -194,8 +194,10 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
           END
         WHERE p.price_max <= $1
           AND p.bedrooms >= $2
-          AND p.listing_status = 'for_sale'                  
-    """, req.budget_max, req.bedrooms_min)
+          AND p.listing_status = 'for_sale'
+          AND ($3::text[] = '{}'::text[] OR LOWER(p.suburb) = ANY($3::text[]))
+    """, req.budget_max, req.bedrooms_min,
+        [s.lower() for s in req.suburbs])
 
     weights = INVESTMENT_WEIGHTS if req.mode == "investment" else RESIDENTIAL_WEIGHTS
     results = []
