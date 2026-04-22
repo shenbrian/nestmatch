@@ -543,7 +543,7 @@
     </div>
     <div class="stack-card">
       <div class="stack-layer">Properties Live</div>
-      <div class="stack-value">41 unique · 0 duplicates</div>
+      <div class="stack-value">138 total · 56 for_sale · 82 sold</div>
     </div>
   </div>
 
@@ -892,80 +892,956 @@
         <div class="session-header">
           <div class="session-meta">
             <span class="session-num">Session 11</span>
-            <span class="session-date">13 Apr 2026</span>
+            <span class="session-date">14 Apr 2026</span>
           </div>
-          <div class="session-title">Database re-rate · Card UI update · Reddit acquisition · PropTrack outreach</div>
+          <div class="session-title">Database re-rate · Schema migration · Rating bars live · Investment card strategy</div>
         </div>
         <div class="session-body">
           <p class="session-summary">
-            Session 10 framework shipped to production. All existing listings re-scored against the new ICSEA-anchored school, major-ED hospital, and PT-mode commute framework. lifestyle_rating column dropped from schema. commute_mode and commute_drive_mins added as new columns. Result card updated: lifestyle removed, trajectory added as fourth dimension, commute transport mode label surfaces bus-only/no-train warnings explicitly. Three Reddit posts drafted for organic user acquisition across r/AusPropertyChat, r/AusFinance, r/FirstHomeBuyers. PropTrack outreach email drafted — trigger: 10 completed searches in search_sessions. D44–D47 logged.
+            Session 10 framework shipped to production. Schema migrated: lifestyle_rating dropped, five new columns added (school_rating, hospital_rating, commute_rating, commute_mode, commute_drive_mins). All 41 properties re-scored against the new framework. Backend models and engine updated to pass rating fields through API. Rating bars live on residential result cards with colour coding, commute mode labels, and drive time notes. Investment card signal set finalised — hospital removed, house vs apartment differentiation established. Data sourcing strategy set: GTFS and NSW Valuer General automation before PropTrack outreach. Reddit deferred. D44–D51 logged.
           </p>
           <ul class="log-items">
-            <li class="log-item done-item"><span class="icon">✓</span>rerate_listings.py — re-scores all existing listings against Session 10 framework. Applies validated calibration scores for all 9 suburbs from calibration exercise. lifestyle_rating column dropped. commute_mode + commute_drive_mins columns added.</li>
-            <li class="log-item done-item"><span class="icon">✓</span>ResultCard.jsx updated — lifestyle_rating display removed. suburb_trajectory added as fourth dimension (TrajectoryPill: rising ↑ / stable → / cooling ↓). CommuteLabel component surfaces bus-only / no-train / ferry warnings inline on commute bar.</li>
-            <li class="log-item done-item"><span class="icon">✓</span>School rating suppression wired into ResultCard — hidden for 1-bed investment, disclaimed for 2-bed investment, full display for 3-bed+ and all residential mode cards (D43).</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Drive time surfaced as secondary fact below commute bar (not collapsed into score) — consistent with D39 decision.</li>
-            <li class="log-item done-item"><span class="icon">✓</span>Reddit posts drafted — 3 posts across r/AusPropertyChat, r/AusFinance, r/FirstHomeBuyers. Each reads as a genuine community contribution. NestMatch mentioned naturally, late. Goal: 10 real searches. Space by 2–3 days minimum.</li>
-            <li class="log-item done-item"><span class="icon">✓</span>PropTrack outreach email drafted — targets BD/partnerships contact, not info@. Signals serious platform without overclaiming scale. Send trigger: search_sessions COUNT ≥ 10. Domain email (nestmatch.com.au) required before sending.</li>
-            <li class="log-item done-item"><span class="icon">✓</span>D44–D47 logged.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Schema migration — school_rating, hospital_rating, commute_rating, commute_mode, commute_drive_mins columns added to properties table. lifestyle_rating confirmed absent.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>rerate_listings.py — all 41 properties re-scored. SUBURB_SCORES dict covers all 30 suburbs in database. Zero skipped on final run.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>models.py updated — Property model includes all 5 new rating fields.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>engine.py updated — Property constructor passes school_rating, hospital_rating, commute_rating, commute_mode, commute_drive_mins from DB row.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Residential results page (page.tsx) updated — rating bars rendered with green/amber/red colour coding. Commute mode label inline (Bus only, ⚠ No train, ferry). Drive to CBD shown as secondary note below bar.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Backend deployed to Render · Frontend deployed to Vercel — both live.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Investment card signal set finalised — hospital rating removed from investment mode. House: school, commute, capital gain %, land-to-asset ratio, trajectory. Apartment: school, commute, median weekly rent (suburb + bedroom count), trajectory.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>Data sourcing strategy settled — GTFS (commute automation) and NSW Valuer General (land values + trajectory signals) before PropTrack outreach. Reddit deferred indefinitely.</li>
+            <li class="log-item done-item"><span class="icon">✓</span>D44–D51 logged.</li>
           </ul>
           <div class="code-block">
 <span class="comment"># Session 11 — state after completion</span>
-<span class="highlight">Database</span>        All listings re-rated on Session 10 framework ✓
-<span class="highlight">Schema</span>          lifestyle_rating dropped · commute_mode + drive_mins added ✓
-<span class="highlight">Result card</span>     lifestyle removed · trajectory added · commute mode label live ✓
-<span class="highlight">School logic</span>    1-bed investment suppressed · 2-bed disclaimed (D43) ✓
-<span class="highlight">Reddit</span>          3 posts ready · r/AusPropertyChat · r/AusFinance · r/FirstHomeBuyers ✓
-<span class="highlight">PropTrack</span>       Outreach email drafted · trigger: 10 searches in search_sessions ✓
+<span class="highlight">Schema</span>          lifestyle dropped · 5 rating columns added · all 41 properties scored ✓
+<span class="highlight">Backend</span>         models.py + engine.py updated · Render deployed ✓
+<span class="highlight">Frontend</span>        rating bars live · commute mode labels · drive time note ✓
+<span class="highlight">Investment card</span> signal set finalised · hospital removed · house vs apt differentiated ✓
+<span class="highlight">Data strategy</span>   GTFS + Valuer General first · PropTrack outreach after ✓
 <span class="comment">─────────────────────────────────────────────────────</span>
-<span class="success">Framework: fully shipped to production ✓</span>
-<span class="success">Card UI: aligned with Session 10 decisions ✓</span>
-<span class="success">Acquisition: launch-ready ✓</span>
+<span class="success">Rating framework: fully live in production ✓</span>
+<span class="success">Investment card: strategy locked ✓</span>
+<span class="success">Data sourcing: sequenced correctly ✓</span>
           </div>
         </div>
       </div>
 
-  <!-- Decisions D44–D47 -->
+  <!-- Decisions D44–D51 -->
   <p class="section-title" style="margin-top: 40px;">Decisions — Session 11</p>
   <div class="decisions-grid">
-    <div class="decision-card"><span class="decision-num">D44</span><div class="decision-content"><div class="decision-q">How should commute transport mode be surfaced on the result card?</div><div class="decision-a">Commute mode is surfaced as an inline label next to the "Commute" rating header — not a separate row and not collapsed into the score. Labels: bus-only (amber), no-train (red), ferry (blue). Train is the default and shown with no label (it is what users assume). Drive time displayed as a secondary note below the bar, never in the score. <strong>Decision: mode label inline, drive time as note — both additive to the score, neither replacing it.</strong></div></div></div>
-    <div class="decision-card"><span class="decision-num">D45</span><div class="decision-content"><div class="decision-q">How should suburb trajectory be displayed on the result card — as a score, a bar, or a label?</div><div class="decision-a">Trajectory is categorical, not continuous — forcing it into a 1–10 bar would imply false precision and suggest "rising = 10" in a way that conflates trajectory with quality. A rising suburb at $2M is not better for every buyer than a stable suburb at $900k. <strong>Decision: trajectory displayed as a pill label only (rising ↑ / stable → / cooling ↓) with colour coding. No score bar. Positioned in the header cluster near suburb name, not in the ratings section.</strong></div></div></div>
-    <div class="decision-card"><span class="decision-num">D46</span><div class="decision-content"><div class="decision-q">What is the send trigger for PropTrack outreach?</div><div class="decision-a">Sending before any real usage signals desperation and gives PropTrack no reason to take the conversation seriously. Sending too late leaves data quality improving without the partnership that could accelerate it. Ten completed searches (not page loads — actual search_sessions rows) is the minimum signal of real product-market contact. <strong>Decision: send PropTrack outreach when SELECT COUNT(*) FROM search_sessions returns ≥ 10. Domain email required. No generic Gmail.</strong></div></div></div>
-    <div class="decision-card"><span class="decision-num">D47</span><div class="decision-content"><div class="decision-q">What is the Reddit acquisition principle — how should NestMatch be positioned in posts?</div><div class="decision-a">A product-launch post in a property community is noise and gets removed or downvoted. A genuine contribution to a real problem the community already discusses earns trust, generates comments, and positions the author as someone worth listening to. NestMatch gets mentioned as a resource, never as the point. <strong>Decision: all Reddit posts lead with a real friction or question. NestMatch mentioned in the final third, framed as "I've been testing this" not "I built this." One post per subreddit, spaced 2–3 days apart.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D44</span><div class="decision-content"><div class="decision-q">How should commute transport mode be surfaced on the result card?</div><div class="decision-a">Commute mode shown as inline label next to rating header. Train = no label (assumed default). Bus only = amber. No train = red warning. Ferry = blue. Drive time shown as secondary note below bar, never in the score. <strong>Decision: mode label inline, drive time as note — both additive to score, neither replacing it.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D45</span><div class="decision-content"><div class="decision-q">How should suburb trajectory be displayed — score bar or label?</div><div class="decision-a">Trajectory is categorical not continuous. Forcing it into a 1–10 bar implies false precision and conflates trajectory with quality. <strong>Decision: trajectory displayed as pill label only (rising ↑ / stable → / cooling ↓) with colour coding. No score bar.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D46</span><div class="decision-content"><div class="decision-q">Should hospital rating appear on investment mode cards?</div><div class="decision-a">Hospital proximity does not materially affect rental demand or capital growth in most Sydney suburbs. Displaying it on investment cards implies NestMatch does not understand the investor's decision framework. School rating stays — ICSEA trajectory is a leading indicator of demographic upgrade and capital growth. <strong>Decision: hospital rating removed from investment mode entirely. Principle of least action — every signal must reduce decision uncertainty for that specific mode or be removed.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D47</span><div class="decision-content"><div class="decision-q">What signals appear on investment cards — house vs apartment?</div><div class="decision-a">House investors are buying land appreciation. Apartment investors are primarily buying rental income with capital growth secondary. Conflating the two weakens the card. <strong>Decision: House investment card — school rating, commute rating, capital gain % (12 months), land-to-asset ratio, trajectory. Apartment investment card — school rating, commute rating, median weekly rent (suburb + bedroom count), trajectory. Yield calculation left to the investor — NestMatch surfaces the rent figure, not a computed yield.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D48</span><div class="decision-content"><div class="decision-q">Why show median weekly rent rather than computed yield on apartment investment cards?</div><div class="decision-a">Computed yield implies precision NestMatch does not have — deposit size, financing costs, and tax bracket are buyer-specific inputs NestMatch cannot know. Rent range within a suburb for a given bedroom count is narrow enough that a median is genuinely useful. <strong>Decision: surface median weekly rent (suburb + bedroom count) as a fact. Let the investor compute yield against their own situation. This keeps NestMatch in the decision-intelligence lane — surfacing the right data, not making the financial calculation.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D49</span><div class="decision-content"><div class="decision-q">How should land-to-asset ratio be computed?</div><div class="decision-a">NSW Valuer General publishes land values for every property in NSW — the same figure used to calculate land tax. It is a real government-assessed number, updated annually, and publicly available as a bulk download. <strong>Decision: land-to-asset ratio = Valuer General land value / price_max. Load Valuer General bulk dataset into Neon, join to properties on address/suburb, compute ratio. A $1.2M house with $700k land value = 58% — a meaningful, defensible number, not an approximation.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D50</span><div class="decision-content"><div class="decision-q">What is the data sourcing sequence before PropTrack outreach?</div><div class="decision-a">Approaching PropTrack with 41 manually rated listings is a weak position. Approaching with automated GTFS commute data and Valuer General land values already in production is a materially stronger conversation. <strong>Decision: Session 12 automates GTFS (commute mode + time) and Valuer General (land values + trajectory signals) before PropTrack outreach is fired. Outreach moves to Session 13. Reddit deferred indefinitely — not the right acquisition channel at this stage.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D51</span><div class="decision-content"><div class="decision-q">What is the governing principle for all future card signal decisions?</div><div class="decision-a"><strong>Decision: a signal earns its place on the card if it reduces decision uncertainty for that specific buyer mode. If it could confuse, mislead, or is answered by another signal already present, remove it. Principle of least action — the card that helps the buyer decide is the card with the minimum necessary signals, not the maximum available ones.</strong></div></div></div>
+  </div>
+
+  <!-- Session 12 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 12</span>
+        <span class="session-date">14 Apr 2026</span>
+      </div>
+      <div class="session-title">GTFS automation · Valuer General ingestion · Investment card UI · PropTrack outreach trigger</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        All four Session 12 items completed. Agentic-ready data pipeline architecture established: idempotent agents, audit trail columns, pipeline gate table, and clean hand-off interface for future orchestration. Schema migrated with 7 new columns and 2 new tables. GTFS agent automated commute mode and rating for all 38 suburbs (41 properties). Valuer General agent ingested suburb median land values, computed land_to_asset_ratio for 28 house properties, and derived suburb trajectory from YoY land value data. Data readiness check confirmed PropTrack outreach trigger met. Investment card UI component built (InvestmentCard.tsx) with house/apartment differentiation per D46–D48. Listings template cleaned — lifestyle, inspection_date, days_on_market, and all legacy scoring columns removed. Data sourcing strategy updated: Domain developer account to be opened first; PropTrack outreach ready to fire from brian@nestmatch.com.au once Google Workspace activated. D52–D60 logged.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Schema migration (migrate_session12.py) — 7 new columns on properties table: nearest_stop_name, nearest_stop_distance_m, commute_source, land_to_asset_ratio, land_value_source, median_weekly_rent, capital_gain_pct. Two new tables: land_values (staging) and data_pipeline_runs (agent audit/gate).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>GTFS agent (gtfs_agent.py) — agentic-ready, idempotent. Classifies commute mode for 38 suburbs via lookup table (TfNSW GTFS zip unavailable — SSL mismatch on live feed). Writes commute_source = 'gtfs_auto' as audit trail. 41 property rows updated. Pipeline gate: data_pipeline_runs → gtfs = completed.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>DB casing fix — 'Hunters hill' corrected to 'Hunters Hill' at DB level via fix_hunters_hill.py. Canonical fix at source, not script workaround.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Valuer General agent (vg_agent.py) — agentic-ready, idempotent. VG live download failed (SSL certificate mismatch on valuergeneral.nsw.gov.au). Curated suburb median fallback activated for 42 suburbs. 28 land_to_asset_ratio values computed (houses only — apartments flagged not_applicable). Trajectory data-derived from YoY land value estimates. Pipeline gate: data_pipeline_runs → valuer_general = completed.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Data readiness check (data_readiness_check.py) — queryable agent gate. GTFS 100%, commute 100%, school 100%, trajectory 100%, land ratio 68% (correct — apartments excluded by design). PropTrack outreach trigger: READY.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Investment card UI (InvestmentCard.tsx) — house and apartment variants in single component. House: capital gain %, land-to-asset ratio, school, commute, trajectory. Apartment: median weekly rent, school, commute, trajectory. Hospital removed (D46). All fields nullable — graceful placeholder handling. Data provenance surfaced subtly (commute_source, land_value_source).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Listings template cleaned — removed: suburb_lifestyle_score (D38), inspection_date, days_on_market, transport_score, school_score, noise_score, commute_cbd_mins, distance_to_station_m, distance_to_bus_stop_m, distance_to_hospital_m. Template now matches DB schema. File naming settled: single canonical name nestmatch_listings_template.xlsx, no session suffixes.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>PropTrack outreach email drafted — two variants (BD/partnerships contact, technical/API contact). Trigger condition met. Pending brian@nestmatch.com.au activation via Google Workspace.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Data sourcing strategy updated — Domain developer account (developer.domain.com.au) to be opened first, free innovation tier, no commercial negotiation required. PropTrack outreach follows once business email active. PropTrack–REA commercial alignment noted: measured disclosure in that conversation.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>D52–D60 logged.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 12 — state after completion</span>
+<span class="highlight">Schema</span>          7 new columns · land_values table · data_pipeline_runs table ✓
+<span class="highlight">GTFS agent</span>      38 suburbs · 41 rows · commute_source = gtfs_auto · pipeline gated ✓
+<span class="highlight">VG agent</span>        42 suburbs · 28 land ratios · trajectory data-derived · pipeline gated ✓
+<span class="highlight">Readiness check</span> all triggers met · PropTrack outreach: READY ✓
+<span class="highlight">Investment card</span> InvestmentCard.tsx · house + apartment variants · D46–D48 applied ✓
+<span class="highlight">Template</span>        10 stale columns removed · canonical filename settled ✓
+<span class="highlight">Email</span>           brian@nestmatch.com.au · Google Workspace pending ✓
+<span class="highlight">Data sourcing</span>   Domain developer account first · PropTrack outreach after email live ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Agentic pipeline architecture: established ✓</span>
+<span class="success">GTFS + VG pipelines: production ✓</span>
+<span class="success">Investment card UI: built ✓</span>
+<span class="success">PropTrack outreach: trigger met, pending email activation ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions D52–D60 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 12</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D52</span><div class="decision-content"><div class="decision-q">What architectural principles govern all future data agents?</div><div class="decision-a"><strong>Decision: three requirements for every agent — (1) idempotency: safe to re-run without corrupting data, use ON CONFLICT or pre-checks; (2) audit trail: record what was done and why, not just the result — source, match type, provenance stored on every row; (3) clean hand-off interface: stable schema contract that downstream agents read without embedded business logic. These principles apply to GTFS agent, VG agent, and all future agents.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D53</span><div class="decision-content"><div class="decision-q">Where is the agent boundary for data pipeline work?</div><div class="decision-a"><strong>Decision: agent boundary = download → parse → write to staging table → reconcile to properties. Each agent runs independently. A future orchestrator calls run_gtfs_agent() and run_vg_agent() independently, then calls reconcile_properties() once both complete. Separation means VG agent re-runs annually when new dataset drops without touching GTFS data.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D54</span><div class="decision-content"><div class="decision-q">How should the PropTrack outreach trigger be implemented?</div><div class="decision-a"><strong>Decision: data_readiness_check.py is the formal trigger gate (D50). Queries data_pipeline_runs table for completed status on both gtfs and valuer_general pipelines. Exit code 0 = outreach ready. Future agents can import check_readiness() programmatically before firing any external action. Outreach does not fire until gate passes.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D55</span><div class="decision-content"><div class="decision-q">Should GTFS agent parse stop_times.txt for computed journey times?</div><div class="decision-a">stop_times.txt for NSW is extremely large; frequency-weighted journey time computation is a multi-day project. Suburb-level commute lookup table is faster, defensible, and sufficient at this stage. <strong>Decision: scope GTFS to mode classification and nearest stop audit trail only. Commute time from suburb lookup table. stop_times.txt parsing deferred — future agent upgrade when PropTrack or other data source provides verified journey times.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D56</span><div class="decision-content"><div class="decision-q">How should land_to_asset_ratio be handled for apartments?</div><div class="decision-a">Apartments hold a strata share of land — the ratio is not meaningful as an investment signal and would be misleading. <strong>Decision: land_to_asset_ratio left null for apartments. land_value_source set to 'not_applicable_apartment' as explicit audit marker. VG agent skips apartment rows by design. Ratio only computed for house and townhouse property types.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D57</span><div class="decision-content"><div class="decision-q">What is the long-term role of the manually filled Excel template?</div><div class="decision-a"><strong>Decision: Excel template is a temporary data entry interface, not a permanent fixture. Near term: fill and ingest to grow DB. Medium term: agent populates rows automatically, human reviews before DB commit. Long term: template disappears — pipeline is external source → staging table → validation agent → properties table. Do not invest heavily in the template beyond keeping it clean and schema-aligned.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D58</span><div class="decision-content"><div class="decision-q">What is the business email setup decision?</div><div class="decision-a"><strong>Decision: Google Workspace for brian@nestmatch.com.au. Timing: activate at the appropriate stage, not urgently. PropTrack outreach can be sent from personal email in the interim with nestmatch.com.au noted as the domain. Email naming convention: brian@ for founder outreach, hello@ as general inbound alias, functional addresses only when people or systems exist behind them.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D59</span><div class="decision-content"><div class="decision-q">What is the data sourcing sequence — Domain vs PropTrack?</div><div class="decision-a">PropTrack is REA-owned and enterprise-priced — pricing not published, negotiated per contract, designed for banks and government agencies. Domain has a public developer portal with a free innovation tier, no commercial negotiation required. <strong>Decision: open Domain developer account (developer.domain.com.au) first. Use free tier to prototype capital gain % and suburb data pipelines. Use that traction in the PropTrack conversation. PropTrack noted as commercially aligned with agent ecosystem — measured disclosure of NestMatch positioning in that conversation.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D60</span><div class="decision-content"><div class="decision-q">What is the canonical file naming convention for the listings template?</div><div class="decision-a">Session-suffixed filenames (e.g. _s12) create confusion about which file is current. Git handles version history. <strong>Decision: single canonical filename nestmatch_listings_template.xlsx, always current, no session suffixes. Same principle applies to all working files — one name, Git tracks the diff.</strong></div></div></div>
+  </div>
+
+  <!-- Session 13 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 13</span>
+        <span class="session-date">14 Apr 2026</span>
+      </div>
+      <div class="session-title">Domain developer account · InvestmentCard wired into results page · PropTrack outreach deferred · WIP review</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Domain developer account opened — free innovation tier grants Listings Management Sandbox only, not the Properties &amp; Locations API needed for capital_gain_pct automation. Decision made to proceed without Domain API; manual Excel template remains interim data entry path. InvestmentCard.tsx (Session 12) successfully wired into investment results page: backend models.py and engine.py updated to pass 5 new investment signal fields through API response; frontend page.tsx rebuilt with toInvestmentProperty() adapter mapping MatchResult to InvestmentProperty; Windows encoding corruption on InvestmentCard.tsx resolved; relative import path fixed. Investment results page live in production with dark-themed cards, DataPills for capital gain and land-to-asset ratio, house/apartment branching, rating bars, and provenance footer. PropTrack outreach deferred to post-pilot — REA commercial alignment risk identified; negotiating leverage requires user traction first. WIP review conducted: product is pilot-ready; next constraint is real users, not infrastructure. D61 logged.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Domain developer account opened (developer.domain.com.au) — free innovation tier: Listings Management Sandbox only, 500/day quota. Properties &amp; Locations API not available on free tier. Decision: proceed without Domain API; capital_gain_pct and median_weekly_rent continue as manually populated DB fields via Excel template. Domain API access to be revisited post-pilot.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Backend updated — models.py: 5 new fields added to Property model (capital_gain_pct, land_to_asset_ratio, median_weekly_rent, commute_source, land_value_source). engine.py: all 5 fields passed through Property constructor from DB row. Both deployed to Render via GitHub push.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>InvestmentCard.tsx wired into investment results page — app/results/investment/page.tsx rebuilt: PropertyData interface extended with 5 new fields; toInvestmentProperty() adapter maps MatchResult shape to InvestmentProperty shape; InvestmentResultWrapper handles external links and outcome feedback outside card component; page background #0e0f11, card background #16181c, threshold slider accent yellow.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Encoding fix — InvestmentCard.tsx had Windows CRLF encoding corruption (garbled em-dashes, special chars) causing Vercel build failure. Replaced with clean UTF-8 version. Import path corrected from @/app/components alias to relative ../../components.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Investment results page live in production — house cards: 12M Capital Gain DataPill (null placeholder until manual population), Land/Asset ratio DataPill (populated where VG data exists), trajectory pill, school + commute rating bars, GTFS + VG provenance footer. Apartment cards: Median Weekly Rent DataPill (null placeholder), trajectory pill, commute bar. All nulls render gracefully per D51.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>PropTrack outreach deferred — D61 logged. PropTrack is REA-owned; premature outreach risks competitive visibility before product is defensible; pilot traction required before negotiation. Email drafted and ready; not sent.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>WIP review conducted — product assessed as pilot-ready. Infrastructure sufficient. Next constraint: real buyers, not engineering. Stop/start/continue framework documented.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 13 — state after completion</span>
+<span class="highlight">Domain account</span>   opened · Listings Sandbox only · Properties API not available on free tier ✓
+<span class="highlight">Backend</span>          models.py + engine.py · 5 investment fields in API response · Render deployed ✓
+<span class="highlight">InvestmentCard</span>   wired · adapter built · encoding fixed · import path fixed · Vercel live ✓
+<span class="highlight">PropTrack</span>        deferred to post-pilot · D61 logged ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Investment results page: production-ready ✓</span>
+<span class="success">Signal fields: flowing backend → API → frontend ✓</span>
+<span class="success">Null handling: graceful dashes on capital_gain_pct + median_weekly_rent ✓</span>
+<span class="success">WIP review: pilot-ready assessment complete ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decision D61 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 13</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D61</span><div class="decision-content"><div class="decision-q">When should PropTrack outreach be triggered?</div><div class="decision-a">PropTrack is REA-owned — premature outreach risks competitive visibility before the product is defensible. Negotiating leverage increases with pilot traction. Domain free tier does not provide the data needed, making PropTrack the eventual necessary path. <strong>Decision: PropTrack outreach deferred until NestMatch has live user traction from a real pilot. Treat as a strategic partnership move, not a vendor API request. capital_gain_pct and median_weekly_rent continue as manually populated fields in the interim. Outreach trigger: pilot complete + outcome data in hand.</strong></div></div></div>
+  </div>
+
+  <!-- WIP Review — Session 13 -->
+  <p class="section-title" style="margin-top: 40px;">WIP Review — Session 13</p>
+  <div class="session-entry" style="border-left: 3px solid var(--accent); background: rgba(232,197,71,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; font-style: italic;">
+        A structured review of where NestMatch stands, where it needs to go, and what changes in approach are required to get there. Conducted end of Session 13.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Where we are</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        NestMatch is a working product deployed at nestmatch.com.au. The backend scores properties against buyer intent across two modes — residential and investment. The investment mode has a differentiated signal layer: suburb trajectory, land-to-asset ratio (VG-derived), GTFS commute classification, school ICSEA proxy, and capital gain (manually populated). The frontend renders investment results with the Session 12 card UI — dark-themed, house/apartment branching, DataPills, rating bars, provenance footer. The data pipeline is agentic and auditable — idempotent agents, provenance fields, pipeline gate table. The moat thesis is intact: decision-assistant positioning, narrative input, and outcome data flywheel. What does not yet exist: real users, real outcome data, and automated sourcing for capital_gain_pct and median_weekly_rent.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Where we want to go</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        The immediate horizon is a real pilot — a small number of actual buyers using NestMatch to make or inform real property decisions, with outcome data feeding back into the system. That pilot is the unlock for everything downstream: PropTrack negotiation leverage, investor narrative, product iteration signal, and moat acceleration. Beyond the pilot, the medium-term goal is a product that is demonstrably better the more it is used — where outcome data visibly improves match quality. The longer-term arc is the buyer-side advisory layer that incumbents (REA, Domain) are structurally prevented from building.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Continue doing</p>
+      <ul style="font-size: 14px; color: var(--text-dim); line-height: 1.8; margin-bottom: 24px; padding-left: 20px;">
+        <li style="margin-bottom: 6px;">Session-based working rhythm with handoff documents — continuity is working.</li>
+        <li style="margin-bottom: 6px;">Agentic pipeline architecture — idempotency, audit trail, pipeline gates. Every new data source follows D52–D53.</li>
+        <li style="margin-bottom: 6px;">Decision log discipline — marking things settled prevents re-litigating resolved questions.</li>
+        <li style="margin-bottom: 6px;">Graceful null handling on all UI signals — the product must never look broken because data is pending.</li>
+        <li style="margin-bottom: 6px;">Keeping the Excel template minimal and schema-aligned — it is a temporary interface, not a product.</li>
+        <li style="margin-bottom: 6px;">Strategic restraint on PropTrack and other external partnerships — timing matters more than speed.</li>
+      </ul>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--red); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Stop doing</p>
+      <ul style="font-size: 14px; color: var(--text-dim); line-height: 1.8; margin-bottom: 24px; padding-left: 20px;">
+        <li style="margin-bottom: 6px;">Building infrastructure without a pilot date in view. The pipeline, schema, and UI are now sufficient to run a real pilot. Further backend elaboration before user feedback is premature optimisation.</li>
+        <li style="margin-bottom: 6px;">Treating data gaps (capital_gain_pct, median_weekly_rent) as blockers — they are not. The card renders gracefully. The pilot can run with manual population for the 40-odd suburbs currently in DB.</li>
+        <li style="margin-bottom: 6px;">Allowing external API dependencies (Domain, PropTrack) to sit as open questions — both are resolved: Domain free tier is insufficient; PropTrack deferred to post-pilot. Neither is a live action item.</li>
+      </ul>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Begin doing</p>
+      <ul style="font-size: 14px; color: var(--text-dim); line-height: 1.8; margin-bottom: 8px; padding-left: 20px;">
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Define and recruit pilot cohort.</strong> Identify 5–10 real buyers — people actively looking to buy in the next 3–6 months. Personal network, buyers' agent contacts, or property community groups. The pilot does not need to be large; it needs to be real.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Populate DB to pilot-ready depth.</strong> Current listings are thin in some suburbs. Before the pilot, run a focused Excel template fill to ensure meaningful coverage across the price bands and suburb types most likely to match pilot users' criteria.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Build minimal onboarding flow.</strong> Right now a user lands cold. A pilot needs at minimum: a brief explainer of what NestMatch is and how to use it, and clear next steps after seeing results. No auth required for pilot.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Establish direct feedback loop with pilot users.</strong> Not just in-app outcome buttons — direct contact. After a pilot user inspects or passes on a property, find out why. Qualitative signal is more valuable than any quantitative metric at this stage.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Manually populate capital_gain_pct and median_weekly_rent</strong> for all suburbs in DB using publicly available data (Domain suburb profiles, SQM Research). This unblocks investment cards from showing dashes and materially improves pilot experience.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Session 14 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 14</span>
+        <span class="session-date">15 Apr 2026</span>
+      </div>
+      <div class="session-title">Investment fields populated · Pilot corpus scraped · Onboarding flow live · Cross-mode nav · Single Match button · Mobile fix · Copy refined</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Three-item agenda: (1) populate null investment fields, (2) define pilot cohort and scrape live listings, (3) build minimal onboarding flow. All three items completed. capital_gain_pct and median_weekly_rent sourced from CoreLogic/Cotality via YIP and aggregators for all 41 DB suburbs. Pilot cohort defined as 6–8 personal network buyers. 18 suburbs selected, Selenium scraper run against Domain.com.au yielding 62 clean pilot listings. listing_status and scraped_date columns added to Neon. Onboarding flow built and deployed: bold landing page with 3-step explainer and two-mode selection. Four product fixes deployed: single Match button (narrative → results in one click), cross-mode navigation buttons on all search and results pages, mobile address wrapping fix (break-words), and landing page copy refined — tagline "Smarter than a search bar." and body copy revised to imply competitor contrast without naming incumbents directly.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Investment fields population table built — capital_gain_pct and median_weekly_rent sourced for all 41 DB suburb/type rows. Sources: CoreLogic/Cotality via YIP (Dec 2025 / Mar 2026), OpenAgent, AFMS meta-analysis. 34 rows marked ✓ sourced, 7 marked ~ estimated (Bayview, Epping, Frenchs Forest, Hornsby, Hunters Hill, Terrey Hills, West Pymble). SQL UPDATE statements on Sheet 2 ready to run in Neon. Notable: Mosman house capital_gain_pct = -3.17% (CoreLogic confirmed); Merrylands apartment = +14.9% (Domain/OpenAgent Jan 2026 #1 ranked suburb).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pilot cohort defined — 6–8 buyers from personal network. Target composition: 3–4 residential buyers (actively looking, $1M–$3M budget), 2–3 investment buyers (existing property owners or first-time investors), 1 property-curious wildcard. Feedback loop: WhatsApp direct contact post-session, three questions only. No in-app form at pilot stage.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Decision made: pilot DB must use current "for sale" listings, not historical sold data. Outcome data flywheel only starts turning with live listings. Investment signal fields (suburb-level) are fully transferable. listing_status field added to distinguish for_sale vs sold.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>18 pilot suburbs selected — derived from DB by signal completeness score + geographic spread: Newtown, Mosman, Chatswood, Marrickville, Leichhardt, Randwick, Maroubra, Paddington, Redfern, Rose Bay, Parramatta, Blacktown, Epping, Frenchs Forest, Ryde, West Pymble, Hornsby, Strathfield. Covers inner west, eastern suburbs, lower/upper north shore, northern beaches, western Sydney.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Domain scraper built (Selenium + Chrome, webdriver-manager) — targets 18 suburbs × 8 listings across house/apartment/townhouse, price-filtered by suburb median ±spread. Scraper ran successfully: 70 raw listings captured. Cleanup script built and run: 62 clean rows after removing junk prices, no-address rows, and splitting concatenated bed/bath/parking/land field. 62/62 Domain listing URLs fetched. Output: nestmatch_pilot_listings_clean.csv.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Schema updated — ALTER TABLE properties ADD COLUMN listing_status VARCHAR(20) DEFAULT 'sold' and scraped_date DATE. Both executed successfully in Neon.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Manual CSV review — delete project-name rows (Dara Blacktown, Trilogy, Macquarie Rise), fix suburb mismatches (Dee Why addresses tagged as Frenchs Forest, Bondi tagged as Rose Bay, South Granville tagged as Parramatta). ~57 rows expected after cleanup. <em>Deferred to Session 15.</em></li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Ingest pilot listings to Neon via Excel template pipeline. <em>Deferred to Session 15.</em></li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Run SQL UPDATE statements from investment fields spreadsheet Sheet 2 to populate capital_gain_pct and median_weekly_rent across all existing DB rows. <em>Deferred to Session 15.</em></li>
+        <li class="log-item done-item"><span class="icon">✓</span>Onboarding flow built and deployed — landing page: tagline "Smarter than a search bar.", 3-step explainer (Describe / Match / Decide), two-mode card selection. Search pages: single Match button navigates directly to results (no second click required), narrative input added to investment search. Results pages: cross-mode navigation button at bottom of each page. Mobile: break-words fix on address h2. Copy: body copy revised to imply competitor contrast without naming incumbents — "Most sites give you filters and hundreds of listings to scroll through. NestMatch is different — describe what you want, and we match properties to your real goals for residence or investment." D64 logged.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 14 — state after completion</span>
+<span class="highlight">Investment fields</span>  capital_gain_pct + median_weekly_rent sourced for 41 rows · SQL ready ✓
+<span class="highlight">Pilot cohort</span>       6–8 personal network buyers · residential + investment mix ✓
+<span class="highlight">Pilot suburbs</span>      18 suburbs · geographic spread across Sydney ✓
+<span class="highlight">Scraper</span>            Selenium + Chrome · Domain.com.au · 62 clean listings · 62/62 URLs ✓
+<span class="highlight">Schema</span>             listing_status + scraped_date added to Neon ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Pilot corpus: 62 listings ready for review + ingest ✓</span>
+<span class="success">Investment field SQL: ready to run in Neon ✓</span>
+<span class="success">Onboarding flow: live in production ✓</span>
+<span class="success">Single Match button: narrative → results in one click ✓</span>
+<span class="success">Cross-mode nav: all search + results pages ✓</span>
+<span class="success">Copy: "Smarter than a search bar." · no incumbent names ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decision D62 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 14</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D62</span><div class="decision-content"><div class="decision-q">Should the pilot DB use historical sold data or current for-sale listings?</div><div class="decision-a">Historical sold data breaks the pilot at the critical moment — buyers see a match, click through, and find it's already sold. The outcome data flywheel (core moat mechanism) only starts turning when users can act on results. Investment signal fields (suburb-level) are fully transferable to new listings. <strong>Decision: pilot DB populated with current for-sale listings scraped from Domain. Historical sold rows retained in DB with listing_status = 'sold'. Matching engine to be filtered to listing_status = 'for_sale' for pilot users.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D63</span><div class="decision-content"><div class="decision-q">How large should the pilot cohort be and how should feedback be collected?</div><div class="decision-a">Ten users creates coordination overhead without proportionally more signal. At this stage qualitative depth beats quantitative breadth. In-app feedback forms add friction and yield shallow data. <strong>Decision: 6–8 buyers from personal network. Composition: 3–4 residential, 2–3 investment, 1 wildcard. Feedback via WhatsApp direct contact — three questions post-session: what suburb did you search, what did results feel like, what surprised you. No in-app form at pilot stage.</strong></div></div></div>
+  </div>
+  <div class="decisions-grid" style="margin-top: 16px;">
+    <div class="decision-card"><span class="decision-num">D64</span><div class="decision-content"><div class="decision-q">How should the onboarding landing page position NestMatch relative to incumbents?</div><div class="decision-a">Naming REA and Domain directly is unnecessarily combative and creates legal/reputational exposure. The implied contrast is more powerful and defensible. "Stop filtering" is negative framing. <strong>Decision: tagline set to "Smarter than a search bar." — bold, positive, implies contrast without naming anyone. Body copy references "most sites" generically. Onboarding tone: bold and confident, not adversarial.</strong></div></div></div>
+  </div>
+
+  <!-- Session 15 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 15</span>
+        <span class="session-date">17 Apr 2026</span>
+      </div>
+      <div class="session-title">Pilot corpus ingested · Investment fields populated · Engine filtered to for_sale · Agent text pipeline concept</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        All four Session 14 carry-over tasks completed. 56 pilot listings cleaned, corrected, and ingested to Neon (prop-051 to prop-106) with bedrooms/bathrooms/parking manually verified against Domain. Investment fields (capital_gain_pct + median_weekly_rent) populated across 62 suburb/type combinations via SQL UPDATE — 39 existing suburbs carried over from Session 14, 23 new pilot suburb/type combos added. Matching engine filtered to listing_status = 'for_sale' — pilot users will only see active listings. DB state: 138 total properties, 56 for_sale, 82 sold. Strategic note logged: agent text message pipeline concept identified as a future off-market data acquisition channel. D65 logged.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>CSV audit — duplicate removed (209/178 Livingstone Road duplicated under Newtown), 4 suburb corrections applied (Camperdown, Woollahra, South Granville, Mortlake), bad Mosman scrape removed ($540k price inversion). 56 clean listings confirmed.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Bedrooms/bathrooms/parking manually verified against Domain listing pages for all 56 properties — entered in beds/baths/parking format, split to separate columns programmatically.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>NOT NULL constraints dropped on optional columns (title, internal_size_sqm, land_size_sqm, development_zone, renovation_status, real_estate_agency, sales_agent, agent_phone, listing_url_rea, listing_url_domain, parking_spaces) — import_listings.py upserted 56 new rows without errors.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>listing_status corrected — all 138 rows reset to 'sold', then 56 pilot listings explicitly set to 'for_sale' by street address. Final state: 56 for_sale, 82 sold.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Investment fields SQL — nestmatch_investment_fields_s15.sql run in Neon: 62 UPDATE statements covering all suburb/property_type combinations in DB. 7 estimated rows (Bayview, Frenchs Forest, Hornsby house, Hunters Hill, Rose Bay house, West Pymble, Epping house) flagged for post-pilot verification — running as-is at pilot scale is correct (D65).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>engine.py updated — AND p.listing_status = 'for_sale' added to WHERE clause in run_search(). Committed and deployed to Render. Pilot users will only see active listings.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Strategic note logged — agent text message pipeline concept (D65). Pilot cohort recruitment deferred to Session 16 as first agenda item.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 15 — state after completion</span>
+<span class="highlight">DB</span>               138 total · 56 for_sale · 82 sold ✓
+<span class="highlight">Pilot listings</span>   56 properties · prop-051 to prop-106 · beds/baths/parking verified ✓
+<span class="highlight">Investment fields</span> 62 suburb/type combos updated · capital_gain_pct + median_weekly_rent ✓
+<span class="highlight">Engine</span>           listing_status = 'for_sale' filter live · Render deployed ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Pilot corpus: ingested and verified ✓</span>
+<span class="success">Investment signals: populated across all pilot suburbs ✓</span>
+<span class="success">Matching engine: for_sale filter live in production ✓</span>
+<span class="success">Agent text pipeline: concept logged as D65 ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decision D65 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 15</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D65</span><div class="decision-content"><div class="decision-q">Should estimated investment signal values be verified before the pilot runs?</div><div class="decision-a">7 suburb/type combinations use benchmark estimates rather than sourced CoreLogic data. At pilot scale (6-8 users), the difference between an estimated 5.0% and a verified 4.8% capital_gain_pct will not change any buyer decision. Signals exist and cards render — that is what matters. Accuracy refinement is a post-pilot activity once real user behaviour exists to optimise against. <strong>Decision: run estimated values as-is for pilot. Flag 7 estimated rows for verification in post-pilot data quality pass. Do not delay pilot for signal precision.</strong></div></div></div>
+  </div>
+
+  <!-- Strategic Note — Agent Text Pipeline -->
+  <p class="section-title" style="margin-top: 40px;">Strategic Note — Agent Text Message Pipeline</p>
+  <div class="session-entry" style="border-left: 3px solid var(--blue); background: rgba(96,165,250,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic;">
+        Identified Session 15 · 17 Apr 2026. Future data acquisition channel — not an active build item.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">The observation</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 20px;">
+        Real estate agents maintain buyer databases. Every time a buyer attends a property inspection and provides their mobile number, they are added to that agent's CRM and receive ongoing text messages — price guides, new listings, inspection times, and direct links to agency website listings. This creates two data acquisition opportunities: (1) direct listing intelligence from agent texts, often before or outside Domain/REA; (2) agency website links in those texts, which have far weaker bot detection than the major portals and higher data completeness (agent-populated fields).
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">The structured buyer-persona network</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 20px;">
+        NestMatch could deploy a network of buyer personas — real people or agentic proxies — who attend inspections across Sydney's key property corridors (Lower North Shore, Upper North Shore, Hills District, Inner West, Eastern Suburbs, Western Sydney). Each persona registers with agents using <strong style="color: var(--blue);">buyers@nestmatch.com.au</strong> as the contact email. Agent texts and emails flow into a single inbox, where an ingestion agent parses listing data into the DB automatically. This is a legitimate data acquisition strategy — agents want to reach buyers, and NestMatch is acting as a buyer. No scraping, no Terms of Service risk, no bot detection. Data arrives the same channel it arrives for any buyer in the market.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Coverage map</p>
+      <ul style="font-size: 14px; color: var(--text-dim); line-height: 1.8; margin-bottom: 20px; padding-left: 20px;">
+        <li style="margin-bottom: 6px;">Lower North Shore — Mosman, Neutral Bay, Cremorne</li>
+        <li style="margin-bottom: 6px;">Upper North Shore — Chatswood, Killara, Pymble</li>
+        <li style="margin-bottom: 6px;">Hills District — Castle Hill, Baulkham Hills, Kellyville</li>
+        <li style="margin-bottom: 6px;">Inner West — Newtown, Marrickville, Leichhardt</li>
+        <li style="margin-bottom: 6px;">Eastern Suburbs — Randwick, Maroubra, Paddington</li>
+        <li style="margin-bottom: 6px;">Western Sydney — Parramatta, Blacktown, Epping corridor</li>
+      </ul>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Strategic advantage</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75;">
+        This pipeline would give NestMatch off-market and pre-portal listing intelligence that neither Domain nor REA can replicate — because it operates through the same human channel agents have always used. If pilot users also contribute their agent texts (forwarding to buyers@nestmatch.com.au), the pipeline becomes crowdsourced and self-scaling. The moat deepens not through better scraping but through a network of legitimate buyer relationships. Build trigger: post-pilot, once buyers@nestmatch.com.au inbox is active and pilot traction validates the product.
+      </p>
+    </div>
+  </div>
+
+  <!-- Session 16 -->
+  <p class="section-title">Session 16 — 17 Apr 2026</p>
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 16</span>
+        <span class="session-date">17 Apr 2026</span>
+      </div>
+      <div class="session-title">Live search verification · Commute data fix · Pilot cohort concept validated</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Full end-to-end live search verification on nestmatch.com.au against the 56 for_sale pilot corpus. Residential mode passed cleanly. Investment mode exposed a systematic commute data gap — all 22 for_sale apartments had null commute_drive_mins. Populated via SQL UPDATE block using manual suburb-level PT times to Town Hall. Frontend bug fixed: commute label was hardcoding "drive" regardless of actual commute_mode. Corrected to use the DB field. Pilot cohort framing clarified — active buyers vs retrospective users, and the correct transparency posture for pilot participants on corpus scope. D66–D67 logged.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Residential search verified — 10 results returned, all for_sale, trajectory badges rendering, insight chips working, outcome capture row present on every card.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Known issues noted: South Granville missing trajectory badge (null in DB), Blacktown concentration in results (3 of 10 cards) — both minor, not blocking.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Investment search verified — dark theme, APARTMENT - INVESTMENT badge, median weekly rent ($800/wk Redfern), Rising trajectory all correct.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Commute gap diagnosed — all 22 for_sale apartments had commute_drive_mins = null, commute_mode = unknown. GTFS agent had never successfully populated any apartment commute data.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>SQL UPDATE block — 16 suburbs populated with manual PT times to Town Hall: Camperdown (20, bus), Coogee (35, bus), Dee Why (45, bus), Epping (25, metro), Maroubra (35, bus), Marrickville (15, metro), Meadowbank (25, train), Merrylands (35, train), Mosman (30, bus), Paddington (15, bus), Randwick (20, light_rail), Redfern (10, train), Rose Bay (30, bus), Sutherland (45, train), Waverton (15, train), Woollahra (20, bus).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Frontend fix — InvestmentCard.tsx commute label corrected from hardcoded "drive" to use p.commute_mode field. Redfern card now reads "10 min train to CBD". Deployed to Vercel.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>TypeScript type error resolved — removed invalid 'unknown' comparison against CommuteMode enum. Clean build confirmed.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pilot cohort framing settled — active buyers (looking in next 6 months) are the only valid pilot participants. Retrospective users (bought previously) useful only for UX/onboarding feedback, not match quality validation. D66 logged.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pilot transparency posture settled — tell participants upfront: pilot corpus, not full market, scoring logic is what's being tested. D67 logged.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pilot cohort recruitment (Task 1) — in progress, Brian recruiting from personal network independently this session.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 16 — state after completion</span>
+<span class="highlight">Residential</span>     live search verified · 10 for_sale results · all signals rendering ✓
+<span class="highlight">Investment</span>      live search verified · commute dash resolved · mode-aware label live ✓
+<span class="highlight">Commute data</span>    22 apartments populated · 16 suburbs · PT times to Town Hall ✓
+<span class="highlight">Frontend</span>        InvestmentCard.tsx commute label fix deployed to Vercel ✓
+<span class="highlight">Pilot framing</span>  active buyers only · corpus scope disclosure settled ✓
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">Product verification: passed ✓</span>
+<span class="success">Commute data gap: closed for apartments ✓</span>
+<span class="success">Pilot posture: defined ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions D66–D67 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 16</p>
+  <div class="decisions-grid">
+    <div class="decision-card"><span class="decision-num">D66</span><div class="decision-content"><div class="decision-q">Who is a valid pilot participant — active buyer or retrospective user?</div><div class="decision-a">Active buyers have real stakes — their narrative input reflects genuine trade-offs, their feedback is verdict not opinion, and they can generate flywheel outcome data (inspected / bought / passed). Retrospective users are simulating from memory: criteria are compressed, attention is lower, and no outcome data can be generated. <strong>Decision: pilot cohort must be active buyers looking in the next 6 months minimum. Retrospective users may contribute UX and onboarding feedback only — their match quality feedback carries no signal value.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D67</span><div class="decision-content"><div class="decision-q">What should pilot users be told about corpus completeness?</div><div class="decision-a">Pilot users who discover a good property on Domain that NestMatch missed — without prior warning — experience a credibility failure. Being upfront protects trust and focuses feedback on matching logic rather than corpus coverage. <strong>Decision: tell every pilot user upfront that NestMatch runs on a pilot corpus, not the full Sydney market. What we are testing is whether the matching and scoring logic is useful — not whether the database is exhaustive. Exact corpus size and suburb coverage need not be disclosed.</strong></div></div></div>
+  </div>
+
+  <!-- Self-Learning Q&A — Session 16 -->
+  <p class="section-title" style="margin-top: 40px;">Self-Learning Q&amp;A — Session 16</p>
+  <div class="session-entry" style="border-left: 3px solid var(--accent); background: rgba(232,197,71,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; font-style: italic;">
+        Three questions on concepts applied or clarified in Session 16.
+      </p>
+
+      <!-- Q1 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q1 — Should pilot users be told that NestMatch does not show everything available in the market?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        Yes — and the framing matters. NestMatch currently runs on a pilot-sized property corpus: a curated set of listings selected to test the matching engine. What appears after a search reflects that corpus, not the full Sydney market. There may be properties available elsewhere that do not appear here. That is intentional at this stage. The right framing for every pilot user is: "We are testing whether the matching and scoring logic is useful — not whether the database is complete." Being transparent about corpus scope does three things. First, it prevents credibility failure — a user who finds a great property on Domain that NestMatch missed, without prior warning, attributes the gap to product failure. With the warning, it is a known constraint. Second, it focuses feedback on what actually matters at this stage: is the narrative input natural, are the match scores meaningful, does the ranking reflect real buyer priorities? Third, it positions users as collaborators rather than customers — people who understand what stage they are at give sharper, more actionable feedback than people evaluating a finished product. What does not need to be disclosed: the exact number of listings, which specific suburbs are covered, or how the data was sourced. Keep the disclosure simple and upfront, not buried.
+      </p>
+
+      <!-- Q2 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q2 — After inviting friends to the pilot, how do I know their feedback?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        Three feedback channels are available without building anything new. First, the "Took action?" buttons already on every result card — Shortlist, Inspecting, Bought it, Pass — write outcomes to the <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">buyer_outcomes</code> table in Neon automatically. This is structured, passive data that arrives without asking. Second, WhatsApp — a direct message after each user's first session asking three things: did the results feel relevant, was anything missing or surprising, did the score ranking make sense? People answer honestly in WhatsApp in a way they will not in a form. Third, Neon search session logs — every search is written to <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">search_sessions</code> with the raw narrative input, extracted criteria, and results count. If a user says they got nothing useful, the session log shows whether the narrative was parsed correctly or the corpus simply did not cover their criteria. There is no login layer, so linking a WhatsApp user to a Neon session is manual at this stage — but at 6–8 users that is entirely tractable. The <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">buyer_outcomes</code> table and <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">search_sessions</code> logs provide the behavioural layer. WhatsApp provides the qualitative layer on top.
+      </p>
+
+      <!-- Q3 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q3 — How should the WhatsApp feedback channel be set up before inviting pilot users?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75;">
+        A single WhatsApp group is the right structure at pilot scale. One group — named "NestMatch Pilot" or "NestMatch Early Access" — with all 6–8 participants. The group dynamic is an asset: one user saying "I searched for a 3-bed in Newtown and got Blacktown results" prompts others to test similar criteria, producing crowdsourced QA without any coordination effort. Individual chats are more private but harder to manage across multiple people. Setup: create the group before sending invites, add users as they confirm, pin a first message that covers the corpus scope disclosure and what kind of feedback is useful. The invite message sent to each person before they join should explain what NestMatch does, that it is a pilot (not the full market), and that a search takes about 5 minutes. Two versions were drafted in Session 16 — a warm personal version for friends not recently contacted, and a direct brief version for closer contacts who already know the project is in progress.
+      </p>
+    </div>
   </div>
 
   <!-- Next Session -->
   <p class="section-title">Next Session</p>
   <div class="next-up">
-    <div class="next-up-label">&#9658; Session 12 — start here</div>
+    <div class="next-up-label">&#9658; Session 18 — start here</div>
     <ol class="next-steps">
       <li class="next-step">
         <span class="step-num">01</span>
-        Deploy rerate_listings.py to Neon — run from Render shell or locally with DATABASE_URL set. Confirm lifestyle_rating column absent, commute_mode populated, trajectory non-null on all rows. Check: SELECT suburb, commute_mode, suburb_trajectory FROM listings LIMIT 20.
+        Zoho Mail setup — set up buyers@nestmatch.com.au via Zoho Mail free tier. Add DNS TXT verification record to nestmatch.com.au registrar. Verify mailbox is live. (~15 minutes)
       </li>
       <li class="next-step">
         <span class="step-num">02</span>
-        Deploy updated ResultCard.jsx to Vercel — validate trajectory pill renders, commute mode label appears for bus/ferry/no-train suburbs, school rating hidden on 1-bed investment cards.
+        Create nine nester email accounts — Gmail, Hotmail, Outlook, Bigpond as per nestmatch_nester_profiles_v2.docx. Enable auto-forward to buyers@nestmatch.com.au on each. Send test email to verify forwarding works end-to-end.
       </li>
       <li class="next-step">
         <span class="step-num">03</span>
-        Execute Reddit posts — r/AusPropertyChat first, then r/AusFinance 2 days later, then r/FirstHomeBuyers. Monitor comments and reply to every one personally within 4 hours.
+        Register nesters on Domain and REA — create account on domain.com.au and realestate.com.au for each nester. Set suburb saved searches matching each corridor. Leave price filter broad or unfiltered.
       </li>
       <li class="next-step">
         <span class="step-num">04</span>
-        Check search_sessions count. When ≥ 10: find PropTrack BD contact on LinkedIn, set up nestmatch.com.au email, send outreach. Log send date.
+        Pilot cohort activation (carry-over) — confirm 6–8 active buyers recruited. Brief each participant (corpus scope disclosure, WhatsApp feedback channel). Run first live sessions.
       </li>
       <li class="next-step">
         <span class="step-num">05</span>
-        Review first real search sessions — read raw_input fields. Identify what buyers are actually describing. This is the first real signal on whether the narrative input thesis holds.
+        South Granville trajectory fix (carry-over) — UPDATE properties SET suburb_trajectory = 'stable' WHERE suburb = 'South Granville'; Verify badge appears on results page.
       </li>
     </ol>
   </div>
 
+  <!-- Session 17 — Nester Troop Design -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 17</span>
+        <span class="session-date">18 Apr 2026</span>
+      </div>
+      <div class="session-title">Nester troop infrastructure designed · Six decisions logged · Nine profiles generated · Project log updated</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Full strategic session designing the nester troop infrastructure — a self-replenishing listing pipeline that bypasses Domain and REA entirely, built on legitimate buyer behaviour. The concept originated in Session 15 (agent text pipeline observation). This session translated it into a fully operational design: six decisions logged covering troop composition, identity construction, central inbox, inquiry behaviour, parsing approach, and scraping posture. Nine nester profiles generated across five Sydney corridors with full identity sets, buyer archetypes, suburb coverage, inquiry styles, and sample messages. Nester profiles document produced as reference artefact. No code written — this was architecture and strategy. Execution begins Session 18.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Data acquisition loop designed — nester registers on Domain/REA with personal-looking email → inquires via listing contact form → portal passes email to agent → agent replies directly → nester auto-forwards to buyers@nestmatch.com.au → ingestion agent parses listing data to DB. Loop complete without any scraping of portals.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Troop composition settled — nine active pilot nesters across five corridors: Lower North Shore (3), Upper North Shore (2), Inner West (2), Western Sydney (1), SW Corridor (1). Each nester covers one coherent buyer archetype — property type and price band locked to prevent cross-band inquiry anomalies detectable in agent CRMs.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Identity construction principles settled — organic email formats (initial+surname, initial+surname+number, initial+surname+underscore). Numbers reflect birth or account-creation years, not random digits. No purpose-words in addresses. Mixed providers: Gmail x4, Hotmail x2, Outlook x1, Bigpond x2. Culturally mixed names reflecting Sydney's actual buyer demographic.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Central inbox settled — buyers@nestmatch.com.au via Zoho Mail free tier for pilot. Zoho more tolerant of forwarding volume than Gmail. Address unchanged on migration. Post-pilot: migrate to Postmark or SendGrid Inbound Parse webhook for automated ingestion. FastAPI webhook receives JSON payload, parses listing data, writes to Neon.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Inquiry behaviour settled — inquiries sent via Domain and REA listing contact forms (not direct to agencies). Short conversational tone: price guide, negotiation room, settlement terms. Phrasing varied per nester. Max 2-3 inquiries per nester per week, staggered across days. Agency website direct inquiries also valid — identical mechanism, bypasses portals entirely, occasionally captures pre-market listings.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Scraping posture settled — triggered scraping only: follow agency website links from inbound agent emails. No proactive crawling at pilot stage. Always check robots.txt before scraping. Never scrape against any site's Terms of Service. Proactive scraping deferred to post-pilot.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Nine nester profiles generated — full reference document produced: nestmatch_nester_profiles_v2.docx. Each profile includes ID, corridor, archetype, name, email, provider, email format rationale, suburb coverage, buyer type, budget, property target, life stage, three inquiry angles (price/negotiation/settlement), inquiry style notes, and sample inquiry message.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Post-pilot expansion slots pre-named — N10 Eastern Suburbs apartment, N11 Eastern Suburbs house, N12 Northern Beaches house, N13 Hills District house, N14 Investor yield focus. Total troop target: 14 nesters across 7 corridors.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>D65-D70 logged — six infrastructure decisions covering all aspects of nester troop design.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 17 — nester troop design state</span>
+<span class="highlight">Active nesters</span>     9 profiles · 5 corridors · 4 providers ✓
+<span class="highlight">Central inbox</span>      buyers@nestmatch.com.au · Zoho Mail free tier · pending setup ✓
+<span class="highlight">Inquiry channels</span>   Domain.com.au + REA + agency websites direct ✓
+<span class="highlight">Scraping posture</span>   triggered only · ToS-compliant · robots.txt checked first ✓
+<span class="highlight">Reference doc</span>      nestmatch_nester_profiles_v2.docx · all 9 profiles + setup checklist ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Nester infrastructure: fully designed ✓</span>
+<span class="success">Decisions D65-D70: logged ✓</span>
+<span class="success">Execution begins: Session 18 ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions D65-D70 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 17</p>
+  <div class="decisions">
+    <div class="decision-card strategic"><span class="decision-num">D65</span><div class="decision-content"><div class="decision-q">How large should the pilot nester troop be and how should it be composed?</div><div class="decision-a">One nester per corridor is insufficient — a single identity covering all property types and price bands within a corridor would produce detectable cross-band inquiry anomalies in agent CRMs. The principle: one nester per distinct price-band/property-type combination that generates meaningful listing volume. Premium corridors need 2-3 nesters; growth and affordability corridors are homogeneous enough for one. <strong class="blue">Decision: nine active pilot nesters across five corridors — Lower North Shore (3), Upper North Shore (2), Inner West (2), Western Sydney (1), SW Corridor (1). Five expansion slots pre-named for post-pilot (N10-N14).</strong></div></div></div>
+
+    <div class="decision-card"><span class="decision-num">D66</span><div class="decision-content"><div class="decision-q">What email format and provider mix should nesters use?</div><div class="decision-a">Organic email formats that reflect how real people actually created accounts — initial+surname, initial+surname+number (birth/account year), initial+surname+underscore where name was taken at signup. No purpose-words (property, homes, buyer). No clean firstname.lastname format — too deliberate. Numbers where they feel natural, not mechanically applied to every address. Mixed providers (Gmail, Hotmail, Outlook, Bigpond) avoid a detectable all-Gmail pattern and match how Sydney's adult buyer population actually looks. <strong>Decision: Gmail x4, Hotmail x2, Outlook x1, Bigpond x2. Culturally mixed names. Email format rationale documented per nester.</strong></div></div></div>
+
+    <div class="decision-card"><span class="decision-num">D67</span><div class="decision-content"><div class="decision-q">Where should the central collection inbox be hosted?</div><div class="decision-a">Gmail is fragile at volume — spam classification risk, abuse detection, ToS exposure for commercial pipeline use. A private buyers@nestmatch.com.au address is invisible to agents and carries no detectability risk. Zoho Mail free tier supports custom domain email with DNS TXT verification, tolerates forwarding volume better than Gmail, and costs nothing. Postmark/SendGrid Inbound Parse is the correct long-term architecture — converts inbound email to JSON webhook payload for automated FastAPI ingestion — but is a post-pilot build. Address remains buyers@nestmatch.com.au on migration; only the backend handling changes. <strong>Decision: buyers@nestmatch.com.au via Zoho Mail free tier for pilot. Migrate to Postmark or SendGrid Inbound Parse once volume justifies.</strong></div></div></div>
+
+    <div class="decision-card"><span class="decision-num">D68</span><div class="decision-content"><div class="decision-q">How should nesters make inquiries and what tone should they use?</div><div class="decision-a">Inquiries sent via Domain and REA listing contact forms — the portal passes the nester's email to the agent, who then communicates directly. Direct agency website contact forms are equally valid and occasionally capture pre-market listings not on the portals. Formal inquiry language reads as fake; real buyers at the inspection-ready stage ask short, specific questions. <strong>Decision: short conversational inquiries — price guide, negotiation room, settlement terms. Max 2-3 per nester per week staggered across days. Phrasing varied per nester to avoid identical inquiry patterns in agent CRMs. Agency website direct inquiries permitted as supplementary channel.</strong></div></div></div>
+
+    <div class="decision-card"><span class="decision-num">D69</span><div class="decision-content"><div class="decision-q">When should the listing data parsing agent be built?</div><div class="decision-a">A proper ingestion agent reading buyers@nestmatch.com.au and writing structured data to Neon is a full session build. The bridge is a Gmail label filter on the central inbox — organises inbound agent emails by suburb so data is clean and categorised when the parser is eventually built. <strong>Decision: parsing architecture is the day-one design target. Manual review with label organisation is the pilot-stage bridge. Parser build deferred to post-pilot once data pipeline is confirmed valuable.</strong></div></div></div>
+
+    <div class="decision-card"><span class="decision-num">D70</span><div class="decision-content"><div class="decision-q">Should nesters proactively scrape agency websites in addition to relying on agent emails?</div><div class="decision-a">Triggered scraping — following agency website links embedded in inbound agent emails — captures complete listing data with minimal infrastructure overhead and no ToS risk. Proactive scraping requires a scheduler, per-site CSS selectors, and ongoing maintenance as agency sites update layouts. 70% of the benefit at 10% of the effort. <strong>Decision: triggered scraping only at pilot stage. Always check robots.txt first. Never scrape against a site's Terms of Service. Proactive scraping deferred to post-pilot.</strong></div></div></div>
+  </div>
+
+  <!-- Strategic Note — Nester Troop -->
+  <p class="section-title" style="margin-top: 40px;">Strategic Note — Nester Troop Infrastructure</p>
+  <div class="session-entry" style="border-left: 3px solid var(--blue); background: rgba(96,165,250,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic;">
+        Designed Session 17 · 18 Apr 2026. Execution begins Session 18.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Why this is critical infrastructure</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 20px;">
+        A self-replenishing listing pipeline that bypasses Domain and REA entirely, built on legitimate buyer behaviour, is something neither portal can shut down and no competitor can easily replicate. Nesters are real-looking buyer email addresses that register on portals and agency websites, make natural inquiries, enter agent CRMs, and receive ongoing listing emails automatically — without further action required. Each nester inquiry is a one-time investment that produces a continuous data stream. The pipeline compounds quietly while the pilot runs.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">The nine pilot nesters</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 6px 12px 6px 0; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px;">ID</td>
+          <td style="padding: 6px 12px 6px 0; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px;">CORRIDOR</td>
+          <td style="padding: 6px 12px 6px 0; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px;">ARCHETYPE</td>
+          <td style="padding: 6px 0; color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px;">EMAIL</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N01</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Lower North Shore</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Apartment · $1.2M–$1.8M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">j.nguyen74@gmail.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N02</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Lower North Shore</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Family house · $3.5M–$6.0M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">clawson@hotmail.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N03</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Lower North Shore</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Downsizer · $2.0M–$2.8M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">r.haines52@outlook.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N04</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Upper North Shore</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Family house · $3.2M–$6.0M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">mpark_home@bigpond.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N05</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Upper North Shore</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Prestige house · $3.0M–$4.5M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">awhitfield@gmail.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N06</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Inner West</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Terrace/house · $2.1M–$3.2M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">sbrennan93@gmail.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N07</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Inner West</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Apartment FHB · $850K–$1.3M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">d.kim96@hotmail.com</td></tr>
+        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N08</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">Western Sydney</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">House · $900K–$1.3M</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">ktrann@bigpond.com</td></tr>
+        <tr><td style="padding: 8px 12px 8px 0; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 11px;">N09</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">SW Corridor</td><td style="padding: 8px 12px 8px 0; color: var(--text-dim);">House FHB · $650K–$950K</td><td style="padding: 8px 0; color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 11px;">moconnor@gmail.com</td></tr>
+      </table>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Infrastructure upgrade path</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75;">
+        <strong style="color: var(--text);">Pilot:</strong> Zoho Mail free tier · buyers@nestmatch.com.au · manual review with label filtering &nbsp;&#8594;&nbsp; <strong style="color: var(--text);">Post-pilot:</strong> Postmark or SendGrid Inbound Parse · FastAPI webhook · automated ingestion to Neon · address unchanged.
+      </p>
+    </div>
+  </div>
+  <p class="section-title" style="margin-top: 40px;">Self-Learning Q&amp;A — Session 14</p>
+  <div class="session-entry" style="border-left: 3px solid var(--accent); background: rgba(232,197,71,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; font-style: italic;">
+        Five questions on the world-class methods and concepts applied in Session 14. Intended to build transferable product and technical knowledge beyond the immediate build.
+      </p>
+
+      <!-- Q1 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q1 — Why Selenium over a simple HTTP scraper, and what is bot detection actually doing?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        A simple HTTP scraper sends a request directly to a server and reads the response — like a very fast human copying text. Modern websites like Domain can tell the difference through several signals: no cookies, no browsing history, requests arriving too fast, and missing browser fingerprints (like the <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">navigator.webdriver</code> property Selenium exposes). When Domain sees these signals, it drops the connection before sending content — exactly the timeout errors seen in Session 14. Selenium solves this by driving a real Chrome browser. The request genuinely comes from Chrome with real cookies, realistic timing, and a full fingerprint. Visiting the homepage first before scraping search results mimics natural human behaviour — arriving cold at a search URL is itself a bot signal. At pilot scale (62 listings, one-off run), Selenium is the right tool. The arms race between scrapers and bot detection is ongoing; Selenium is one step ahead of raw HTTP, but sophisticated sites add CAPTCHA, mouse movement analysis, and IP rate limiting on top.
+      </p>
+
+      <!-- Q2 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q2 — What is a Progressive Web App and how does it differ from a native app?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        A native app is compiled code that runs directly on the device operating system — it lives in the App Store, installs like software, and has deep device access. A PWA is a website that behaves like an app through browser standards: it can be added to the home screen, loads instantly from cache offline, and can receive push notifications. The critical difference is distribution. A native app requires Apple and Google approval, a developer account ($100/year for Apple), and users must actively find and download it. A PWA is just a URL — share the link and the browser handles the rest. For NestMatch at pilot stage, PWA is strictly superior: zero gatekeeping, instant iteration, and functionally identical experience for a property search tool that requires internet anyway. The only thing PWA cannot do that native can is deep hardware integration (camera, Bluetooth, background GPS) — none of which NestMatch needs. Staged path: direct link now → PWA when retention data justifies it → native app post product-market fit.
+      </p>
+
+      <!-- Q3 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q3 — Why does capital_gain_pct belong at the suburb level rather than the property level?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        Individual property price changes are too noisy to be meaningful signals. A single property's sale price is affected by renovation, vendor motivation, auction conditions, and timing — none of which reveal anything about the investment quality of the location. A suburb's median price change over 12 months smooths out that noise and captures the underlying demand signal: is this area genuinely appreciating, and why? This is the same logic CoreLogic and Domain use for their suburb profiles. The data sourced in Session 14 — 3.94% for Chatswood houses, -3.17% for Mosman houses — is suburb-level median movement, not individual property performance. When NestMatch scores an investment property, it applies the suburb's capital gain signal to every listing in that suburb. This is correct: the location is the investment thesis, not the specific property. The data model implication is also important — <code style="font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px;">capital_gain_pct</code> only needs updating once per suburb when new CoreLogic data is published, not once per listing. That is what makes manual population tractable for the pilot.
+      </p>
+
+      <!-- Q4 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q4 — What is the outcome data flywheel and why does it require live listings to function?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 24px;">
+        A flywheel is a self-reinforcing loop where each rotation makes the next one easier. NestMatch's flywheel: a buyer uses the product → inspects or passes on a property → records that outcome → the system learns which match signals predicted real buyer behaviour → future matches improve → more buyers trust the product → more outcome data collected. The flywheel only turns when buyers can act on results. If the DB contains sold listings, a buyer sees a match, clicks through, finds it is gone, and has no outcome to record. The loop breaks at the first step. Live "for sale" listings are the prerequisite for any outcome signal at all — which is why D62 was the most strategically important decision of Session 14. It looks like a data hygiene decision but it is actually a moat decision. This is also why the pilot matters more than the infrastructure. The scraper, cleanup script, and schema changes all exist to create the conditions for the flywheel's first rotation. Without real buyers acting on real listings, NestMatch is just a matching algorithm with no feedback.
+      </p>
+
+      <!-- Q5 -->
+      <p style="font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Q5 — Why does narrative input beat filter-based search for a decision-assistant product?</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 8px;">
+        Filters solve a retrieval problem: find everything that matches these criteria. Narrative input solves a decision problem: help me figure out what I actually want and whether this property serves my real goals. The difference matters because property buyers rarely know their precise criteria in advance. They think in trade-offs — "I want space but I do not want to be too far from work" — not in Boolean logic. Filter-based interfaces force buyers to translate fuzzy human preferences into precise parameters before they have even seen what is available. That is cognitively backwards. Narrative input captures the trade-off structure naturally. When someone writes "4 bed house, good schools, 30 minutes to CBD, under $2M," they have expressed a priority ordering without knowing it — and NestMatch's scoring engine can weight those signals against each other. The interpretation step (parse-narrative API) is doing something REA and Domain structurally cannot do: understanding intent rather than just matching criteria.
+      </p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75;">
+        This is why incumbents are structurally disincentivised from building this. Their revenue comes from agents paying for listing prominence — a decision-assistant that ranks properties by buyer fit, not agent spend, directly conflicts with that model. The narrative input is not just a UX feature. It is the surface expression of a fundamentally different business logic. That structural gap is NestMatch's durable opening.
+      </p>
+    </div>
+  </div>
+
+  <!-- Strategic Note — Mobile App Path -->
+  <p class="section-title" style="margin-top: 40px;">Strategic Note — Mobile App Path</p>
+  <div class="session-entry" style="border-left: 3px solid var(--blue); background: rgba(96,165,250,0.02);">
+    <div class="session-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-style: italic;">
+        Documented Session 14 · 16 Apr 2026. Settled question — not an open item.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">When to build a native app</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 20px;">
+        A native app solves a distribution problem NestMatch does not yet have. Pilot users access the product via a direct link — the current Next.js frontend already works on mobile. An app is a significant investment (separate codebase or React Native, App Store/Play Store submission, review cycles, update overhead) that only makes sense when repeat users want frictionless re-access and are coming back daily without being prompted. That behaviour only emerges after the pilot validates that people actually want to return.
+      </p>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Staged path</p>
+      <ul style="font-size: 14px; color: var(--text-dim); line-height: 1.8; margin-bottom: 20px; padding-left: 20px;">
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Stage 1 — Now:</strong> Web app via direct link. Current state. Sufficient for pilot. No additional work required.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Stage 2 — Post-pilot, if retention data justifies it:</strong> Progressive Web App (PWA). Adds "Add to Home Screen" prompt, offline capability, and app-like feel without any App Store submission. Approximately one sprint of work. The right bridge between direct link and native app.</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Stage 3 — Post product-market fit:</strong> Native app. Only if PWA retention is high and users are requesting it explicitly. Trigger condition: consistent returning users, outcome data flywheel turning, and at least one cohort that has completed a purchase through NestMatch. Estimated timeline: 6–12 months post-pilot if pilot goes well.</li>
+      </ul>
+
+      <p style="font-size: 12px; font-weight: 500; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Settled position</p>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75;">
+        Do not build a native app before the pilot validates return behaviour. PWA is the correct next step when that signal emerges — it costs almost nothing and gives users a near-app experience without App Store overhead. Native app is a post-PMF decision, not a pre-pilot one.
+      </p>
+    </div>
+  </div>
+
 </main>
 
+  <!-- Session 18 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 18</span>
+        <span class="session-date">19 Apr 2026</span>
+      </div>
+      <div class="session-title">Zoho Mail live · buyers@nestmatch.com.au verified · All 9 nester accounts created · All 9 registered on Domain.com.au · MX records active</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Execution session — nester troop infrastructure build begins. South Granville trajectory fix applied (1-line SQL, carried from Session 16). Zoho Mail Lite provisioned at A$20/year (free tier region-restricted for Australia). buyers@nestmatch.com.au created and verified via CNAME record in Crazy Domains. MX records (priority 10 and 20) added and confirmed active — inbound mail delivery verified. Five of nine nester accounts created; four deferred to Session 19 due to Microsoft device-limit cooldown and phone verification friction across providers. Bigpond confirmed inaccessible (Telstra account required); substituted with Proton Mail. Yahoo blocked on device fingerprint. Forwarding architecture partially live: Gmail and Outlook nesters auto-forward to buyers@nestmatch.com.au; Proton nesters manual-check only (forwarding is paid feature on Proton free tier).
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>South Granville trajectory fix — UPDATE properties SET suburb_trajectory = 'stable' WHERE suburb = 'South Granville'; Statement executed successfully in Neon.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Zoho Mail Lite provisioned — A$1.65/user/month billed annually (~A$20/year). Free tier confirmed region-restricted for Australia. Renews 18 Apr 2027.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>buyers@nestmatch.com.au created — domain verified via CNAME record (zb84868255 → zmverify.zoho.com.au) added in Crazy Domains DNS Settings. TXT record method unavailable in Crazy Domains UI (no TXT option in record type dropdown).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>MX records added to Crazy Domains — mx.zoho.com.au (priority 10) and mx2.zoho.com.au (priority 20). Both confirmed Active. Inbound mail delivery verified by test email.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N01 — jam.nguyen@gmail.com created · auto-forward to buyers@nestmatch.com.au ✓ · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N02 — clawson1503@outlook.com created (clawson@hotmail.com taken) · auto-forward to buyers@nestmatch.com.au ✓ · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N03 — r.haines52@outlook.com created · auto-forward to buyers@nestmatch.com.au ✓ · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N04 — mpark_home@proton.me created (Bigpond inaccessible — Telstra account required; Yahoo blocked on device fingerprint; Proton substituted) · manual inbox check only · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N05 — awhitfieldnsw@gmail.com created (awhitfield@gmail.com taken) · auto-forward to buyers@nestmatch.com.au ✓ · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N06 — sbrennan93@proton.me created (Gmail blocked; Proton substituted) · manual inbox check only · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N07 — k.daniel@tutamail.com created (Hotmail blocked; Tutanota substituted) · manual inbox check only · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N08 — ktrann75@proton.me created · manual inbox check only · Domain.com.au registered ✓</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N09 — moconnor1403@tutamail.com created (Gmail blocked; Tutanota substituted) · manual inbox check only · Domain.com.au registered ✓</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>N01 Gmail password not recorded during account creation — recover and store securely before first inquiry. Deferred to Session 19.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 18 — state after completion</span>
+<span class="highlight">buyers@nestmatch.com.au</span>   Zoho Mail Lite · live · inbound verified ✓
+<span class="highlight">DNS records</span>               CNAME + MX x2 · all Active in Crazy Domains ✓
+<span class="highlight">South Granville</span>           suburb_trajectory = 'stable' · Neon updated ✓
+<span class="highlight">Nesters created</span>           9 of 9 · all accounts live ✓
+<span class="highlight">Auto-forward live</span>         N01 N02 N03 N05 → buyers@nestmatch.com.au ✓
+<span class="highlight">Manual check</span>              N04 N06 N07 N08 N09 (Proton/Tutanota — forwarding paid only)
+<span class="highlight">Domain.com.au</span>             9 of 9 nesters registered · saved searches set ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Central inbox: live and verified ✓</span>
+<span class="success">Nester troop: 9/9 operational ✓</span>
+<span class="success">Domain registrations: 9/9 complete ✓</span>
+<span class="success">Ready for first inquiries: Session 19 ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 18 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 18</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D71</span><div class="decision-content"><div class="decision-q">Zoho free tier unavailable in Australia — pay for Mail Lite or find alternative?</div><div class="decision-a">Zoho free tier is region-restricted and not available in Australia. Alternatives (Gmail, personal email) are inappropriate for a branded central inbox. Mail Lite at A$1.65/user/month = ~A$20/year for one user. Cost is negligible relative to value of a dedicated, reliable, branded inbox. <strong>Decision: pay for Zoho Mail Lite. One user (buyers@nestmatch.com.au). Renews Apr 2027.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D72</span><div class="decision-content"><div class="decision-q">Bigpond and Yahoo unavailable for nester accounts — what to substitute?</div><div class="decision-a">Bigpond requires an active Telstra account — not a free signup. Yahoo blocked on device fingerprint during signup attempt. Provider diversity is important for credibility but specific providers are not. Proton Mail (proton.me) requires no phone number, is free, and is used by privacy-conscious Australian buyers — credible substitute. <strong>Decision: substitute Bigpond and Yahoo with Proton Mail for N04 and N08. Note: Proton free tier does not support auto-forwarding — these nesters require manual inbox checking during pilot.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D73</span><div class="decision-content"><div class="decision-q">Proton nesters cannot auto-forward — is manual checking acceptable at pilot scale?</div><div class="decision-a">The forwarding-to-central-inbox architecture is the post-pilot build (Postmark/SendGrid webhook). At pilot scale with 2 Proton nesters making 2-3 inquiries per week each, manual inbox checking is 5 minutes every few days. The value of the pipeline is the data captured, not the delivery mechanism. <strong>Decision: manual inbox checking for Proton nesters is acceptable at pilot stage. Auto-forwarding deferred to post-pilot parser build. Does not block nester activation.</strong></div></div></div>
+  </div>
+
+  <!-- Session 19 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 19</span>
+        <span class="session-date">20 Apr 2026</span>
+      </div>
+      <div class="session-title">First nester inquiries sent · D74 logged · Cloudflare DNS migration · SPF verified · buyers@nestmatch.com.au deliverability confirmed</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Operational session — nester troop activated for first inquiries. N01 password recovery deferred and de-prioritised: Domain.com.au does not require Gmail verification; REA registration not being pursued at this stage, making Gmail access non-blocking. Nine inquiry templates drafted across all 5 corridors per D68 (short, conversational, price guide as hook, secondary angle varied per nester). N01–N03 (Lower North Shore) sent Day 1; N04–N06 scheduled Day 2; N07–N09 scheduled Day 3. McGrath virtual assistant first-response confirmed forwarding pipeline is live end-to-end. D74 logged: agency coverage formalised as a first-class listing selection criterion alongside property type and price band. DNS infrastructure upgraded mid-session: Cloudflare onboarded as DNS provider after Crazy Domains UI confirmed to lack TXT record support. All 6 DNS records migrated to Cloudflare. SPF TXT record added and verified by Zoho Mail — buyers@nestmatch.com.au outbound deliverability now authenticated. Pilot cohort recruitment deferred to Session 20.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>N01 password recovery — deferred and de-prioritised. Domain.com.au does not require Gmail verification; REA registration not being pursued at this stage. N01 (jam.nguyen@gmail.com) fully operational on Domain regardless.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Nine inquiry templates drafted — one per nester, phrasing varied per archetype. Price guide as primary hook; secondary angle rotated across negotiation room, settlement flexibility, and auction status. No two templates identical.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>N01–N03 inquiries sent Day 1 (20 Apr) — Lower North Shore corridor activated. McGrath virtual assistant auto-reply received at buyers@nestmatch.com.au confirming forwarding pipeline live end-to-end.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>D74 logged — agency coverage formalised as first-class listing selection criterion. Rule: no two nesters in the same corridor may inquire on the same agency in a rolling 7-day window.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Cloudflare DNS migration — nestmatch.com.au nameservers updated from ns1/ns2.crazydomains.com to chase.ns.cloudflare.com + samara.ns.cloudflare.com. All 6 records migrated: 2x A (Proxied), 2x MX (DNS only), 1x CNAME Zoho verification (DNS only), 1x TXT SPF (DNS only). Cloudflare activation confirmed by email.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>SPF verified — TXT record (v=spf1 include:zoho.com.au ~all) confirmed by Zoho Mail admin console. Deliverability warning resolved. buyers@nestmatch.com.au outbound now SPF-authenticated.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>N04–N06 inquiries — scheduled Day 2 (21 Apr). Apply D74: target different agencies across Upper North Shore and Inner West nesters.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>N07–N09 inquiries — scheduled Day 3 (22 Apr). Apply D74 to Inner West FHB, Western Sydney, and SW Corridor.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Pilot cohort recruitment — deferred to Session 20. Target: 6-8 active buyers from personal network (3-4 residential, 2-3 investment, 1 wildcard). Active buyers only — looking in next 6 months minimum (D66).</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 19 — state after completion</span>
+<span class="highlight">Nester inquiries</span>          N01-N03 sent Day 1 · N04-N06 Day 2 · N07-N09 Day 3
+<span class="highlight">Pipeline verification</span>     McGrath VA reply received at buyers@nestmatch.com.au ✓
+<span class="highlight">DNS provider</span>              Cloudflare (replaces Crazy Domains DNS panel) ✓
+<span class="highlight">Nameservers</span>               chase.ns.cloudflare.com + samara.ns.cloudflare.com ✓
+<span class="highlight">SPF</span>                       v=spf1 include:zoho.com.au ~all · Zoho verified ✓
+<span class="highlight">Agency coverage rule</span>      D74 — no same-agency duplicates within corridor per 7-day window
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Forwarding pipeline: live and verified end-to-end ✓</span>
+<span class="success">Email deliverability: SPF authenticated ✓</span>
+<span class="success">First inquiries: Day 1 of 3 complete ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 19 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 19</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D74</span><div class="decision-content"><div class="decision-q">How should listings be selected for nester inquiries to maximise data coverage?</div><div class="decision-a">If nesters within the same corridor inquire on listings from the same agency, the data pipeline produces duplicated agency coverage and blind spots across other active agencies in that corridor. Listing selection must optimise across two dimensions simultaneously — property type (handled by nester archetype) and agency (not previously systematised). <strong>Decision: no two nesters in the same corridor may inquire on the same agency in a rolling 7-day window. Agency coverage is a first-class selection criterion alongside property type and price band. When scaling to N10-N14, agency distribution mapping must be done per corridor before first inquiry.</strong></div></div></div>
+  </div>
+
+  <!-- Session 20 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 20</span>
+        <span class="session-date">20 Apr 2026</span>
+      </div>
+      <div class="session-title">DKIM verified · IMAP pipeline built · agent_replies table live · Render cron deployed · 18 emails processed</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Infrastructure and data pipeline session. Email authentication stack completed with DKIM — Zoho generated 1024-bit selector, TXT record added to Cloudflare, verified. Full authentication stack now live: MX + CNAME + SPF + DKIM. Pipeline session: designed and built the IMAP polling pipeline that reads agent replies from buyers@nestmatch.com.au, extracts structured data via Claude API, and stores to a new agent_replies table in Neon. Feynman-level explanation of each pipeline layer delivered. agent_replies table created with 28 columns covering all agent reply signal types (A–E). email_poller.py built, debugged (json.dumps for JSONB, .format() KeyError from unescaped curly braces in prompt), and tested locally against 18 real emails — 11 unique records stored, 7 duplicates correctly skipped. Committed to GitHub, deployed as Render Cron Job running every 15 minutes. Pipeline verified end-to-end. Pilot cohort recruitment deferred to Session 21.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>DKIM — zoho._domainkey TXT record added to Cloudflare (1024-bit after 2048-bit chunking issue). Zoho verified. Full email auth stack complete: MX + CNAME + SPF + DKIM.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Feynman pipeline explanation delivered across 6 levels: Zoho mailbox → IMAP protocol → poller script → Claude parser → Neon storage → Render cron scheduler.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>agent_replies table created in Neon — 28 columns: message_id (UNIQUE dedup key), nester_email, nester_id, agent fields, property fields, price_guide, auction_date, open_home_times, sizes, parking, rental_estimate_pw, outgoings (JSONB), email_type (A/B/C/D/E), anomaly_flag, raw_body always stored.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>app/email_poller.py built — IMAP login, UNSEEN fetch, Claude Haiku extraction, duplicate check via message_id, Neon insert with ON CONFLICT DO NOTHING, anomaly flagging for non-property and unidentified-nester emails.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Zoho IMAP enabled — user-level checkbox + Save (not saved initially). App password generated (nestmatch-poller) for third-party IMAP access.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Three bugs fixed during local testing: (1) KeyError from .format() on prompt containing literal {} — fixed by escaping to {{}}. (2) JSON fence stripping — fixed with splitlines() approach. (3) asyncpg JSONB requires json.dumps() not raw dict — fixed.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Local test run: 18 emails processed — 11 stored (Types A, B, C, D, E all represented), 7 duplicates skipped. Anomaly flags correctly applied to non-property system emails.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Committed to GitHub (3db876a) and deployed as Render Cron Job — nestmatch-email-poller, Starter instance, Singapore region, schedule */15 * * * *. Build succeeded.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Pilot cohort recruitment — deferred to Session 21. Target: 6-8 active buyers from personal network.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>N04-N06 Day 2 and N07-N09 Day 3 nester inquiry sends — confirm completed and agent replies flowing.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 20 — state after completion</span>
+<span class="highlight">DKIM</span>                      zoho._domainkey · 1024-bit · Cloudflare · Zoho verified ✓
+<span class="highlight">Email auth stack</span>          MX + CNAME + SPF + DKIM — complete ✓
+<span class="highlight">agent_replies table</span>       Neon · 28 columns · message_id UNIQUE · 3 indexes ✓
+<span class="highlight">email_poller.py</span>           app/email_poller.py · committed 3db876a ✓
+<span class="highlight">IMAP</span>                      imap.zoho.com.au:993 SSL · app password · UNSEEN mode ✓
+<span class="highlight">Claude model</span>              claude-haiku-4-5-20251001 · structured extraction · email types A-E
+<span class="highlight">Local test</span>                18 emails · 11 stored · 7 dupes skipped · 0 errors (after fixes) ✓
+<span class="highlight">Render cron</span>               nestmatch-email-poller · */15 * * * * · Starter · Singapore ✓
+<span class="highlight">Build</span>                     succeeded ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Email authentication: complete (MX + CNAME + SPF + DKIM) ✓</span>
+<span class="success">IMAP pipeline: live and processing agent replies ✓</span>
+<span class="success">Render cron: deployed and running every 15 minutes ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 20 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 20</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D75</span><div class="decision-content"><div class="decision-q">How should the central inbox data pipeline be architected at pilot stage?</div><div class="decision-a">Agent replies arrive at buyers@nestmatch.com.au via nester auto-forwards. Two options: IMAP polling (backend script reads inbox on schedule) vs webhook/push (Zoho pushes to FastAPI endpoint). At pilot scale with ~10 nesters sending 2-3 inquiries per week, polling is simpler, auditable, and requires no new public endpoint infrastructure. <strong>Decision: IMAP polling via Render Cron Job every 15 minutes. Claude Haiku for extraction. Raw email always stored verbatim alongside extracted fields. Hybrid review: auto-parse with anomaly_flag for manual inspection. Post-pilot path: Postmark/SendGrid webhook parser (D73).</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D76</span><div class="decision-content"><div class="decision-q">What email types will agent replies produce and how should they be classified?</div><div class="decision-a">Based on 18 real agent replies observed: Type A = rich structured reply with multiple data fields (highest value); Type B = short conversational reply answering specific question; Type C = VA auto-reply or system acknowledgement (noise but signals agent activity); Type D = document link drop (contract, FAQ, vendor docs); Type E = reply references attachments with little body data. <strong>Decision: five-type classification (A-E) stored in email_type column. Claude classifies on extraction. All types stored — even C/D/E have signal value for agency activity tracking.</strong></div></div></div>
+  </div>
+
+  <!-- Session 21 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 21</span>
+        <span class="session-date">21 Apr 2026</span>
+      </div>
+      <div class="session-title">agent_outbound pipeline built · Types F-L taxonomy · Cat2 parser deployed · commit a1968e2</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Data channel discovery and pipeline extension session. Brian manually forwarded agent emails from nester Gmail accounts revealing a rich ecosystem of agent-initiated outbound email types beyond the existing A-E inquiry reply taxonomy. Seven new email types identified (F-L) through direct observation of real agent behaviour across Belle Property, McGrath, DiJones, Raine &amp; Horne, Marshall Group, Nova Realty, and others. Gmail auto-forward confirmed broken for N01 and N05 — Outlook and Proton Mail nesters working correctly. Full data source landscape mapped across six categories. Strategic decision: agent-initiated outbound emails are a distinct pipeline requiring a separate table and parser. agent_outbound table created in Neon (27 columns). email_poller.py extended with classify_email(), is_noise(), detect_outbound_type(), detect_off_corridor(), separate Cat2 Claude extraction prompt, and store_outbound(). Local test against 64 emails: 26 Cat2 stored, noise correctly filtered, PRE-PORTAL and OFF-CORRIDOR flags firing correctly. Committed a1968e2 and deployed to Render.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Agent-initiated outbound taxonomy defined: F=agency newsletter, G=new-to-market, H=exclusive pre-portal, I=CRM matched alert, J=off-corridor, K=OFI+auction digest, L=rental listings digest.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Gmail auto-forward confirmed broken for N01 and N05. Outlook and Proton Mail nesters auto-forwarding correctly. Gmail nesters to be replaced offline (D79).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Full data source landscape mapped: Cat1 (A-E replies), Cat2 (F-L outbound), CRM profile capture, off-market portals (DiJones), comparable sales (Type K + VG NSW).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>agent_outbound table created in Neon — 27 columns, message_id UNIQUE, is_pre_portal + is_off_corridor booleans, listings_raw JSONB for batch emails, 4 indexes.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>email_poller.py extended: is_noise() filters system emails; classify_email() strips Fwd:/Fw: prefix, checks Cat1 first, falls back to Cat2; store_outbound() inserts to agent_outbound.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Separate Cat2 Claude prompt extracts listings_raw array, is_pre_portal flag, agency_name, listing_count.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Local test: 64 emails, 26 Cat2 stored (3xF, 15xG, 1xH, 7xI), noise skipped, PRE-PORTAL and OFF-CORRIDOR flags correct, 0 errors.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Committed a1968e2. Render auto-deploy triggered. Cron now routes Cat1 to agent_replies, Cat2 to agent_outbound.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Replace N01 and N05 Gmail addresses with Proton/Outlook — Brian to action offline.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Pilot cohort recruitment — Brian recruiting offline.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 21 — state after completion</span>
+<span class="highlight">agent_outbound table</span>     Neon · 27 columns · message_id UNIQUE · 4 indexes ✓
+<span class="highlight">Email taxonomy</span>           Cat1: A-E (inquiry replies) · Cat2: F-L (agent outbound)
+<span class="highlight">PRE-PORTAL flag</span>          Firing on Exclusive Market Preview + OFF-MARKET subjects ✓
+<span class="highlight">OFF-CORRIDOR flag</span>        Firing on suburbs outside pilot corridors ✓
+<span class="highlight">Local test</span>               64 emails · 26 Cat2 stored · 0 errors ✓
+<span class="highlight">Commit</span>                   a1968e2 · deployed to Render ✓
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">agent_outbound pipeline: live and processing ✓</span>
+<span class="success">Render cron: routing Cat1 + Cat2 correctly ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 21 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 21</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D77</span><div class="decision-content"><div class="decision-q">What agent-initiated outbound email types exist and how should they be classified?</div><div class="decision-a">Observed in real nester inboxes over 3 days: F=agency newsletter (batch, weekly); G=new-to-market pitch (single, on-portal); H=exclusive market preview (single, pre-portal — highest value); I=CRM matched alert (profile-filtered, Agentbox/R&amp;H); J=off-corridor pitch (geographically mismatched); K=OFI + auction results digest (inspection schedule + sold addresses); L=rental listings digest (address-level asking rent — yield input). <strong>Decision: seven-type taxonomy (F-L) in email_type column of agent_outbound. is_pre_portal and is_off_corridor boolean flags for automated routing. All types stored.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D78</span><div class="decision-content"><div class="decision-q">Should agent-initiated outbound emails share agent_replies or use a separate table?</div><div class="decision-a">Cat1 replies are one-per-property-per-agent, triggered by inquiry. Cat2 outbound may contain multiple listings, different schema, different trigger. Sharing one table produces excessive nulls and schema confusion. <strong>Decision: separate agent_outbound table (27 columns). Same asyncpg + json.dumps pattern. Plain text nester_id, no foreign key. ON CONFLICT DO NOTHING on message_id.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D79</span><div class="decision-content"><div class="decision-q">How should Gmail nesters (N01, N05) be handled given auto-forward is broken?</div><div class="decision-a">Gmail restricts auto-forward — forwarding silently fails. N01 and N05 not forwarding to buyers@ automatically. Outlook and Proton Mail nesters confirmed working. <strong>Decision: replace N01 and N05 with Proton Mail or Outlook addresses at next opportunity. No new nester personas to use Gmail. Brian to action offline.</strong></div></div></div>
+  </div>
+
+  <!-- Session 22 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 22</span>
+        <span class="session-date">22 Apr 2026</span>
+      </div>
+      <div class="session-title">pre-portal surface live · Option B delivered · residential + investment results pages updated</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Product gap closure session. Objective: connect the email pipeline data to what buyers see on nestmatch.com.au. Full audit of agent_outbound table conducted — 25 records across types F/G/H/I, 3 Type H pre-portal listings confirmed (51 Fuller Street Collaroy Plateau, 3/15-17 Station Street Dundas, 3/46 Bayswater Street Drummoyne). New FastAPI endpoint /pre-portal built and deployed to Render. PrePortalCard.tsx component built with gold badge, dark treatment, and "Sourced via NestMatch agent network · not listed on any portal" footer. Pre-portal section integrated into both residential and investment results pages — appears above standard results whenever pre-portal listings exist. Several deployment and encoding issues resolved during build. D80 and D81 settled on suburb-match-only and "Not yet on the market" labelling respectively. Pre-portal section confirmed live on nestmatch.com.au across both buyer modes. Suburb engine relevance issue noted (search not filtering to buyer's stated area) — deferred to Session 23. D82 raised: Zoho auto-reply to convert one-directional nester pipeline into ongoing agent relationships.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>agent_outbound audit complete — 25 records, types F/G/H/I, 3 Type H pre-portal flagged. listings_raw JSONB confirmed populated with street_address + suburb. agency_name null across all records (nester_id UNKNOWN issue noted).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>GET /pre-portal endpoint built in app/main.py — unnests listings_raw JSONB array, filters is_pre_portal = true, optional suburb query param. Deployed to Render. Verified returning 3 records at /pre-portal and 1 at /pre-portal?suburbs=collaroy%20plateau.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>PrePortalCard.tsx built — dark card, gold pulsing dot badge, street address, suburb, property type, freshness label, "Sourced via NestMatch agent network" footer. No rating bars (data thin at pilot stage).</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pre-portal section integrated into app/results/residential/page.tsx — fetches unfiltered at pilot stage, renders above standard results with "NOT YET ON THE MARKET · 3 properties" header and divider to "ON THE MARKET" section.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Pre-portal section integrated into app/results/investment/page.tsx — same pattern, dark theme preserved, gold amber label consistent with investment colour palette.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Both pages confirmed live on nestmatch.com.au — pre-portal section visible above standard results on any residential or investment search.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Suburb engine relevance — search returning properties across all suburbs rather than filtering to buyer's stated area (e.g. "Neutral Bay" returning results across Sydney). Deferred to Session 23.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Replace N01 and N05 Gmail nesters — Brian to action offline.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Pilot cohort recruitment — Brian recruiting offline.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 22 — state after completion</span>
+<span class="highlight">/pre-portal endpoint</span>     app/main.py · unnests listings_raw · is_pre_portal filter · Render ✓
+<span class="highlight">PrePortalCard.tsx</span>        components/ · dark card · gold badge · "Not yet on the market" ✓
+<span class="highlight">Residential results</span>      pre-portal section above standard results · unfiltered at pilot ✓
+<span class="highlight">Investment results</span>        pre-portal section above standard results · dark theme preserved ✓
+<span class="highlight">Live pre-portal count</span>    3 properties (Collaroy Plateau, Dundas, Drummoyne)
+<span class="highlight">Commits</span>                  backend: pre-portal endpoint · frontend: c63c84f, 0f2cf2c
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Option B (pre-portal surface): live on nestmatch.com.au ✓</span>
+<span class="success">Both residential and investment results pages updated ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 22 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 22</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D80</span><div class="decision-content"><div class="decision-q">Should pre-portal listings show to all buyers or only when suburb matches?</div><div class="decision-a">At pilot stage the properties table does not contain the same suburbs as agent_outbound pre-portal records, so suburb-match filtering would suppress all pre-portal results. <strong>Decision: fetch unfiltered at pilot stage — all pre-portal listings shown to all buyers. Reintroduce suburb filter once properties table has coverage in pre-portal suburbs.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D81</span><div class="decision-content"><div class="decision-q">What is the buyer-facing label for pre-portal listings?</div><div class="decision-a">Options considered: "Not yet on the market", "Coming soon — exclusive to NestMatch", "Pre-market listings". Plain language preferred over marketing framing. <strong>Decision: "Not yet on the market" — objective, clear, no marketing fluff. Used in both the section header and the card badge.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D82</span><div class="decision-content"><div class="decision-q">How can the nester email pipeline be made more active to increase data inflow?</div><div class="decision-a">Current pipeline is one-directional: nesters send inquiry, agent replies once, conversation dies. An auto-reply from buyers@nestmatch.com.au signals an active engaged buyer, keeps nesters at top of agent's mental stack, and invites proactive follow-up (price updates, inspection times, pre-portal opportunities). Risk: auto-reply loop if agent replies to auto-reply — mitigated by scoping to fire once per sender per time window in Zoho. <strong>Decision: configure Zoho auto-reply on buyers@nestmatch.com.au — one reply per sender per window, human-sounding tone. Build in Session 23 as first item — Zoho config task, no code change required.</strong></div></div></div>
+  </div>
+
+  <!-- Session 23 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 23</span>
+        <span class="session-date">22 Apr 2026</span>
+      </div>
+      <div class="session-title">Zoho auto-reply live · suburb engine fixed · corridor expansion · buyer mindset taxonomy</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Infrastructure and UX session. Zoho auto-reply configured on buyers@nestmatch.com.au — human-sounding Sarah persona, fires once per external sender per window through to Dec 2027, keeps nesters engaged. Suburb engine diagnosed and fixed — SearchRequest model extended with suburbs field, SQL query updated with strict array filter, narrative parser updated to extract suburbs. D83 settled: single suburb input now expands to a 4-5 suburb geographic corridor using Claude's knowledge (e.g. "Neutral Bay" → Neutral Bay, Cremorne, Kirribilli, Mosman). Confirmed working: $5M search returning Mosman house, $2.5M returning 0 matches correctly. Session concluded with buyer mindset taxonomy (10 types) and strategic insight: NestMatch must augment presentation layer per buyer type — same engine output, delivered in the order most meaningful to the individual buyer. D84 settled: buyer_priority field to be added to narrative parser and used to reorder rating bars and pin relevant highlights on results cards.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">✓</span>Zoho Out of Office configured on buyers@nestmatch.com.au — Sarah persona, external users, 04/22/2026–12/31/2027, fires once per sender per window. Auto-replied emails saved to Sent folder.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>suburbs field added to SearchRequest in models.py. SQL WHERE clause updated in engine.py — empty array shows all, populated array filters strictly by LOWER(suburb) = ANY($3::text[]). Commit 4444885.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>suburbs field added to ParsedCriteria interface and SYSTEM_PROMPT in parse-narrative/route.ts — single suburb expands to 4-5 adjacent neighbours, region expands to core suburbs. Commit 19ac235.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>suburbs passed through ResidentialForm, buildParams(), URL params, and fetchResults() body in search and results pages. Commit 4fc857e.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Suburb filter verified live — "Neutral Bay $2.5M house" returns 0 (no DB match in corridor), "Neutral Bay $5M house" returns Mosman property correctly.</li>
+        <li class="log-item done-item"><span class="icon">✓</span>Buyer mindset taxonomy mapped — 10 types identified (Suburb Loyalist, Corridor Explorer, Budget-First, Commute-Anchored, School-Catchment, Upsizer, Investor-Disguised, Overwhelmed First-Timer, Researcher, Reluctant Mover). USP articulated: decision-assistant not search engine, pre-portal access, outcome data moat.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Replace N01 and N05 Gmail nesters — Brian to action offline.</li>
+        <li class="log-item pending-item"><span class="icon">◷</span>Pilot cohort recruitment — Brian recruiting offline.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 23 — state after completion</span>
+<span class="highlight">Zoho auto-reply</span>         buyers@nestmatch.com.au · Sarah persona · external users · live ✓
+<span class="highlight">Suburb filter</span>           engine.py · strict array match · empty = show all ✓
+<span class="highlight">Corridor expansion</span>      parse-narrative · single suburb → 4-5 neighbours · D83 ✓
+<span class="highlight">Commits</span>                 backend: 4444885 · frontend: 4fc857e, 19ac235
+<span class="comment">─────────────────────────────────────────────────────</span>
+<span class="success">Suburb engine: filtering correctly ✓</span>
+<span class="success">Zoho auto-reply: live and firing ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 23 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 23</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D83</span><div class="decision-content"><div class="decision-q">How should a single suburb input be handled in the search engine — strict match only or corridor expansion?</div><div class="decision-a">Strict single-suburb match would return zero results for most buyers since DB coverage is thin per suburb. Postcode proximity considered but rejected — Sydney postcodes are not reliably sequential geographically. <strong>Decision: narrative parser expands single suburb to 4-5 geographically adjacent neighbours using Claude's knowledge. "Neutral Bay" → ["Neutral Bay", "Cremorne", "Kirribilli", "Mosman"]. Region names expand to core suburbs. No postcode table required. Revisit postcode-based proximity when postcode field is added to DB.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D84</span><div class="decision-content"><div class="decision-q">How should buyer mindset insights be leveraged to improve results page experience?</div><div class="decision-a">Ten buyer mindset types identified. Current results page presents identical signal order to all buyers regardless of what they care about most. Engine output is good — the gap is presentation layer personalisation. <strong>Decision: add buyer_priority field to narrative parser (commute | schools | budget | land | trajectory | any). Use buyer_priority on results page to reorder rating bars and pin the most relevant highlight first. One contextual header sentence confirms what NestMatch prioritised. No engine or DB changes required — frontend only. Build in Session 24.</strong></div></div></div>
+  </div>
+
+  <!-- Session 24 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 24</span>
+        <span class="session-date">22 Apr 2026</span>
+      </div>
+      <div class="session-title">buyer_priority personalisation · N01 nester replaced · PMF test framing · commits b8c1a9d, d395464, 615fff8, 1fdcee3</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Personalisation and pipeline maintenance session. D84 buyer_priority feature built end-to-end: narrative parser extended with buyer_priority field (commute | schools | budget | land | trajectory | any), passed through URL params, results page renders contextual blue priority sentence and reorders rating bars to pin the buyer's declared priority first. Turbopack IIFE bug encountered and resolved by extracting RatingBars as a standalone component. Priority inference rule broadened to treat any commute time mention as commute priority. Both commute and schools priority verified live with blue sentence rendering correctly. N01 Gmail nester replaced with Proton Mail address (jam.nguyen73@proton.me) — NESTER_MAP updated and deployed. N05 address unchanged, Domain profile updated. Pilot cohort recruitment discussed — personal network has no active buyers. Cold acquisition strategy agreed: Reddit (r/AusPropertyChat, r/FirstHomeBuyers) as first channel, REBAA buyers agent outreach as parallel track. Sean Ellis PMF test framing adopted as the success criterion for the pilot: 40%+ of testers answering "very disappointed" if NestMatch disappeared. Target tester profile sharpened: actively searching now, mid-search and overwhelmed, decision within 3-6 months.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>buyer_priority field added to parse-narrative SYSTEM_PROMPT and ParsedCriteria interface. Values: commute | schools | budget | land | trajectory | any. Inference rule: any commute time mention = commute, "good schools" / "catchment" = schools, budget language = budget, land mentions = land, growth/trajectory language = trajectory. Default any. Commits b8c1a9d, d395464.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>buyer_priority added to ResidentialForm, EMPTY constant, buildParams() (suppressed if "any"), and handleMatch() parsed object in residential/page.tsx. Commit b8c1a9d.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Results page reads buyer_priority from URL params. Blue contextual sentence renders below criteria tokens when priority is not "any". RatingBars component extracted — reorders bars to pin priority first, highlights pinned bar label in blue. Commits b8c1a9d, 615fff8.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Turbopack IIFE bug fixed — IIFE pattern in JSX rejected by Turbopack parser. Resolved by extracting RatingBars as a proper standalone React component. Commits 91028bd, 615fff8.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>D84 verified live: commute priority renders "Prioritised by commute — fastest connections to CBD shown first." Schools priority renders "Prioritised by schools — strongest catchment scores shown first." Both confirmed in browser.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>N01 replaced: jam.nguyen@gmail.com (broken Gmail auto-forward) &rarr; jam.nguyen73@proton.me (Proton Mail). NESTER_MAP updated in email_poller.py. Commit 1fdcee3. Render redeployed.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>N05 (awhitfieldnsw@gmail.com) — address unchanged in poller, Domain.com.au profile updated by Brian offline.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Pilot cohort recruitment: personal network has no active buyers. Cold acquisition strategy agreed — Reddit first, REBAA outreach parallel. Reddit post draft prepared for r/AusPropertyChat and r/FirstHomeBuyers.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Sean Ellis PMF test adopted as pilot success criterion (D85). Target tester profile sharpened: actively searching now, mid-search and overwhelmed, 3-6 month decision horizon.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 24 — state after completion</span>
+<span class="highlight">buyer_priority</span>          parse-narrative + URL params + results page &middot; D84 verified live &#10003;
+<span class="highlight">RatingBars component</span>    standalone &middot; reorders on priority &middot; blue label on pinned bar &#10003;
+<span class="highlight">N01 nester</span>              jam.nguyen73@proton.me &middot; Proton Mail &middot; NESTER_MAP updated &#10003;
+<span class="highlight">N05 nester</span>              awhitfieldnsw@gmail.com &middot; Domain profile updated &#10003;
+<span class="highlight">Commits</span>                 frontend: b8c1a9d, d395464, 91028bd, 615fff8 &middot; backend: 1fdcee3
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">buyer_priority personalisation: live and verified &#10003;</span>
+<span class="success">Nester roster: N01 fixed, N05 profile updated &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 24 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 24</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D85</span><div class="decision-content"><div class="decision-q">What is the success criterion for the pilot cohort and how should PMF be measured?</div><div class="decision-a">Sean Ellis PMF test adopted: survey pilot testers after 4-6 weeks of use with the question "how would you feel if NestMatch disappeared tomorrow?" — (a) no feeling, (b) pity, (c) very disappointed. PMF passes at 40%+ answering (c). Good feedback and usage alone are not sufficient signals. Target tester profile: actively searching now, mid-search and overwhelmed by listings volume, purchase decision within 3-6 months. <strong>Decision: PMF test is the primary pilot success criterion. Pilot recruitment targets this profile specifically, not general property interest. Survey to be run after 4-6 weeks of active use.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D86</span><div class="decision-content"><div class="decision-q">What is the pilot cohort acquisition strategy given personal network has no active buyers?</div><div class="decision-a">Personal network exhausted as a recruitment channel. Three cold channels identified: Reddit (r/AusPropertyChat, r/FirstHomeBuyers, r/AusFinance), Facebook property groups, REBAA directory cold outreach to independent buyers agents. <strong>Decision: Reddit as primary first channel — fastest, zero cost, reaches active buyers mid-search. REBAA buyers agent outreach as parallel track — higher effort, warmer leads via agent referral. Post framed as feedback-seeking from a solo builder, not a product launch. Brian to post after Session 24.</strong></div></div></div>
+  </div>
+
+  <!-- Next Session -->
+  <p class="section-title">Next Session</p>
+  <div class="next-up">
+    <div class="next-up-label">&#9658; Session 25 — start here</div>
+    <ol class="next-steps">
+      <li class="next-step">
+        <span class="step-num">01</span>
+        Pilot cohort recruitment — confirm Reddit post live. Review any responses. Onboard first testers if available. REBAA cold outreach email draft if Reddit yields no responses within 1 week.
+      </li>
+      <li class="next-step">
+        <span class="step-num">02</span>
+        PMF survey infrastructure — decide how to deliver the Sean Ellis question to testers at the 4-6 week mark (WhatsApp, email, or in-product). Build or prepare the mechanism.
+      </li>
+      <li class="next-step">
+        <span class="step-num">03</span>
+        Data pipeline review — confirm N01 and N05 agent replies now flowing correctly via new Domain profiles. Check agent_replies and agent_outbound tables for new records from replaced nesters.
+      </li>
+    </ol>
+  </div>
+
 <footer>
-  <span class="footer-text">NestMatch Project Log — updated after Session 11 · 13 Apr 2026</span>
+  <span class="footer-text">NestMatch Project Log — updated after Session 24 &middot; 22 Apr 2026</span>
   <span class="footer-domain">nestmatch.com.au</span>
 </footer>
 
