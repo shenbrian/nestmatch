@@ -4,10 +4,13 @@ Session 8: D29 actionable details in response + D23 outcome endpoint
 """
 
 import os
+import json
 import uuid
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional, Any
 import asyncpg
 
 from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
@@ -18,7 +21,6 @@ from app.outcome_agent import run_outcome_agent
 
 async def log_search_session(conn, req, results: list) -> None:
     """Logs every completed search to search_sessions table."""
-    import json
     raw_summary = (
         f"{req.mode} | budget ${req.budget_max:,} | "
         f"{req.bedrooms_min}bd | {req.property_type or 'any type'}"
@@ -228,4 +230,38 @@ async def pre_portal(suburbs: str = ""):
                 """
             )
 
-    return [dict(r) for r in rows]    
+    return [dict(r) for r in rows]
+
+
+# ── Feedback (Session 26 — D89) ───────────────────────────────────────────────
+
+class FeedbackRequest(BaseModel):
+    comment: str
+    search_params: Optional[Any] = None
+    page: Optional[str] = "residential"
+
+@app.post("/feedback")
+async def submit_feedback(body: FeedbackRequest):
+    """
+    Stores free-text pilot feedback from the results page.
+    comment: buyer's raw text (capped at 2000 chars).
+    search_params: JSONB snapshot of the search that produced the results.
+    page: 'residential' (investment to follow post-pilot).
+    """
+    if not body.comment or not body.comment.strip():
+        raise HTTPException(status_code=400, detail="Comment cannot be empty")
+
+    comment = body.comment.strip()[:2000]
+
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO user_feedback (comment, search_params, page)
+            VALUES ($1, $2::jsonb, $3)
+            """,
+            comment,
+            json.dumps(body.search_params) if body.search_params is not None else None,
+            body.page,
+        )
+
+    return {"status": "ok"}
