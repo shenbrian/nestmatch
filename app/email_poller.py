@@ -338,19 +338,40 @@ def fetch_unseen_emails():
             sender_email = re.search(r'[\w.+-]+@[\w-]+\.[a-z.]+', from_addr)
             sender_email = sender_email.group(0) if sender_email else from_addr
 
-            # Identify which nester this was sent to
+            # ── Nester identification (three-pass) ───────────────────────────
+            # Pass 1: subject line tag e.g. [N01] — works for forwarded emails
+            nester_id = None
             nester_email = None
-            for ne in NESTER_MAP:
-                if ne.lower() in to_addr.lower():
-                    nester_email = ne
-                    break
+            tag_match = re.search(r'\[N(\d{2})\]', subject, re.IGNORECASE)
+            if tag_match:
+                nester_id = f"N{tag_match.group(1)}"
+                # Reverse-lookup email from nester_id
+                nester_email = next(
+                    (e for e, n in NESTER_MAP.items() if n == nester_id), None
+                )
+
+            # Pass 2: To: header contains nester address (direct delivery)
+            if not nester_id:
+                for ne in NESTER_MAP:
+                    if ne.lower() in to_addr.lower():
+                        nester_email = ne
+                        nester_id = NESTER_MAP[ne]
+                        break
+
+            # Pass 3: sender IS a nester (nester emailing us directly)
+            if not nester_id:
+                for ne in NESTER_MAP:
+                    if ne.lower() in sender_email.lower():
+                        nester_email = ne
+                        nester_id = NESTER_MAP[ne]
+                        break
 
             messages.append({
                 "message_id":    message_id,
                 "subject":       subject,
                 "agent_email":   sender_email,
                 "nester_email":  nester_email,
-                "nester_id":     NESTER_MAP.get(nester_email, "UNKNOWN") if nester_email else "UNKNOWN",
+                "nester_id":     nester_id or "UNKNOWN",
                 "received_at":   received_at,
                 "body":          body,
                 "has_attachment": attachments,
