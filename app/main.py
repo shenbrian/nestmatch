@@ -264,4 +264,27 @@ async def submit_feedback(body: FeedbackRequest):
             body.page,
         )
 
+ # ── Card reactions (Session 29 — D93 outcome data) ────────────────────────────
+
+class CardReactionRequest(BaseModel):
+    property_id: str
+    reaction: str   # 'looks_right' | 'not_for_me'
+    search_params: Optional[Any] = None
+    session_id: Optional[str] = None
+
+@app.post("/card-reaction")
+async def card_reaction(body: CardReactionRequest):
+    if body.reaction not in ("looks_right", "not_for_me"):
+        raise HTTPException(status_code=400, detail="Invalid reaction")
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO card_reactions (property_id, reaction, search_params, session_id)
+            VALUES ($1::uuid, $2, $3::jsonb, $4)
+            """,
+            body.property_id,
+            body.reaction,
+            json.dumps(body.search_params) if body.search_params is not None else None,
+            body.session_id,
+        )
     return {"status": "ok"}
