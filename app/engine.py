@@ -192,9 +192,9 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             WHEN p.property_type = 'townhouse' THEN 'house'
             ELSE p.property_type
           END
-        WHERE p.price_max <= $1
+         WHERE p.price_max <= $1
           AND p.bedrooms >= $2
-          AND p.listing_status = 'for_sale'
+          AND p.listing_status IN ('for_sale', 'agent_sourced')
           AND ($3::text[] = '{}'::text[] OR LOWER(p.suburb) = ANY($3::text[]))
     """, req.budget_max, req.bedrooms_min,
         [s.lower() for s in req.suburbs])
