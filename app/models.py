@@ -56,6 +56,7 @@ class Property(BaseModel):
     agent_name: Optional[str] = None
     agent_phone: Optional[str] = None
     agent_email: Optional[str] = None
+    price_guide: Optional[str] = None
     listing_url_rea: Optional[str] = None
     listing_url_domain: Optional[str] = None
     inspection_date: Optional[date] = None

@@ -198,6 +198,26 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
           AND ($3::text[] = '{}'::text[] OR LOWER(p.suburb) = ANY($3::text[]))
     """, req.budget_max, req.bedrooms_min,
         [s.lower() for s in req.suburbs])
+    
+    # Session 29 — agent_replies lookup (D94: agent contact bypass)
+    # Match on street portion only (before first comma) — addresses inconsistent across sources
+    agent_data = {}
+    agent_rows = await conn.fetch("""
+        SELECT DISTINCT ON (property_address)
+            property_address,
+            agent_email,
+            price_guide
+        FROM agent_replies
+        WHERE property_address IS NOT NULL
+        ORDER BY property_address, received_at DESC
+    """)
+    for ar in agent_rows:
+        full = ar["property_address"].strip().lower()
+        street_key = full.split(",")[0].strip()
+        agent_data[street_key] = {
+            "agent_email": ar["agent_email"],
+            "price_guide": ar["price_guide"],
+        }
 
     weights = INVESTMENT_WEIGHTS if req.mode == "investment" else RESIDENTIAL_WEIGHTS
     results = []
@@ -231,6 +251,11 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
 
         highlights, tradeoffs = generate_explanation(row, traj, req)
 
+        # Match agent_replies by street_address
+        full_addr = (row.get("street_address") or "").strip().lower()
+        street_key = full_addr.split(",")[0].strip()
+        agent_info = agent_data.get(street_key, {})
+
         prop = Property(
             id=row["id"],
             suburb=row["suburb"],
@@ -249,6 +274,8 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             street_address=row.get("street_address"),
             agent_name=row.get("sales_agent"),
             agent_phone=row.get("agent_phone"),
+            agent_email=agent_info.get("agent_email"),
+            price_guide=agent_info.get("price_guide"),
             listing_url_rea=row.get("listing_url_rea"),
             listing_url_domain=row.get("listing_url_domain"),
             inspection_date=row.get("inspection_date"),
