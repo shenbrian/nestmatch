@@ -16,6 +16,7 @@ import asyncpg
 from app.models import SearchRequest, MatchResult, OutcomeReport, OutcomeResponse
 from app.engine import run_search
 from app.outcome_agent import run_outcome_agent
+from app.demand_trigger import trigger_enquiries
 
 # — Session logging (D23 — outcome data flywheel) ————————————————
 
@@ -81,6 +82,19 @@ async def search(req: SearchRequest):
     async with pool.acquire() as conn:
         results = await run_search(conn, req)
         await log_search_session(conn, req, results)
+        try:
+            queued = await trigger_enquiries(
+                conn,
+                results,
+                req.dict(),
+                buyer_id="anon",
+            )
+            if queued:
+                import logging
+                logging.getLogger(__name__).info(f"Queued {queued} nester enquiries from search")
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"demand_trigger error: {e}")
     return results
 
 
