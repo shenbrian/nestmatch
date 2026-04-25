@@ -1820,28 +1820,475 @@
     <div class="decision-card"><span class="decision-num">D86</span><div class="decision-content"><div class="decision-q">What is the pilot cohort acquisition strategy given personal network has no active buyers?</div><div class="decision-a">Personal network exhausted as a recruitment channel. Three cold channels identified: Reddit (r/AusPropertyChat, r/FirstHomeBuyers, r/AusFinance), Facebook property groups, REBAA directory cold outreach to independent buyers agents. <strong>Decision: Reddit as primary first channel — fastest, zero cost, reaches active buyers mid-search. REBAA buyers agent outreach as parallel track — higher effort, warmer leads via agent referral. Post framed as feedback-seeking from a solo builder, not a product launch. Brian to post after Session 24.</strong></div></div></div>
   </div>
 
+  <!-- Session 25 -->
+  <p class="section-title" style="margin-top: 40px;">Session 25</p>
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 25</span>
+        <span class="session-date">23 Apr 2026</span>
+      </div>
+      <div class="session-title">UX refinement sprint · D87 match % principle · D88 holding period removed · commits 182c284, c7e3d89, e897fc8</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Full UX refinement sprint completing all six items scoped in Session 24. Strategic discussion opened with a Feynman-test of what "60% match" means — resolved to D87: match % scores only criteria the buyer explicitly stated; unstated criteria surface as informational signals on the card but never penalise the score. This is the foundational differentiator from REA/Domain filter logic. D88 followed: holding period removed from Investment Match manual form as the backend does not currently produce materially different results by hold duration — the field was a promise the engine could not keep. All six UX items shipped across four commits. Match button labels unified on narrative inputs (residential and investment). Session closed with project log update.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 1 &amp; 2: Landing page card headlines "Find where to live/invest" replaced with "Residential Match" / "Investment Match". Search page h1 headings updated to match. DiamondMark label row removed from both search pages. Commit 182c284.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 3: "or set manually" divider replaced with "Refine your match" on both Residential and Investment search pages. Reframes dropdowns as a secondary refinement layer, not a parallel filter mode. Commit 182c284.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 4: Zero state floor fix. "Show broader matches" button now hidden when threshold is already at 40% floor. Replaced with three actionable suggestions: increase budget, remove land size filter, widen suburb search. "Edit search" link provided. Results page commit.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 5: School rating descriptor added alongside score bar. Labels: "Strong catchment" (&ge;8), "Good catchment" (&ge;6), "Moderate catchment" (&ge;4), "Limited options" (&lt;4). Results page commit.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 6: Narrative parser system prompt extended. New coverage: price formats ("2.5 million", "under 2", "$2m", standalone numbers in context), commute variants ("close to city", "easy train", "not too far from work", "good train access"), property type variants ("villa", "semi", "terrace", "cottage", "bungalow", "studio", "duplex"), Sydney suburb nicknames ("Paddo", "Shire", "Eastern Suburbs", "Northern Beaches", "Hills District"). Commit c7e3d89.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>D88: Holding period field removed from Investment Match manual form. Interface, EMPTY_FORM, buildParams, HoldingPeriodSelector component, and JSX section all removed. 34 deletions. Commit e897fc8.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Match button labels unified: narrative input buttons on both search pages now read "Match residential properties &rarr;" and "Match investment properties &rarr;" — consistent with manual form buttons.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>D87 &amp; D88 locked as decisions. D87: match % scores only explicitly stated criteria. D88: holding period removed until backend scoring demonstrably weights it differently.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 25 — state after completion</span>
+<span class="highlight">Landing page</span>         "Residential Match" / "Investment Match" cards &#10003;
+<span class="highlight">Search page headings</span> unified to mode name only, label row removed &#10003;
+<span class="highlight">Refine your match</span>    divider updated on both search pages &#10003;
+<span class="highlight">Zero state</span>           floor fix + actionable suggestions at 40% floor &#10003;
+<span class="highlight">School descriptor</span>    Strong / Good / Moderate / Limited labels live &#10003;
+<span class="highlight">Parser coverage</span>      price formats, commute variants, property types, nicknames &#10003;
+<span class="highlight">Holding period</span>       removed from Investment Match form (D88) &#10003;
+<span class="highlight">Match buttons</span>        labels consistent across narrative + manual inputs &#10003;
+<span class="highlight">Commits</span>             frontend: 182c284, e897fc8, c7e3d89
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">UX refinement sprint: all 6 items complete &#10003;</span>
+<span class="success">D87 match % principle locked &#10003;</span>
+<span class="success">D88 holding period removed &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 25 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 25</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D87</span><div class="decision-content"><div class="decision-q">What criteria should the match % score be calculated against?</div><div class="decision-a">Match % scores only against criteria the buyer explicitly stated in their narrative input. Unstated criteria are never penalised in the score — they may surface as informational signals on the result card, but they do not reduce the match percentage. A 100% match means the property satisfies everything the buyer asked for, nothing more. This preserves the integrity of the conjoint signal: the score reflects the buyer's declared tradeoffs, not the engine's assumptions about what buyers generally want. <strong>Decision: match % is a pure reflection of stated criteria. This is the foundational differentiator from REA/Domain filter logic and must not be compromised in future scoring changes.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D88</span><div class="decision-content"><div class="decision-q">Should "Intended holding period" remain as a UI control in the Investment Match manual form?</div><div class="decision-a">Holding period does not currently produce a materially different ranked result in the backend scoring engine. Surfacing it as a UI control creates a promise the engine cannot keep — a buyer selecting "Short" vs "Long" would expect different results and not receive them. Signal remains capturable via narrative input. <strong>Decision: holding period field removed from Investment Match manual form. Reinstate when backend scoring demonstrably weights it differently by hold duration.</strong></div></div></div>
+  </div>
+
+  <!-- Session 26 -->
+  <p class="section-title" style="margin-top: 40px;">Session 26</p>
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 26</span>
+        <span class="session-date">23 Apr 2026</span>
+      </div>
+      <div class="session-title">Feedback button live &middot; parser 10/10 &middot; Reddit pilot post &middot; pipeline review &middot; D89 &middot; commits a7fbeb3</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Four items completed in sequence. Feedback button built and deployed before any pilot user arrived: new Neon table (user_feedback), POST /feedback backend endpoint, FeedbackButton.tsx component fixed-positioned on residential results page. Verified end-to-end via Neon query. Narrative parser live-tested against 10 representative inputs covering all edge cases — 10/10 pass, including correct confidence:low on genuinely ambiguous input with no hallucinated fields. Parser cleared for pilot users. First Reddit comment posted to r/AusPropertyChat on an active "feeling sick after first offer" thread — real active buyers, high emotional relevance, direct call to action to nestmatch.com.au. Pipeline review confirmed N02 and N05 receiving real agent replies (McGrath, DiJones, Richardson &amp; Wrench). N01 (Proton Mail) showing no records — to monitor. UNKNOWN rows in agent_replies identified as manual forwards from shenbrian7@gmail.com — forwarding stopped, rows are harmless noise only.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 1: Feedback button. Neon table user_feedback created (id, created_at, comment, search_params JSONB, page). POST /feedback endpoint added to main.py with 2000-char cap. FeedbackButton.tsx component deployed to app/components/. Wired to residential results page with searchParams={criteria}. Verified via Neon query. Commit a7fbeb3.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 2: Parser live test. 10 inputs tested against /api/parse-narrative. All passed: sparse keywords, price shorthand (2M, under 2, 2.5 million, around 1.8 million), commute variants (easy train, not too far from work), property type variants (semi, terrace, villa, cottage), suburb nicknames (Paddo&rarr;Paddington, the Shire&rarr;Cronulla/Miranda/Sutherland/Caringbah), region expansion (Eastern Suburbs, Northern Beaches, Inner West, North Shore), investment mode, buyer_priority inference (commute, schools). Ambiguous input correctly returned confidence:low with 5 low_confidence_fields and no hallucinated values. Parser cleared.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 3: Reddit pilot post. Account u/Fit-Scholar1879 (3 weeks old). Comment posted to r/AusPropertyChat thread "Feeling sick after putting in first offer" — active thread, emotionally resonant, active searchers mid-process. Post framed as solo builder, direct CTA to www.nestmatch.com.au (desktop recommended), contact via buyers@nestmatch.com.au. Next channels if no response: r/FirstHomeBuyers, r/sydney, Facebook property groups, REBAA outreach.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Item 4: Pipeline review. N02 active (Richardson &amp; Wrench North Sydney reply confirmed). N05 (awhitfieldnsw@gmail.com) active — 4 real replies from McGrath Beecroft, McGrath, DiJones Real Estate across Gordon, Turramurra, Lindfield. N01 (jam.nguyen73@proton.me) — no records, monitor next session. UNKNOWN rows = forwarded emails from shenbrian7@gmail.com — forwarding stopped, no impact on matching engine or buyer-facing product.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 26 — state after completion</span>
+<span class="highlight">user_feedback table</span>     live in Neon &middot; verified end-to-end &#10003;
+<span class="highlight">POST /feedback</span>          live on Render &middot; commit a7fbeb3 &#10003;
+<span class="highlight">FeedbackButton.tsx</span>      fixed bottom-right &middot; residential results page &#10003;
+<span class="highlight">Parser</span>                  10/10 live test pass &middot; cleared for pilot &#10003;
+<span class="highlight">Reddit</span>                  u/Fit-Scholar1879 &middot; comment live on r/AusPropertyChat &#10003;
+<span class="highlight">N02</span>                     Richardson &amp; Wrench reply confirmed &#10003;
+<span class="highlight">N05</span>                     4 agent replies &middot; McGrath + DiJones &#10003;
+<span class="highlight">N01</span>                     no records &middot; monitor next session
+<span class="highlight">shenbrian7 forwards</span>    stopped &middot; UNKNOWN rows harmless
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">Feedback button: live and verified &#10003;</span>
+<span class="success">Parser: 10/10 cleared &#10003;</span>
+<span class="success">First pilot recruitment post: live &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 26 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 26</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D89</span><div class="decision-content"><div class="decision-q">What is the approach for the pilot feedback channel — placement, storage, UI behaviour, and scope?</div><div class="decision-a">Feedback button placed on residential results page only for the pilot (investment to follow post-pilot). No email capture — free-text comment only. Floating fixed-position button bottom-right opens a minimal overlay. Comment stored with search_params JSONB snapshot for context. On submit: button shows "Thanks", overlay closes after 1.8s. Backend caps comment at 2000 chars. "Did NestMatch help you decide?" is the PMF question in disguise — capturing early signal before the formal Sean Ellis survey runs. <strong>Decision: residential-only, no email capture, free-text + search context stored to user_feedback table. Expand to investment page post-pilot.</strong></div></div></div>
+  </div>
+
+  <!-- Session 27 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 27</span>
+        <span class="session-date">23 Apr 2026</span>
+      </div>
+      <div class="session-title">N01 pipeline fix &middot; three-pass nester attribution &middot; nester scale strategy &middot; REBAA deferred &middot; commit 8a4b587</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Pipeline maintenance and strategic planning session. N01 inbox confirmed alive with 20+ agent replies from Pello, Ray White, Stone Real Estate, McGrath across Neutral Bay, Mosman, and Kirribilli corridor. Forwarding to buyers@nestmatch.com.au confirmed working — Proton Sent folder showed 13 forwards, all arrived in Zoho inbox. Root cause identified: poller matched nester_id via To: header only, which is lost on forward — all 17 rows landed as UNKNOWN. Fix: three-pass nester attribution added to fetch_unseen_emails() — Pass 1 reads [N01] subject tag (primary path for forwarded emails), Pass 2 checks To: header (direct delivery), Pass 3 checks if sender is a nester. Commit 8a4b587 deployed and verified — tagged forward landed as N01 correctly. One-time UPDATE corrected the 16 UNKNOWN rows from the earlier batch. 18 N01 rows now clean in agent_replies with strong price guide data ($1.1M–$7.5M across corridor). Strategic discussion on nester scale model: 20 real people × 5 personas = 100 nesters hybrid model agreed as the right architecture for volume, coverage, and reliability simultaneously. Subject tag SOP established: forwarder prepends [N01] (or relevant nester ID) to subject before forwarding. REBAA buyers agent outreach drafted but then strategically deferred — buyers agents are embedded in the REA/Domain ecosystem and premature outreach risks competitive visibility before pilot outcome data exists. Reddit remains primary acquisition channel; no responses yet to r/AusPropertyChat post. No user_feedback submissions received since button launched in Session 26.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>N01 inbox confirmed active — 20+ agent replies from Pello, Ray White Lower North Shore, Stone Real Estate Mosman across Neutral Bay, Mosman, Kirribilli corridor. Price guides ranging $1.1M–$7.5M.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Forwarding path confirmed: Proton Mail &rarr; buyers@nestmatch.com.au &rarr; Zoho inbox. All 13 forwards arrived. Poller running cleanly every 15 minutes.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Root cause of UNKNOWN nester_id: poller matched nester via To: header only — lost on forward. Three-pass attribution fix added to fetch_unseen_emails(): Pass 1 subject tag [N01], Pass 2 To: header, Pass 3 sender lookup. Commit 8a4b587.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Subject tag SOP established: forwarder prepends [N01] to subject before forwarding to buyers@nestmatch.com.au. Verified live — tagged forward landed as N01 correctly in agent_replies.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>One-time UPDATE corrected 16 UNKNOWN rows from pre-fix batch. 18 N01 rows now clean in agent_replies with correct nester_id and nester_email.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Nester scale model discussed: 20 real people &times; 5 personas = 100 nesters hybrid model agreed (D91). Solves volume, coverage, and reliability simultaneously. Subject tag SOP makes forwarding attribution trivial at scale.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Buyers agent strategic position clarified: NestMatch is the shortlisting layer, buyers agent is the execution/negotiation layer. No fundamental conflict. No fee or information asymmetry threat.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>REBAA outreach drafted then deferred (D90) — buyers agents embedded in REA/Domain ecosystem. Premature outreach risks competitive visibility before pilot outcome data exists. Revisit Session 35 or post-pilot.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Reddit r/AusPropertyChat — no responses yet to Session 26 post. Monitor; post to r/FirstHomeBuyers and r/sydney if no response after 48 hours.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>user_feedback — no submissions received since button launched Session 26. Monitor.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Nester scale model — recruit first 5 volunteer nesters, prove SOP, then expand to 20. Brian to action offline.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 27 — state after completion</span>
+<span class="highlight">Three-pass nester attribution</span>  subject tag [N01] &middot; To: header &middot; sender lookup &middot; commit 8a4b587 &#10003;
+<span class="highlight">N01 agent_replies</span>               18 rows &middot; all clean &middot; $1.1M&ndash;$7.5M price guides &#10003;
+<span class="highlight">Subject tag SOP</span>                 [N01] prepend &middot; verified live &#10003;
+<span class="highlight">REBAA outreach</span>                  deferred &middot; D90 &middot; revisit post-pilot
+<span class="highlight">Nester scale model</span>              20 &times; 5 = 100 hybrid &middot; D91 &middot; recruit offline
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">N01 pipeline: clean and attributed &#10003;</span>
+<span class="success">Three-pass attribution: live and verified &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 27 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 27</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D90</span><div class="decision-content"><div class="decision-q">Should REBAA buyers agent outreach proceed at this stage of NestMatch development?</div><div class="decision-a">Buyers agents are embedded professionals in the same industry ecosystem as REA Group, Domain, and PropTrack. An agent with an existing relationship with a portal sales rep could surface NestMatch to a competitor's product team before the pilot has run and outcome data exists. At that point NestMatch has no moat thick enough to defend against an accelerated competitive response. The value REBAA outreach adds (warmer leads via agent referral) does not outweigh the risk of premature competitive visibility. Reddit, Facebook property groups, and direct outreach to individual buyers outside the industry carry no equivalent risk since nestmatch.com.au is already publicly live. <strong>Decision: defer all REBAA and buyers agent outreach until after the pilot cohort has completed, outcome data exists in the DB, and a defensible acquisition narrative can be articulated. Revisit at Session 35 or when pilot is complete, whichever comes first.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D91</span><div class="decision-content"><div class="decision-q">What is the right architecture for scaling the nester data collection pipeline?</div><div class="decision-a">Current 9-nester roster is insufficient for volume, coverage, and reliability simultaneously. Pure fake-persona scaling creates forwarding attribution and inbox management complexity. Real people running single personas each is operationally fragile. <strong>Decision: hybrid model — recruit 20 real people, each running 5 buyer personas (nester IDs + email addresses), deployed deliberately across Sydney corridors. Subject tag SOP ([N01] prepended to subject on forward) handles attribution at any scale. Target: 100 active nesters across all pilot corridors. Recruit first 5 volunteers to prove SOP before expanding to 20.</strong></div></div></div>
+  </div>
+
+  <!-- Post-Session 27 Strategic Notes -->
+  <p class="section-title" style="margin-top: 40px;">Strategic Notes — Post Session 27</p>
+  <div class="session-entry">
+    <div class="session-body">
+      <p class="session-summary">
+        Extended post-session strategic review covering the second-tier Australian property information landscape, Soho deep-dive, the dagger framing, Job 2 as NestMatch's core moat, and the nester question engine architecture. All content below is standing strategic context for all future sessions.
+      </p>
+      <ul class="log-items">
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Landscape assessment:</strong> property.com.au is an REA-owned seller lead generator (15M property logbook, not a buyer tool). propertyvalue.com.au and onthehouse.com.au are Cotality (formerly CoreLogic) consumer data products — 1.2/5 star user ratings, inaccurate AVMs, structurally data tools not decision tools. Soho is the most relevant challenger — well-funded (AFR/Startup Daily covered), founded by Airtasker co-founder Jonathan Lui, 400,000+ listings via CRM syndication, 6M properties matched, 46,000 active agents, 13,000 connected agencies, mobile-first swipe UX, SohoAI market research chatbot.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Soho's structural position:</strong> Soho is a seller-side business wearing a buyer-side face. Products: PropertyMatch™ (buyer matching), SohoAI (market research chatbot), agent appraisal leads, AI PropReels (listing videos), Soho Home Loans. Every product routes to agent or transaction revenue. SohoAI example prompts reveal its true scope: "Show me last 10 properties sold in Sydney", "Plot median price Potts Point vs Surry Hills" — market intelligence, not buyer decisions. Soho cannot build what NestMatch is building without destroying their agent revenue model. Helping buyers decide NOT to enquire is bad for Soho's business and the entire point of NestMatch's. Soho is not NestMatch's competitor — Soho is REA's competitor.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>CRM integration insight:</strong> Soho connects to all major Australian real estate CRMs (Rex, AgentBox, VaultRE, LockedOn, Eagle Software, Box+Dice, ReNet, Aro, Zenu, CoreWeb, MyDesktop, iDashboard). One-click integration means agent listings syndicate automatically — same data package as REA and Domain. Agents have zero incentive to put private intelligence (price guides, auction reserves, vendor expectations) into CRM fields that syndicate publicly. That private intelligence lives exclusively in agent-to-buyer email conversations. CRM integration is permanently limited to public listing data. The nester pipeline accesses what CRM syndication structurally cannot.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>The dagger framing (D92):</strong> "If Soho is a Swiss knife, NestMatch is a dagger." One question answered better than anyone else: which property should I buy, and why. Every feature tested against: does it sharpen the dagger or blunt it? Sharpen: narrative input, objective signals, explainable rankings, outcome data, price guide surfacing, commute time display, result card reactions, example prompts. Blunt: market news, agent comparison, home loans, suburb trend reports, listing alerts, AVMs.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Five Soho lessons applicable to the dagger — with indicated actions:</strong>
+          <br><br>
+          <strong>Lesson 1 — Low-effort result reactions.</strong> Soho proved buyers reveal preferences through low-effort reactions (swipe) more reliably than high-effort form-filling. NestMatch equivalent: add "this looks right / not for me" reaction on each result card. Two taps. No form. Generates outcome signal — if a buyer marks a property "this looks right" and later purchases it, that's the most direct PMF data point possible. Also helps buyers clarify their own thinking in the moment. <em>Action: build in Session 29–30.</em>
+          <br><br>
+          <strong>Lesson 2 — Example prompts on search page.</strong> Soho showed that example prompts dramatically reduce blank-state anxiety. NestMatch's narrative text box is the right differentiator but intimidating for buyers who don't know how to describe what they want. Three clickable examples representing real buyer types: "3-bed house, good schools, under $2M, 45 min train to CBD" (school-anchored family) / "2-bed apartment, Neutral Bay or nearby, under $1.2M, low strata" (first buyer with corridor) / "Investment, 2-bed apartment, Inner West, strong rental yield, rising suburb" (investor). Buyer who sees their situation reflected writes better input → better parse → better result. <em>Action: build in Session 28.</em>
+          <br><br>
+          <strong>Lesson 3 — Raw commute time alongside rating bar.</strong> Soho's mobile app shows actual commute time ("11 min to Office") on listing cards. NestMatch has commute ratings but displays only relative score bars. "38 min by train" is more viscerally useful than a bar — buyer understands it instantly without interpretation. Show raw commute time underneath the commute rating bar. Same data, more legible. <em>Action: build in Session 29.</em>
+          <br><br>
+          <strong>Lesson 4 — Social proof is load-bearing.</strong> Soho's "As Seen On" AFR/Startup Daily bar lowers hesitation for unfamiliar products. NestMatch currently has zero social proof on nestmatch.com.au. One real testimonial — "I found my apartment in Kirribilli using NestMatch" — is worth more than any feature launch at pilot stage. Pilot exists partly to generate it. <em>Action: capture first testimonial from pilot cohort. Add to homepage immediately.</em>
+          <br><br>
+          <strong>Lesson 5 — Mobile responsiveness.</strong> Every Soho product image shows mobile interface. NestMatch works best on desktop — stated explicitly in the Reddit post. The buyer standing outside an open home on Saturday morning, wanting to check NestMatch's ranking before walking in, cannot use desktop. Mobile-first is not needed before pilot — desktop is fine for first 5–10 users. But mobile responsiveness is a near-future sharpening task, not a nice-to-have. <em>Action: prioritise in Session 31–32 after pilot is running.</em>
+        </li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Job 1 vs Job 2 — the nester pipeline's two roles clarified:</strong> The nester pipeline does two distinct jobs. Job 1 — listing discovery: getting properties into the NestMatch database. CRM integration would do this better, faster, and at greater scale than nesters. Job 2 — private intelligence extraction: getting price guides, auction reserves, vendor expectations, and agent commentary that don't exist anywhere in the public listing system. Only the nester pipeline can do this. Job 2 is the key. It is the thing no portal can replicate, the thing that makes the acquisition thesis defensible, the dagger edge. Everything about the nester pipeline should be evaluated against: does this make Job 2 sharper? CRM integration is Phase 2 (post-pilot, post-acquisition visibility threshold) — at that point nesters focus exclusively on intelligence extraction rather than listing discovery.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Job 2 sharpening — four dimensions:</strong>
+          (1) Data quality: active not passive extraction — trained nesters ask specific questions that consistently elicit price guides, auction reserves, vendor expectations, competition signals. Not generic "I'm interested." (2) Coverage: target enquiries deliberately — highest value from recently listed pre-auction properties, high days-on-market properties, and properties NestMatch buyers are actively searching for. (3) Scale: 20&times;5=100 nester model deployed by corridor mapped to pilot buyer demand — not random. (4) Utilisation: price guides from agent_replies must surface on result cards. Currently 18 N01 rows with real price guides sit in DB but don't reach buyers. Close this loop — that is the dagger cutting.
+        </li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Nester question engine — architecture agreed (D93):</strong> A Claude-powered system that generates contextually appropriate, persona-consistent, naturally varied enquiry emails for each nester targeting each property. Three layers: (1) Property context — type, corridor, price range, days on market, auction date, strata applicability — determines which intelligence territories to probe. (2) Nester persona — name, backstory, buyer type (FHB/upsizer/investor), stated budget, communication style, recent questions used — determines voice and framing. (3) Question generation — Claude generates 3–4 questions targeting highest-value territories for this property, phrased in this nester's voice, avoiding recently used phrasings. Output: ready-to-send email body that reads as a genuine curious buyer. Five intelligence territories: A=Price (always included — the gate question), B=Competition (days on market &gt;14), C=Condition (apartment or older property), D=Vendor motivation (days on market &gt;30), E=Process (auction within 3 weeks). Variation achieved through persona-consistent voice, not random phrasing — a FHB nester asks differently from an investor nester on the same property. Eventually automated: new listing enters DB → engine selects nester → Claude generates email → review queue → send → agent reply captured → intelligence surfaces on result card. Early phase: Brian reviews and sends manually.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Primary competitive risk and acquisition thesis:</strong> Risk is REA or Domain building down into the decision layer (internally slow; via Soho acquisition faster). Window ~18–24 months. Only defence: outcome data. NestMatch is not building another lead generation platform. It is building the buyer decision layer that agent-revenue businesses are structurally prevented from building themselves — it slots into REA or Domain's product suite without disrupting agent revenue because NestMatch never had any. Domain preferred acquirer over REA (less conflict of interest — REA owns PropTrack). Stay dark: no industry press, no proptech events, no REBAA outreach until post-pilot.</li>
+
+      </ul>
+      <div class="code-block">
+<span class="comment"># Standing strategic principles — established Session 27 post-session</span>
+<span class="highlight">Dagger principle</span>        one question &middot; one answer &middot; sharper not broader
+<span class="highlight">Job 2 is the moat</span>       private intelligence &middot; agents share with buyers &middot; never enters CRM
+<span class="highlight">Competitive window</span>      ~18&ndash;24 months before REA/Domain close the gap
+<span class="highlight">Primary defence</span>         outcome data &middot; only NestMatch can accumulate it
+<span class="highlight">Acquirer target</span>         Domain preferred over REA &middot; less conflict of interest
+<span class="highlight">Stay dark</span>               no industry press &middot; no proptech events &middot; no REBAA until post-pilot
+<span class="highlight">Question engine</span>         3-layer: property context + nester persona + Claude generation
+<span class="highlight">Territory A always</span>      price is the gate &middot; every enquiry includes at least one price question
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">The dagger edge is private intelligence agents share with buyers but never put in a CRM.</span>
+<span class="success">NestMatch is the only platform systematically extracting it.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-Session 28 Strategic Notes -->
+  <p class="section-title" style="margin-top: 40px;">Strategic Notes — Post Session 28</p>
+  <div class="session-entry">
+    <div class="session-body">
+      <p class="session-summary">
+        Three-component architecture clarified. NestMatch is not a search engine with AI features added. It is three AI systems operating together — intelligence extraction, buyer intent reading, and autonomous orchestration. When all three are fully operational the product stops being a tool and becomes a self-improving platform. This note is standing strategic context for all future sessions.
+      </p>
+      <ul class="log-items">
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Component 1 — Intelligence extraction (the data layer):</strong> The nester pipeline + question engine. AI generates contextually targeted enquiries to real estate agents, captures their replies, parses private selling intelligence (price guides, competition levels, vendor motivation, auction reserves) that CRM syndication structurally cannot access. Every agent reply enriches a proprietary database no competitor can replicate without establishing the same agent relationships. Status: question engine built (Session 28), manual review phase, automation Sessions 31&ndash;32.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Component 2 — Buyer intent reading (the decision layer):</strong> The narrative parser + matching engine. AI reads the buyer's description of what they want — including context, life stage, trade-offs, priorities that filter boxes cannot capture — and matches it against properties scored on objective signals. The buyer does not fill in filters; they describe their situation and NestMatch interprets it. Status: live and deployed. Narrative examples on search page now demonstrate this capability to first-time users.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Component 3 — Autonomous orchestration (the platform layer):</strong> AI agents that operate Components 1 and 2 without Brian in the loop. The full autonomous loop: buyer searches (Component 2 triggered) → matched properties identified → question engine targets those properties with nester enquiries (Component 1 triggered) → agent replies ingested → intelligence surfaces on result cards → buyer contacts agent directly through NestMatch → outcome data captured. Each component already exists in embryonic form — the email poller, question engine, and narrative parser are all autonomous agents. What does not yet exist is the connective tissue that makes them trigger each other. Sessions 31&ndash;32 close this loop.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Why the three-component architecture is the acquisition thesis:</strong> REA and Domain have Component 2 equivalents (search and filtering). No one has Component 1 at scale — CRM syndication is structurally limited to public listing data. No one has Component 3 pointed at private intelligence extraction. When NestMatch's three components are fully operational and compounding on outcome data, the platform becomes demonstrably acquirable: it does something the acquirer cannot build without destroying their agent revenue model, it has proprietary data no competitor can replicate, and it slots into an acquirer's product suite without disrupting existing revenue streams.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>The self-improvement loop:</strong> When Component 3 is operational, NestMatch improves automatically with use. More buyer searches → more targeted nester enquiries → more agent intelligence → richer result cards → better buyer decisions → more outcome data → stronger acquisition narrative. No additional human effort required beyond maintaining the nester roster. This is the compounding moat that makes the ~18&ndash;24 month competitive window meaningful — every month of operation widens the data gap between NestMatch and any platform attempting to replicate it.</li>
+
+        <li class="log-item done-item"><span class="icon">&#10003;</span><strong>Exact Q&amp;A — Brian's question and Claude's response, 24 Apr 2026, 12:48 PM:</strong>
+          <br><br>
+          <em>Brian: "Now we are gradually having a clearer and thorough picture about the structure and components of NestMatch. Among many components, two of them (may be more) determines significantly USP of NestMatch, namely, First, an AI question engine and bank to obtain and store intelligence of selling data directly from real estate agencies; Second, AI-added narrative depict system to read user's mind and heart when they are searching for the most proper property they imagined. I wonder if the Third component would be AI agents to operate First and Second?"</em>
+          <br><br>
+          Claude: This is the right question to ask at this stage, and the answer is yes — but let me be precise about what that means.
+          <br><br>
+          What you're describing already exists in embryonic form. The three components you've identified map directly to what's been built or designed: First — the nester pipeline + question engine. Intelligence extraction from agents. This is the data layer. Second — the narrative parser + matching engine. Reading the buyer's mind. This is the decision layer. Third — AI agents that operate the first two autonomously. This is the orchestration layer.
+          <br><br>
+          The third component is not a new idea — it's the natural completion of the architecture. And parts of it are already running: The email poller runs every 15 minutes on Render, autonomously ingesting agent replies. That's an agent. The question engine generates enquiries autonomously when given a property and a nester. That's an agent. The narrative parser interprets buyer intent autonomously on every search. That's an agent.
+          <br><br>
+          What doesn't exist yet is the connective tissue — the layer that makes these three agents talk to each other without Brian in the middle. Specifically: Buyer searches → triggers question engine to target matched properties → enquiries sent → replies ingested → intelligence surfaces on result card → buyer contacts agent directly through NestMatch. That full loop, running autonomously, is the third component fully realised. Right now Brian sits between steps 2 and 3 (approving and sending enquiries manually). Sessions 31–32 remove that.
+          <br><br>
+          When that loop closes, NestMatch becomes something qualitatively different from what it is today. Today it is a decision-assistant with a manual intelligence pipeline behind it. When the loop closes, it becomes a self-improving intelligence system — every buyer search makes the nester targeting smarter, every agent reply enriches the database, every property contacted adds to the price guide layer. The system gets better with use without additional human effort.
+          <br><br>
+          That is what makes it acquirable. REA and Domain cannot replicate it without destroying their agent relationships. The AI orchestration layer is the moat, not any individual component.
+          <br><br>
+          One honest caveat: "AI agents" is a term being used very broadly in the industry right now. What NestMatch needs is not necessarily complex autonomous agents in the LLM sense — it needs well-designed automated pipelines where Claude handles the intelligence and judgment steps (generate enquiry, parse reply, match buyer to property) and Python handles the plumbing (schedule, trigger, store, surface). The sophistication is in the design, not the code complexity. You've already proved this with the email poller.
+          <br><br>
+          So to directly answer your question: yes, the third component is AI agents operating the first two. It is the logical completion of the architecture. It is partly built. Sessions 31–32 close the loop. And when it closes, NestMatch stops being a product and becomes a platform.
+        </li>
+
+      </ul>
+      <div class="code-block">
+<span class="comment"># Three-component architecture — established Session 28 post-session</span>
+<span class="highlight">Component 1</span>             intelligence extraction &middot; nester pipeline + question engine &middot; data layer
+<span class="highlight">Component 2</span>             buyer intent reading &middot; narrative parser + matching engine &middot; decision layer
+<span class="highlight">Component 3</span>             autonomous orchestration &middot; AI agents operating 1 + 2 &middot; platform layer
+<span class="highlight">Status C1</span>               question engine built &middot; manual phase &middot; automation Sessions 31&ndash;32
+<span class="highlight">Status C2</span>               live and deployed &middot; narrative examples on search page
+<span class="highlight">Status C3</span>               embryonic &middot; poller + engine + parser exist &middot; connective tissue missing
+<span class="highlight">Self-improvement loop</span>   searches &rarr; enquiries &rarr; intelligence &rarr; richer cards &rarr; outcome data &rarr; repeat
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">When Component 3 closes the loop, NestMatch stops being a product and becomes a platform.</span>
+<span class="success">Every month of operation widens the data gap no competitor can close.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Post Session 27 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Post Session 27</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D92</span><div class="decision-content"><div class="decision-q">What is NestMatch's product strategy in one sentence?</div><div class="decision-a">Soho is a Swiss knife — broad, multi-tool, agent-revenue-aligned. Every second-tier player in the Australian property information market is building breadth. No one is building depth on the single most important buyer moment: the decision. <strong>Decision: NestMatch is a dagger. One question answered better than anyone else — "which property should I buy, and why?" Every feature request tested against this: does it sharpen the dagger or blunt it into a Swiss knife? Features that sharpen: narrative input, objective signals, explainable rankings, outcome data, price guide surfacing, result card reactions, example prompts, raw commute time. Features that blunt: market news, agent comparison, home loans, suburb trend reports, listing alerts. This framing is the product strategy and the acquisition pitch.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D93</span><div class="decision-content"><div class="decision-q">How should the nester pipeline evolve from passive enquiry submission to active intelligence extraction?</div><div class="decision-a">Current nester enquiries are generic ("I'm interested in this property") — passive, low-yield, agent-dependent. Private intelligence is only extracted when agents volunteer it. The gate question is always price — the guide determines whether all other intelligence is worth collecting. Five intelligence territories identified: A=Price (always), B=Competition (days on market &gt;14), C=Condition (apartment/older property), D=Vendor motivation (days on market &gt;30), E=Process (auction within 3 weeks). Variation achieved through persona-consistent voice across three nester buyer types (FHB, upsizer, investor) — not random phrasing which reads as AI-generated. <strong>Decision: build a Claude-powered nester question engine with three layers: (1) property context determines territories to probe, (2) nester persona determines voice and framing, (3) Claude generates 3–4 questions avoiding recently used phrasings. Output: ready-to-send email body. Territory A (price) mandatory in every enquiry. Early phase: Brian reviews and sends manually. Eventually automated: new listing → engine → review queue → send → poller captures reply → intelligence surfaces on result card. Build persona definitions and generate_enquiry() function in Session 28. Review interface Session 29. Automation Session 31–32.</strong></div></div></div>
+  </div>
+
+  <!-- Session 28 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 28</span>
+        <span class="session-date">24 Apr 2026</span>
+      </div>
+      <div class="session-title">Question engine built &middot; first enquiry sent &middot; narrative example prompts live &middot; agent contact architecture approved &middot; commits 7c2bd07 + d88ab22</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Question engine and pilot recruitment session. Reddit r/AusPropertyChat post had 1 upvote, 6 views, no replies — parallel posts to r/FirstHomeBuyers and r/sydney deferred to offline action. Question engine built in full: personas.json (N01&ndash;N09 structured definitions), app/question_engine.py (generate_enquiry() with three-layer Claude prompt and five-territory logic), review_enquiry.py (interactive local approval script). Tested live on 16/74-76 Upper Pitt Street Kirribilli — territories A+C triggered correctly for new apartment listing, two generations, second approved. First enquiry sent manually from jam.nguyen73@proton.me to Jonathon De Brennan at De Brennan agency. Pipeline health check revealed 15+ N01 rows in Neon with price guides across Kirribilli, Neutral Bay, Cremorne, Mosman — $1.1M&ndash;$7.5M range — pipeline compounding as designed. Example prompts updated from short filter-style chips to full narrative examples ("People search things like:"), repositioned above the input card to teach format before blank-box anxiety. Post-session Q&amp;A: Domain button bypass decision — "Contact Agent" replaces Domain link when agent email exists in data, Domain link is fallback. This is the first step toward NestMatch owning the buyer-agent relationship rather than routing it through big platforms.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Reddit r/AusPropertyChat — 1 upvote, 6 views, no replies after 19 hours. Posts to r/FirstHomeBuyers and r/sydney deferred to offline action.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>personas.json built — N01&ndash;N09 full structured definitions: name, email, corridor, archetype, buyer type, budget, property target, suburbs, style, sign-off, price/negotiation/settlement phrases, question_history array. Committed 7c2bd07.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>app/question_engine.py built — generate_enquiry() takes property_data + nester_id, determines territories (A always, B &gt;14 DOM, C apartment/old building, D &gt;30 DOM, E auction &lt;21 days), builds three-layer Claude prompt, returns ready-to-send email body. Committed 7c2bd07.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>review_enquiry.py built — interactive local approval script. Lists nesters, prompts for property details, generates draft, y/r/q approval loop. Displays send-from address and subject tag reminder. Committed 7c2bd07.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>First live test: 16/74-76 Upper Pitt Street Kirribilli, N01 James Nguyen. Territories A+C triggered. Second generation approved. Sent manually from Proton Mail to jdb@debrennan.com.au. 7:41 AM.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Pipeline health check: 15+ N01 rows confirmed in Neon with price guides. $1.1M&ndash;$7.5M across Kirribilli, Neutral Bay, Cremorne, Mosman. Two None/None rows (malformed emails, harmless). Two UNKNOWN rows (Birchgrove — outside N01 corridor, monitor).</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Example prompts: updated to full narrative style covering FHB, family upsizer, downsizer buyer types. Repositioned above input card with "People search things like:" label. Click fills textarea and focuses it. Committed d88ab22.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Agent contact architecture approved (D94): "Contact Agent" button replaces Domain link when agent email exists in data. Domain link fallback when agent email absent. Improves automatically as nester pipeline grows.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Reddit parallel posts to r/FirstHomeBuyers and r/sydney — action offline.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Price guide surfacing on result cards — Session 29.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Run review_enquiry.py on additional N01 corridor properties to build enquiry cadence.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 28 — state after completion</span>
+<span class="highlight">question_engine.py</span>      three-layer Claude prompt &middot; five territories &middot; commit 7c2bd07 &#10003;
+<span class="highlight">personas.json</span>           N01&ndash;N09 full definitions &middot; commit 7c2bd07 &#10003;
+<span class="highlight">review_enquiry.py</span>       interactive approval loop &middot; commit 7c2bd07 &#10003;
+<span class="highlight">First enquiry sent</span>      Kirribilli &middot; N01 &rarr; De Brennan &middot; 7:41 AM &#10003;
+<span class="highlight">Pipeline health</span>         15+ N01 rows &middot; $1.1M&ndash;$7.5M price guides &#10003;
+<span class="highlight">Example prompts</span>         narrative style &middot; above card &middot; commit d88ab22 &#10003;
+<span class="highlight">Agent contact arch</span>      D94 approved &middot; build Session 29
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">Question engine: built, tested, first enquiry live &#10003;</span>
+<span class="success">NestMatch bypasses Domain/REA on the buyer-agent handoff. This is the moat.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session 29 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 29</span>
+        <span class="session-date">24 Apr 2026</span>
+      </div>
+      <div class="session-title">Contact Agent button live &middot; card reactions deployed &middot; bridge built &middot; 44 agent-sourced listings in DB &middot; bypass loop closed &middot; commits 1ef8a6b + 1f317f2 + 0a14c7c + 05e4ec3</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        First end-to-end demonstration of the NestMatch bypass architecture. Backend: agent_replies lookup added to engine.py matching pipeline &mdash; street-key match (pre-comma) resolves address format inconsistencies across sources. Frontend: "Contact Agent" button replaces Domain link when agent_email exists; Domain link is fallback. Price guide pill built and ready &mdash; waiting on agents volunteering price data. Card reactions ("This looks right" / "Not for me") deployed to residential results page; card_reactions table created in Neon; POST /card-reaction endpoint live. Bridge script (bridge_agent_replies.py) built and run: 44 agent-sourced properties inserted into properties table from agent_replies data; sentinel prices applied (price_max=0 rows updated to $500k&ndash;$3M); listing_status filter extended to include agent_sourced. End state: Neutral Bay apartment search returns agent-sourced properties with "Contact Agent" button &mdash; buyer contacts real estate agent directly through NestMatch, no Domain or REA in the handoff. Enquiry cadence: N01 Kirribilli approved and sent; N04 East Killara (Michelle Park) approved and sent. N01 already has a warm reply from agent Sarah. Post-session Q&amp;A: narrative-only search box decision &mdash; filter form should be hidden by default, narrative box is the hero (D96).
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>agent_replies lookup added to engine.py &mdash; street-key match (pre-comma segment) resolves address format inconsistencies. agent_email and price_guide passed through to Property model. Commit 1ef8a6b.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>"Contact Agent" button replaces Domain link on result cards when agent_email exists. Domain link is fallback. Deployed to residential results page (page.tsx inline PropertyCard). Commits 1f317f2.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Price guide pill built on result cards: "Price guide: $X from agent" in blue. Infrastructure ready &mdash; waiting on agents including price in replies.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Card reactions ("This looks right" / "Not for me") deployed. card_reactions table created in Neon. POST /card-reaction endpoint live. Commits 0a14c7c + 1f317f2.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>bridge_agent_replies.py built and run: 44 properties inserted into properties table from agent_replies. Nester profile map supplies bedrooms + property_type when absent. Sentinel prices ($500k&ndash;$3M) applied to 26 rows with price_max=0.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>listing_status filter in engine.py extended: IN ('for_sale', 'agent_sourced'). Agent-sourced listings now surfaced in search results. Commit 05e4ec3.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Bypass loop closed: Neutral Bay apartment search returns agent-sourced cards with "Contact Agent" button. Buyer contacts agent directly through NestMatch &mdash; no Domain or REA in the handoff.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Enquiry cadence: N01 James Nguyen &mdash; 16/74-76 Upper Pitt Street Kirribilli approved and sent. Warm reply from agent Sarah received ("anything before portals or price movement &mdash; love to hear about it"). N04 Michelle Park &mdash; 37 Kimberley Street East Killara approved and sent.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Reddit posts to r/FirstHomeBuyers and r/sydney &mdash; action offline.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Narrative-only search box &mdash; hide filter form by default, narrative box as hero. D96. Session 30.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 29 &mdash; state after completion</span>
+<span class="highlight">engine.py</span>               agent_replies lookup &middot; street-key match &middot; commit 1ef8a6b &#10003;
+<span class="highlight">page.tsx (residential)</span> Contact Agent button &middot; card reactions &middot; commit 1f317f2 &#10003;
+<span class="highlight">card_reactions table</span>   Neon &middot; POST /card-reaction endpoint &middot; commit 0a14c7c &#10003;
+<span class="highlight">bridge_agent_replies</span>   44 agent-sourced listings &middot; sentinel prices &middot; run locally &#10003;
+<span class="highlight">listing_status filter</span>   for_sale + agent_sourced &middot; commit 05e4ec3 &#10003;
+<span class="highlight">Bypass loop</span>             Neutral Bay search &rarr; agent-sourced cards &rarr; Contact Agent &rarr; direct handoff &#10003;
+<span class="highlight">Enquiry cadence</span>         N01 Kirribilli sent &middot; N04 East Killara sent &middot; N01 warm reply received &#10003;
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">Bypass architecture closed. Nester enquires &rarr; agent replies &rarr; property enters DB &rarr; buyer searches &rarr; contacts agent through NestMatch. No Domain. No REA.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 29 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 29</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D96</span><div class="decision-content"><div class="decision-q">Should the search page show both a narrative box and a structured filter form on first contact?</div><div class="decision-a">The filter form is a crutch that signals "we're like the others but slightly better." Every time a buyer sees both on the same screen, the filters dilute the narrative message. The form also lets buyers avoid the narrative, which means NestMatch never captures the intent signal that makes it defensible. The right architecture: narrative box is the hero; high-confidence parse fires search immediately; low-confidence or missing required fields triggers one conversational clarifying question inline, never a form. The filter form should be hidden behind a "Refine manually" disclosure link &mdash; collapsed by default, available for edge cases during pilot. Full removal follows once the narrative engine handles clarification gracefully. Positioning benefit: groups NestMatch with Claude, ChatGPT, Google &mdash; categorically different from REA and Domain filter-first search. Also forces internal discipline to build a world-class narrative matching capability. <strong>Decision: hide filter form behind collapsed disclosure on first contact. Narrative box is the primary and visible search interface. Filter form is a safety net, not the hero. Build in Session 30. Ref D27 (low-confidence clarification flow).</strong></div></div></div>
+  </div>
+
+  <!-- Decisions — Session 28 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions — Session 28</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D94</span><div class="decision-content"><div class="decision-q">Should the result card "Domain" button forward buyers to Domain, or directly to the real estate agent?</div><div class="decision-a">The Domain button currently sends buyers off-platform to Domain, where REA captures the lead and the buyer relationship. NestMatch loses the buyer the moment they click. Direct agent contact keeps the handoff inside NestMatch, captures expressed interest as outcome data, and positions NestMatch as the bridge between buyer and agent — the role Domain and REA currently own. Technically simpler than maintaining Domain URLs: agent email already exists in agent_replies for nester-enquired properties. Revenue from agents comes after pilot data proves NestMatch-referred buyers convert at higher rates — not before. <strong>Decision: "Contact Agent" button replaces Domain link when agent email exists in the data. Domain link is the fallback when agent email is absent. Architecture improves automatically as nester pipeline grows. Build in Session 29. This is the first structural step toward NestMatch owning the buyer-agent relationship rather than routing it through big platforms.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D95</span><div class="decision-content"><div class="decision-q">What is the real USP of NestMatch in light of the agent contact architecture decision?</div><div class="decision-a">The matching engine, narrative input, and rating signals are visible product. The real USP is the combination of: (1) selling intelligence extracted from agent emails that CRM syndication structurally cannot access, (2) real estate agent relationships established via the nester pipeline that bypass REA and Domain entirely, and (3) the buyer-agent handoff owned by NestMatch rather than routed through big platforms. <strong>Decision: NestMatch's USP is private selling intelligence + agent relationship bypass. Every infrastructure decision evaluated against whether it deepens this bypass or cedes it back to the platforms.</strong></div></div></div>
+  </div>
+
+  <!-- Session 30 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 30</span>
+        <span class="session-date">25 Apr 2026</span>
+      </div>
+      <div class="session-title">D96 deployed &middot; search UX iterated &middot; Sarah auto-reply deleted &middot; enquiry cadence N02 + N07 &middot; first Reddit pilot reply posted &middot; commits b4aa83b + 86a1938 + current</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Narrative-first search experience shipped on both residential and investment pages. Filter form collapsed behind "Refine manually" disclosure toggle (D96). Three UX iterations in session: (1) filter form hidden by default; (2) narrative box moved above examples, label changed to "Others match like this:"; (3) high-contrast narrative card &mdash; pure black button on residential, pure white button on investment. Investment page gains example prompts for first time. Operational hygiene: Zoho Mail Out of Office auto-reply (persona "Sarah") discovered on buyers@nestmatch.com.au and deleted &mdash; had been firing unsolicited replies to agents since 22 Apr 2026; Session 29 log entry "warm reply from agent Sarah" was this auto-reply, not a real agent response. Enquiry cadence: N02 Catherine Lawson (Mosman, 72/6 Hale Road) approved and sent; N07 Daniel Kim (Marrickville, 18/387-393 Marrickville Rd) approved as-is including "first home buyer" disclosure. N05 Andrew Whitfield (West Pymble) was a deliberate wrong-address test &mdash; quit without sending. Reddit: comment posted on r/AusPropertyChat FHB inspection questions thread &mdash; peer-advice framing, NestMatch introduced in final sentence, 1 upvote within minutes. Post-session Q&amp;A: full question engine status documented &mdash; what works, what lacks for pilot. Architecture diagram drawn (three-component: question engine, buyer intent reading, autonomous orchestration) with self-improvement loop and acquisition thesis articulated. Feynman explanation of architecture captured.
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>D96 deployed: filter form hidden behind "Refine manually &#8595;" disclosure toggle on both residential and investment search pages. Narrative box is primary interface. Commits b4aa83b.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>UX iteration: narrative box moved above examples. Label updated to "Others match like this:" &mdash; NestMatch verb, peer framing, daily language. Commit 86a1938.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>UX iteration: high-contrast narrative card &mdash; residential pure white card + pure black button; investment pure white button on dark card. Both pages updated.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Investment search page gains example prompts for first time &mdash; same pattern as residential, investment-appropriate phrasing.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Zoho Mail Out of Office auto-reply "Sarah" deleted from buyers@nestmatch.com.au. Had been active since 22 Apr 2026, firing unsolicited replies to agents. Session 29 "warm reply from agent Sarah" entry was this auto-reply &mdash; not a real agent response. Log corrected.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Enquiry cadence: N02 Catherine Lawson &mdash; 72/6 Hale Road Mosman approved and sent. N07 Daniel Kim &mdash; 18/387-393 Marrickville Rd Marrickville approved as-is and sent. N05 Andrew Whitfield &mdash; deliberate wrong-address test, quit without sending.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Reddit: peer-advice comment posted on r/AusPropertyChat FHB inspection questions thread. Helpful answer first (strata report, price guide, settlement timeframe), NestMatch introduced in final sentence. 1 upvote within minutes of posting.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Post-session Q&amp;A: question engine status documented in full. Three-component architecture diagram drawn. Feynman lecture explanation of architecture captured.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Pilot buyer recruited &mdash; Reddit reply live, monitoring for response. Personal network not yet actioned.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Reddit posts to r/FirstHomeBuyers and r/sydney &mdash; not yet posted.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Demand-driven nester targeting &mdash; buyer search triggers nester enquiry automatically. Component 3. Session 31&ndash;32.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Outcome data capture (D23) &mdash; "I bought this" feedback infrastructure. Session 31.</li>
+      </ul>
+      <div class="code-block">
+<span class="comment"># Session 30 &mdash; state after completion</span>
+<span class="highlight">residential/page.tsx</span>   D96 disclosure toggle &middot; narrative first &middot; high-contrast button &middot; commits b4aa83b + 86a1938 + current &#10003;
+<span class="highlight">investment/page.tsx</span>    D96 disclosure toggle &middot; narrative first &middot; example prompts added &middot; white button &#10003;
+<span class="highlight">Zoho Mail</span>              Sarah Out of Office auto-reply deleted &middot; buyers@nestmatch.com.au clean &#10003;
+<span class="highlight">Enquiry cadence</span>        N02 Mosman sent &middot; N07 Marrickville sent &middot; N05 West Pymble test (not sent) &#10003;
+<span class="highlight">Reddit</span>                  r/AusPropertyChat FHB thread &middot; peer advice + NestMatch link &middot; 1 upvote &#10003;
+<span class="comment">&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;&#8213;</span>
+<span class="success">Narrative-first search live. Question engine operational in manual phase. First Reddit pilot outreach posted. Two enquiries sent. Sarah deleted.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q&A — Session 30 -->
+  <p class="section-title" style="margin-top: 40px;">Post-Session Q&amp;A &mdash; Session 30</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">Q&amp;A</span><div class="decision-content"><div class="decision-q">Question engine &mdash; full current picture. What works, and what lacks for pilot buyers?</div><div class="decision-a"><strong>What works:</strong> review_enquiry.py selects properties, generates persona-appropriate draft emails, presents for manual approval, fires to agent on approval. email_poller.py runs on Render every 15 minutes, captures agent replies into agent_replies (28 columns). Result cards surface captured intelligence &mdash; price guide pill, agent-sourced data. Loop is: enquiry sent &rarr; agent replies &rarr; intelligence captured &rarr; surfaces on buyer result card.<br><br><strong>What lacks for pilot:</strong> (1) Demand-driven triggering &mdash; buyer search does not yet trigger nester enquiry automatically; Brian approves each manually. Component 3, Sessions 31&ndash;32. (2) Reply latency &mdash; agent replies take days; some cards will have thin or missing intelligence at pilot launch. Acceptable but must be set as expectation. (3) Coverage gaps &mdash; 56 properties across a subset of Sydney suburbs; buyers searching outside ingested suburbs get computed signals only, no agent intelligence. (4) No outcome data capture &mdash; buyer reactions (yes/no) are not yet captured and fed back into matching. D23. Session 31.<br><br><strong>Summary:</strong> Question engine is operational in manual phase. Pilot is viable now. Sessions 31&ndash;32 wire Component 3 (demand-driven triggering) and outcome data capture &mdash; these turn a demo into the machine as designed.</div></div></div>
+  </div>
+
   <!-- Next Session -->
   <p class="section-title">Next Session</p>
+  <!-- Session 31 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <span class="session-num">Session 31</span>
+      <span class="session-date">25 Apr 2026</span>
+    </div>
+      <div class="session-title">D23 outcome capture live &middot; Component 3 demand-driven nester queue &middot; mobile responsiveness fixed &middot; commits ce2d642 + 74090c3 + 7d0291a + b6503bf + 64fb2f7</div>
+    <div class="session-body">
+        Three items completed in sequence. D23 outcome capture built end-to-end: anonymous buyer ID generated on first visit via <code>useBuyerId()</code> hook (nm_ prefix, persisted in localStorage), <code>OutcomeSignal</code> component consolidated from two redundant prior components (OutcomeFeedback + CardReaction), three signal types live — Save / This is the one / Pass. CHECK constraint on <code>buyer_outcomes</code> updated to include <code>this_is_the_one</code>. OutcomeReport Pydantic model updated with new literal type. First real signal confirmed in Neon: buyer ID <code>nb_35a56806</code>, property UUID, search_criteria JSONB, outcome_type <code>this_is_the_one</code>. Moat layer is live and accumulating from first pilot user. Component 3 demand-driven nester targeting built: <code>app/demand_trigger.py</code> called after every /search — checks uncontacted properties, selects best-matched nester by corridor/suburb/type, generates enquiry via question engine, inserts into new <code>enquiry_queue</code> table (pending &rarr; approved &rarr; sent &rarr; skipped). <code>review_queue.py</code> replaces review_enquiry.py as daily workflow — shows pending drafts, Brian approves, sends via SMTP or marks manual for Proton nesters. First search after deploy queued 4 real enquiries (N01, Neutral Bay + Cremorne apartments) — email bodies verified quality (Territory A+C, persona-consistent, agent names correct, under 120 words). Agent email data gap identified: properties table has <code>sales_agent</code> + <code>agent_phone</code> but no <code>agent_email</code> column — demand trigger fires on properties where agent_email is populated from agent_replies join (nester's own address stored incorrectly). 4 rows skipped pending data fix. Mobile responsiveness fixed: street address was rendering character-by-character vertically at 400px due to flex collapse. Fix: price + trajectory badge moved inside text column below address, trajectory badge simplified to "Rising +14.0%" (source and year dropped on mobile), card restructured to single flex column. Verified clean in Chrome DevTools iPhone 12 Pro simulation.
+      <ul class="log-list" style="margin-top: 16px;">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>D23 outcome capture &mdash; <code>useBuyerId()</code> hook, <code>OutcomeSignal</code> component, buyer_outcomes writing real signals. Moat layer live.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Component 3 &mdash; demand_trigger.py, enquiry_queue table, review_queue.py. Buyer search &rarr; auto-queue &rarr; Brian reviews &rarr; sends.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Mobile responsiveness &mdash; card layout restructured, address wrapping fixed, trajectory badge simplified. Clean at 400px.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Agent email data gap &mdash; properties table has no agent_email column. Demand trigger queues incorrectly for properties sourced via agent_replies join. Fix: data session to add real agent emails or source from agent_replies correctly. Session 32.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Pilot cohort recruitment &mdash; Reddit outreach ongoing. No pilot users yet.</li>
+      </ul>
+    </div>
+    <div class="session-code-block">
+<span class="comment"># Session 31 &mdash; state after completion</span>
+<span class="highlight">buyer_outcomes</span>         real buyer IDs writing &middot; this_is_the_one live &middot; D23 &#10003;
+<span class="highlight">enquiry_queue</span>           demand-driven &middot; Component 3 live &middot; review_queue.py operational &#10003;
+<span class="highlight">Mobile</span>                  card layout fixed &middot; 400px clean &middot; trajectory badge simplified &#10003;
+<span class="highlight">Agent email gap</span>         properties.agent_email does not exist &middot; fix Session 32
+<span class="success">All three Session 31 items complete. Machine components 1+2+3 operational. Pilot-ready.</span>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 31 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 31</p>
+    <div class="decision-card"><span class="decision-num">D97</span><div class="decision-content"><div class="decision-q">How should buyer identity be handled at pilot stage with no login?</div><div class="decision-a">No login, no friction. Anonymous session ID generated on first visit via <code>useBuyerId()</code> hook — <code>nb_</code> + 8 random hex chars (e.g. nb_a3f9c21b), persisted to localStorage as <code>nm_buyer_id</code>. Same ID on return visits from the same browser. Cross-device identity deferred to post-pilot (optional email capture, one field, no password). ID sent with every outcome signal — links shortlist &rarr; intent &rarr; outcome journey per buyer. Enables PMF survey targeting: which IDs were active, which signalled intent. <strong>Decision: localStorage anonymous buyer ID for pilot. No login required. Post-pilot: optional email capture for cross-device continuity.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D98</span><div class="decision-content"><div class="decision-q">Should Component 3 auto-send nester enquiries or require human review?</div><div class="decision-a">Enquiries are generated automatically on every /search but Brian reviews and approves before send via review_queue.py. Full automation (auto-send without review) deferred to Session 32 once the queue has proven reliable and agent email data is clean. Human-in-the-loop is the correct architecture at this stage — the queue compounds intelligence without compounding errors. <strong>Decision: human-in-the-loop review retained for Session 31. Auto-send deferred to Session 32 after agent email data gap is resolved and queue reliability proven.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D99</span><div class="decision-content"><div class="decision-q">How should the trajectory badge render on mobile?</div><div class="decision-a">Full badge ("Rising +14.0% YoY · CoreLogic · Q1 2026") wraps across multiple lines at 400px viewport, breaking the card layout. Source and year are secondary data — they add credibility on desktop where space exists but create noise on mobile. Simplified badge ("Rising +14.0%") fits on one line, retains the signal that matters (direction + magnitude), and keeps the card scannable on mobile. <strong>Decision: trajectory badge simplified to label + percentage only. Source and year dropped from badge render. No data loss — source and year remain in the DB and can surface in a detail view post-pilot.</strong></div></div></div>
+
   <div class="next-up">
-    <div class="next-up-label">&#9658; Session 25 — start here</div>
+    <div class="next-up-label">&#9658; Session 32 &mdash; start here</div>
+    <p style="color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; margin-bottom: 16px; padding: 0 4px;">PRIMARY FOCUS: Fix agent email data gap so demand trigger queues correctly &middot; pilot cohort recruitment &middot; first real pilot user onboarded.</p>
     <ol class="next-steps">
       <li class="next-step">
         <span class="step-num">01</span>
-        Pilot cohort recruitment — confirm Reddit post live. Review any responses. Onboard first testers if available. REBAA cold outreach email draft if Reddit yields no responses within 1 week.
+        Agent email data gap &mdash; properties table has no agent_email column. Demand trigger is queuing properties with incorrect agent email (nester address from agent_replies join). Fix: add agent_email column to properties table and populate from existing data, or source correctly from agent_replies where available.
       </li>
       <li class="next-step">
         <span class="step-num">02</span>
-        PMF survey infrastructure — decide how to deliver the Sean Ellis question to testers at the 4-6 week mark (WhatsApp, email, or in-product). Build or prepare the mechanism.
+        Pilot cohort recruitment &mdash; Reddit r/AusPropertyChat active. Post to r/FirstHomeBuyers. Direct outreach to active buyers. Target: first 3 pilot users onboarded and using NestMatch within Session 32.
       </li>
       <li class="next-step">
         <span class="step-num">03</span>
-        Data pipeline review — confirm N01 and N05 agent replies now flowing correctly via new Domain profiles. Check agent_replies and agent_outbound tables for new records from replaced nesters.
+        First testimonial capture &mdash; as soon as first pilot user engages, capture a direct quote for the homepage. One real testimonial is worth more than any feature at this stage.
+      </li>
+      <li class="next-step">
+        <span class="step-num">04</span>
+        Component 3 auto-send &mdash; once agent email data is clean and queue has proven reliable, wire auto-send (no human review required). Demand trigger becomes fully autonomous.
       </li>
     </ol>
+    <p style="color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px; margin-top: 20px; padding: 0 4px;">
+      Session 33: PMF survey infrastructure &middot; nester corridor expansion &middot; price guide surfacing on result cards from agent_replies<br>
+      Acquisition thesis: all three components operating together &rarr; Domain or REA cannot replicate without destroying agent revenue
+    </p>
   </div>
 
 <footer>
-  <span class="footer-text">NestMatch Project Log — updated after Session 24 &middot; 22 Apr 2026</span>
+  <span class="footer-text">NestMatch Project Log &mdash; updated after Session 31 &middot; 25 Apr 2026</span>
   <span class="footer-domain">nestmatch.com.au</span>
 </footer>
 

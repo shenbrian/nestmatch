@@ -151,8 +151,10 @@ async def trigger_enquiries(
         suburb = p.suburb
         property_type = p.property_type
 
-        # Skip if no agent email — can't send enquiry
-        if not p.agent_email:
+        # Skip if no agent email or email is a NestMatch alias — can't send real enquiry
+        if not p.listing_agent_email:
+            continue
+        if "proton.me" in p.listing_agent_email or "zoho.com" in p.listing_agent_email:
             continue
 
         # Skip if already contacted recently
@@ -187,8 +189,8 @@ async def trigger_enquiries(
             "bathrooms": p.bathrooms,
             "price": p.price,
             "days_on_market": p.days_on_market or 0,
-            "agent_name": p.agent_name or "Agent",
-            "agent_email": p.agent_email,
+            "agent_name": p.listing_agent_name or "Agent",
+            "agent_email": p.listing_agent_email,
             "inspection_date": str(p.inspection_date) if p.inspection_date else None,
             "land_size_sqm": p.land_size_sqm,
         }
@@ -213,8 +215,8 @@ async def trigger_enquiries(
                 """,
                 property_id,
                 nester_id,
-                p.agent_email,
-                p.agent_name,
+                p.listing_agent_email,
+                p.listing_agent_name,
                 p.street_address,
                 suburb,
                 property_type,

@@ -176,7 +176,6 @@ def generate_explanation(
     tradeoffs.sort(key=lambda t: t.severity, reverse=True)
     return highlights, tradeoffs
 
-
 async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[MatchResult]:
     rows = await conn.fetch("""
         SELECT
@@ -215,7 +214,7 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
         full = ar["property_address"].strip().lower()
         street_key = full.split(",")[0].strip()
         agent_data[street_key] = {
-            "agent_email": ar["agent_email"],
+            "agent_email_reply": ar["agent_email"],
             "price_guide": ar["price_guide"],
         }
 
@@ -272,9 +271,9 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             commute_mode=row.get("commute_mode"),
             commute_drive_mins=row.get("commute_drive_mins"),
             street_address=row.get("street_address"),
-            agent_name=row.get("sales_agent"),
-            agent_phone=row.get("agent_phone"),
-            agent_email=agent_info.get("agent_email"),
+            listing_agent_name=row.get("sales_agent"),
+            listing_agent_phone=row.get("agent_phone"),
+            listing_agent_email=row.get("listing_agent_email") or agent_info.get("agent_email_reply"),
             price_guide=agent_info.get("price_guide"),
             listing_url_rea=row.get("listing_url_rea"),
             listing_url_domain=row.get("listing_url_domain"),

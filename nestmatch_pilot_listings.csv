@@ -1,0 +1,71 @@
+suburb,property_type,street_address,title,price_min,price_max,bedrooms,bathrooms,parking_spaces,land_size_sqm,internal_size_sqm,renovation_status,development_zone,real_estate_agency,sales_agent,agent_phone,listing_url_domain,listing_url_rea,listing_status,scraped_date
+Newtown,apartment,"209/178 Livingstone Road, Marrickville",,2300000,2300000,,,322,,,,,,,,,,for_sale,2026-04-15
+Newtown,apartment,"3/119-135 Church Street, Camperdown",,1120000,1120000,,,221,,,,,,,,,,for_sale,2026-04-15
+Newtown,house,"86 Wells Street, Newtown",,1400000,1400000,,,31,,,,,,,,,,for_sale,2026-04-15
+Newtown,house,"51 O'Connell Street, Newtown",,1700000,1750000,,,21126,,,,,,,,,,for_sale,2026-04-15
+Mosman,house,"22A Upper Avenue, Mosman",,3500000,3500000,,,432,,,,,,,,,,for_sale,2026-04-15
+Mosman,house,"34 Somerset Street, Mosman",,540000,540000,,,422557,,,,,,,,,,for_sale,2026-04-15
+Mosman,apartment,Kleo,,2950000,2950000,,,32,,,,,,,,,,for_sale,2026-04-15
+Mosman,apartment,"72/6 Hale Road, Mosman",,2950000,2950000,,,221,,,,,,,,,,for_sale,2026-04-15
+Chatswood,house,"15 Reid Drive, Chatswood",,3800000,4000000,,,542657,,,,,,,,,,for_sale,2026-04-15
+Chatswood,house,"5 Spencer Place, Chatswood",,3250000,3250000,,,523732,,,,,,,,,,for_sale,2026-04-15
+Chatswood,apartment,Chatswood,,422973729,422973729,,,221,,,,,,,,,,for_sale,2026-04-15
+Chatswood,apartment,Chatswood,,422973729,422973729,,,331,,,,,,,,,,for_sale,2026-04-15
+Marrickville,house,"14 Ivanhoe Street, Marrickville",,1700000,1700000,,,21269,,,,,,,,,,for_sale,2026-04-15
+Marrickville,house,"125 Addison Road, Marrickville",,1900000,1900000,,,31221,,,,,,,,,,for_sale,2026-04-15
+Marrickville,apartment,"209/178 Livingstone Road, Marrickville",,2300000,2300000,,,322,,,,,,,,,,for_sale,2026-04-15
+Marrickville,apartment,"18/387-393 Marrickville Road, Marrickville",,950000,950000,,,211102,,,,,,,,,,for_sale,2026-04-15
+Leichhardt,house,"8 Excelsior Street, Leichhardt",,1795000,1795000,,,21167,,,,,,,,,,for_sale,2026-04-15
+Leichhardt,house,"93 Flood Street, Leichhardt",,1795000,1795000,,,31159,,,,,,,,,,for_sale,2026-04-15
+Leichhardt,apartment,Ara,,2750000,2750000,,,1360000,,,,,,,,,,for_sale,2026-04-15
+Leichhardt,apartment,"203/22B George Street, Leichhardt",,990000,1040000,,,221,,,,,,,,,,for_sale,2026-04-15
+Randwick,house,"225B Rainbow Street, Randwick",,3175000,3175000,,,431,,,,,,,,,,for_sale,2026-04-15
+Randwick,house,"32 Alison Road, Randwick",,1980000,1980000,,,211,,,,,,,,,,for_sale,2026-04-15
+Randwick,apartment,"306/16 Roscrea Avenue, Randwick",,1365000,1365000,,,212,,,,,,,,,,for_sale,2026-04-15
+Randwick,apartment,"1/55 Perouse Road, Randwick",,1800000,1850000,,,321,,,,,,,,,,for_sale,2026-04-15
+Maroubra,house,"11a Shepherd Street, Maroubra",,2750000,2750000,,,432,,,,,,,,,,for_sale,2026-04-15
+Maroubra,house,"2/730A Anzac Parade, Maroubra",,1880000,1880000,,,211,,,,,,,,,,for_sale,2026-04-15
+Maroubra,apartment,"3/262 Maroubra Road, Maroubra",,1150000,1150000,,,211118,,,,,,,,,,for_sale,2026-04-15
+Maroubra,apartment,"32/1 Wride Street, Maroubra",,2200000,2200000,,,322,,,,,,,,,,for_sale,2026-04-15
+Paddington,house,"49 Sutherland Street, Paddington",,2300000,2300000,,,21127,,,,,,,,,,for_sale,2026-04-15
+Paddington,house,"27 Albion Avenue, Paddington",,2100000,2100000,,,42,,,,,,,,,,for_sale,2026-04-15
+Paddington,apartment,"7/13-21 Macdonald Street, Paddington",,2000000,2000000,,,221,,,,,,,,,,for_sale,2026-04-15
+Paddington,apartment,"1/271 Edgecliff Road, Woollahra",,1700000,1700000,,,221,,,,,,,,,,for_sale,2026-04-15
+Redfern,apartment,"C319/6-8 Crescent Street, Redfern",,950000,950000,,,111,,,,,,,,,,for_sale,2026-04-15
+Redfern,apartment,"15/292-296 Chalmers Street, Redfern",,890000,890000,,,211,,,,,,,,,,for_sale,2026-04-15
+Redfern,house,"9 Rennie Street, Redfern",,1675000,1675000,,,22,,,,,,,,,,for_sale,2026-04-15
+Redfern,house,"13 Vine Street, Redfern",,1800000,1800000,,,421108,,,,,,,,,,for_sale,2026-04-15
+Rose Bay,house,"467 Old South Head Road, Rose Bay",,2300000,2400000,,,41284,,,,,,,,,,for_sale,2026-04-15
+Rose Bay,house,"171 Bondi Road, Bondi",,4490000,4490000,,,351,,,,,,,,,,for_sale,2026-04-15
+Rose Bay,apartment,"2/596 Old South Head Road, Rose Bay",,2700000,2700000,,,322,,,,,,,,,,for_sale,2026-04-15
+Rose Bay,apartment,"9/33 Hamilton Street, Rose Bay",,3500000,3500000,,,322,,,,,,,,,,for_sale,2026-04-15
+Parramatta,house,"58 Marsden Street, Parramatta",,1590000,1590000,,,421297,,,,,,,,,,for_sale,2026-04-15
+Parramatta,house,"35 Steel Street, South Granville",,1368000,1368000,,,411613,,,,,,,,,,for_sale,2026-04-15
+Parramatta,apartment,Parramatta,,422973729,422973729,,,322,,,,,,,,,,for_sale,2026-04-15
+Parramatta,apartment,Parramatta,,422973729,422973729,,,321,,,,,,,,,,for_sale,2026-04-15
+Blacktown,house,"42 Kent Street, Blacktown",,1200000,1300000,,,322665,,,,,,,,,,for_sale,2026-04-15
+Blacktown,house,"11 Matthew Crescent, Blacktown",,1250000,1250000,,,413588,,,,,,,,,,for_sale,2026-04-15
+Blacktown,apartment,Dara Blacktown,,710000,710000,,,710000,,,,,,,,,,for_sale,2026-04-15
+Blacktown,apartment,"6326 Putters Way, Blacktown",,746000,746000,,,321,,,,,,,,,,for_sale,2026-04-15
+Epping,house,"166 Ray Road, Epping",,2000000,2200000,,,422748,,,,,,,,,,for_sale,2026-04-15
+Epping,house,"58 Valley Road, Epping",,1980000,1980000,,,432332,,,,,,,,,,for_sale,2026-04-15
+Epping,apartment,Epping,,422973729,422973729,,,322,,,,,,,,,,for_sale,2026-04-15
+Epping,apartment,"1801/2 Cambridge Street, Epping",,2620000,2670000,,,432,,,,,,,,,,for_sale,2026-04-15
+Frenchs Forest,apartment,"312/2 Delmar Parade, Dee Why",,1250000,1250000,,,221118,,,,,,,,,,for_sale,2026-04-15
+Frenchs Forest,apartment,"605/822 Pittwater Road, Dee Why",,1350000,1350000,,,221115,,,,,,,,,,for_sale,2026-04-15
+Ryde,house,"25A Greene Avenue, Ryde",,2295000,2295000,,,542366,,,,,,,,,,for_sale,2026-04-15
+Ryde,house,"8 Cressy Road, Ryde",,2150000,2250000,,,412897,,,,,,,,,,for_sale,2026-04-15
+Ryde,apartment,"505w/3 Lardelli Drive, Ryde",,900000,900000,,,221,,,,,,,,,,for_sale,2026-04-15
+Ryde,apartment,"605N/1 Lardelli Drive, Ryde",,900000,950000,,,211,,,,,,,,,,for_sale,2026-04-15
+West Pymble,house,"5 Kamilaroy Road, West Pymble",,2400000,2540000,,,422696,,,,,,,,,,for_sale,2026-04-15
+West Pymble,house,"37 Kimberley Street, East Killara",,2400000,2400000,,,4321106,,,,,,,,,,for_sale,2026-04-15
+West Pymble,apartment,Trilogy,,1328000,2060000,,,43895000,,,,,,,,,,for_sale,2026-04-15
+West Pymble,apartment,Macquarie Rise,,1500000,2115000,,,26750002775000,,,,,,,,,,for_sale,2026-04-15
+Hornsby,house,"78 Old Berowra Road, Hornsby",,1375000,1375000,,,311701,,,,,,,,,,for_sale,2026-04-15
+Hornsby,house,"28 Rosemead Road, Hornsby",,1800000,1800000,,,322711,,,,,,,,,,for_sale,2026-04-15
+Hornsby,apartment,"12/9-15 May Street, Hornsby",,770000,830000,,,221109,,,,,,,,,,for_sale,2026-04-15
+Hornsby,apartment,"15/8-10 Bellbrook Avenue, Hornsby",,990000,990000,,,322,,,,,,,,,,for_sale,2026-04-15
+Strathfield,house,Strathfield,,1950000,2100000,,,322,,,,,,,,,,for_sale,2026-04-15
+Strathfield,house,"31 Fairway Circuit, Strathfield",,1695000,1695000,,,432,,,,,,,,,,for_sale,2026-04-15
+Strathfield,apartment,"BG10/86 Centenary Drive, Strathfield",,1250000,1250000,,,222,,,,,,,,,,for_sale,2026-04-15
+Strathfield,apartment,"702/10 Hilly Street, Mortlake",,1880000,1880000,,,322,,,,,,,,,,for_sale,2026-04-15

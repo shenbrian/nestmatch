@@ -4,7 +4,7 @@ Session 8: added D29 actionable fields + outcome tracking
 Session 13: added Session 12 investment signal fields to Property
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, Literal
 from datetime import date
 from uuid import UUID
@@ -30,6 +30,8 @@ class SearchRequest(BaseModel):
 # ── Property (DB row → API response) ────────────────────────────────────────────
 
 class Property(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id: UUID
     suburb: str
     property_type: str
@@ -53,9 +55,9 @@ class Property(BaseModel):
 
     # D29 — actionable details (Session 8)
     street_address: Optional[str] = None
-    agent_name: Optional[str] = None
-    agent_phone: Optional[str] = None
-    agent_email: Optional[str] = None
+    listing_agent_name: Optional[str] = Field(None, alias="agent_name", serialization_alias="agent_name")
+    listing_agent_phone: Optional[str] = Field(None, alias="agent_phone", serialization_alias="agent_phone")
+    listing_agent_email: Optional[str] = Field(None, alias="agent_email", serialization_alias="agent_email")
     price_guide: Optional[str] = None
     listing_url_rea: Optional[str] = None
     listing_url_domain: Optional[str] = None
