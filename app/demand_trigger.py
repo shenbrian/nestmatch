@@ -195,7 +195,8 @@ async def trigger_enquiries(
 
         # Generate enquiry via question engine
         try:
-            email_body = await generate_enquiry(property_data, nester_id)
+            enquiry = await generate_enquiry(property_data, nester_id)
+            email_body = enquiry["email_body"]
         except Exception as e:
             logger.error(f"Question engine failed for {property_id}: {e}")
             continue
