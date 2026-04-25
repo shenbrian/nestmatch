@@ -97,7 +97,7 @@ class MatchResult(BaseModel):
 class OutcomeReport(BaseModel):
     session_id: str
     property_id: UUID
-    outcome_type: Literal["inspected", "purchased", "shortlisted", "passed"]
+    outcome_type: Literal["inspected", "purchased", "shortlisted", "passed", "this_is_the_one"]
     search_criteria: Optional[dict] = None
     match_score: Optional[float] = None
     notes: Optional[str] = None
