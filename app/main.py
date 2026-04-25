@@ -105,7 +105,7 @@ async def report_outcome(report: OutcomeReport):
                 """,
                 report.session_id,
                 report.property_id,
-                str(report.search_criteria) if report.search_criteria else None,
+                json.dumps(report.search_criteria) if report.search_criteria else None,
                 report.match_score,
                 report.outcome_type,
             )
