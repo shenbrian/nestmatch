@@ -23,6 +23,8 @@ import httpx
 from pathlib import Path
 from datetime import datetime, date
 
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+
 # Load personas once at import time
 PERSONAS_PATH = Path(__file__).parent.parent / "personas.json"
 with open(PERSONAS_PATH, "r", encoding="utf-8") as f:
@@ -223,3 +225,49 @@ Write the email body now:"""
         "email_body": email_body,
         "generated_at": datetime.utcnow().isoformat(),
     }
+
+async def send_enquiry(enquiry: dict, to_email: str, subject: str) -> dict:
+    """
+    Send a generated enquiry email via Resend API.
+
+    Args:
+        enquiry: dict returned by generate_enquiry()
+        to_email: the listing agent's email address
+        subject: subject line for the email
+
+    Returns:
+        dict with keys: success (bool), resend_id (str or None), error (str or None)
+    """
+    if not RESEND_API_KEY:
+        raise EnvironmentError("RESEND_API_KEY environment variable not set")
+
+    payload = {
+        "from": f"{enquiry['nester_name']} <{enquiry['nester_email']}>",
+        "to": [to_email],
+        "subject": subject,
+        "text": enquiry["email_body"],
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+        )
+
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.json()
+            return {
+                "success": True,
+                "resend_id": data.get("id"),
+                "error": None,
+            }
+        else:
+            return {
+                "success": False,
+                "resend_id": None,
+                "error": f"Resend API error {response.status_code}: {response.text}",
+            }
