@@ -1,16 +1,16 @@
 """
 app/demand_trigger.py -- Component 3: demand-driven nester targeting
-Session 31
+Session 36 — auto-send update
 
 Called after every /search that returns results.
 For each result property:
   1. Check if a nester enquiry was sent in the last 14 days
   2. If not, select the best-matched nester by corridor/suburb
-  3. Generate an enquiry via question_engine
-  4. Insert into enquiry_queue with status 'pending'
+  3. Call deployment_trigger.demand_trigger() — generates, sends, logs to send_log
+  4. Write to enquiry_queue with status 'sent' as audit record (no pending/review step)
 
-Brian reviews and sends via review_queue.py daily.
-Auto-send (no human review) is deferred to Session 32.
+Session 31 note: manual review step (enquiry_queue pending → review_queue.py) retired.
+Auto-send is live as of Session 36 per D115.
 """
 
 import json
@@ -107,7 +107,7 @@ def select_nester(suburb: str, property_type: str, bedrooms: int) -> str | None:
 async def was_recently_contacted(conn, property_id: str, days: int = 14) -> bool:
     """
     Returns True if a nester enquiry was sent for this property in the last N days.
-    Checks both enquiry_queue (sent) and agent_replies (reply received).
+    Checks enquiry_queue for rows with status 'sent'.
     """
     row = await conn.fetchrow(
         """
@@ -139,11 +139,11 @@ async def trigger_enquiries(
         buyer_id: nm_ buyer ID if available
 
     Returns:
-        Number of enquiries queued
+        Number of enquiries sent
     """
-    from app.question_engine import generate_enquiry
+    from app.deployment_trigger import demand_trigger
 
-    queued = 0
+    sent = 0
 
     for result in results:
         p = result.property
@@ -162,48 +162,34 @@ async def trigger_enquiries(
         if already_contacted:
             continue
 
-        # Skip if already pending in queue (don't double-queue)
-        pending = await conn.fetchrow(
-            """
-            SELECT 1 FROM enquiry_queue
-            WHERE property_id = $1::uuid AND status = 'pending'
-            LIMIT 1
-            """,
-            property_id,
-        )
-        if pending:
-            continue
-
         # Select best nester
         nester_id = select_nester(suburb, property_type, p.bedrooms)
         if not nester_id:
             logger.info(f"No nester mapped for suburb: {suburb}")
             continue
 
-        # Build property_data dict for question engine
-        property_data = {
-            "street_address": p.street_address or f"{suburb} property",
-            "suburb": suburb,
-            "property_type": property_type,
-            "bedrooms": p.bedrooms,
-            "bathrooms": p.bathrooms,
-            "price": p.price,
-            "days_on_market": p.days_on_market or 0,
-            "agent_name": p.listing_agent_name or "Agent",
-            "agent_email": p.listing_agent_email,
-            "inspection_date": str(p.inspection_date) if p.inspection_date else None,
-            "land_size_sqm": p.land_size_sqm,
-        }
-
-        # Generate enquiry via question engine
+        # Fire demand_trigger — generates enquiry, applies safety gates, sends via Resend
         try:
-            enquiry = await generate_enquiry(property_data, nester_id)
-            email_body = enquiry["email_body"]
+            result_dict = await demand_trigger(
+                property_id=property_id,
+                suburb=suburb,
+                property_type=property_type,
+                agent_email=p.listing_agent_email,
+                agency_name=getattr(p, "agency_name", "") or "",
+                listing_agent_name=p.listing_agent_name or "Agent",
+                property_address=p.street_address or f"{suburb} property",
+                price_guide=str(p.price) if p.price else None,
+            )
         except Exception as e:
-            logger.error(f"Question engine failed for {property_id}: {e}")
+            logger.error(f"demand_trigger failed for {property_id}: {e}")
             continue
 
-        # Insert into enquiry_queue
+        status = result_dict.get("status")  # 'sent' | 'skipped' | 'failed'
+
+        if status not in ("sent", "skipped", "failed"):
+            continue
+
+        # Write audit record to enquiry_queue regardless of outcome
         try:
             await conn.execute(
                 """
@@ -211,7 +197,8 @@ async def trigger_enquiries(
                     (property_id, nester_id, agent_email, agent_name,
                      street_address, suburb, property_type,
                      email_body, status, triggered_by, search_params)
-                VALUES ($1::uuid, $2, $3, $4, $5, $6, $7, $8, 'pending', $9, $10)
+                VALUES ($1::uuid, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                ON CONFLICT DO NOTHING
                 """,
                 property_id,
                 nester_id,
@@ -220,13 +207,23 @@ async def trigger_enquiries(
                 p.street_address,
                 suburb,
                 property_type,
-                email_body,
+                result_dict.get("reason") or status,   # brief note in email_body slot
+                status,
                 buyer_id,
                 json.dumps(search_params),
             )
-            queued += 1
-            logger.info(f"Queued enquiry: {nester_id} -> {p.street_address or suburb}")
         except Exception as e:
-            logger.error(f"Failed to queue enquiry for {property_id}: {e}")
+            logger.error(f"enquiry_queue audit write failed for {property_id}: {e}")
 
-    return queued
+        if status == "sent":
+            sent += 1
+            logger.info(
+                f"Auto-sent: {result_dict.get('nester_id')} "
+                f"({result_dict.get('nester_name')}) -> {p.street_address or suburb}"
+            )
+        else:
+            logger.info(
+                f"Send {status}: {property_id} — {result_dict.get('reason')}"
+            )
+
+    return sent

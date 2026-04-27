@@ -48,7 +48,7 @@ import os
 import random
 import logging
 from datetime import datetime, timezone, timedelta
-from nester_router import pick_nester
+from app.nester_router import pick_nester
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +209,7 @@ async def demand_trigger(
 
     Returns a result dict with status and details.
     """
-    from question_engine import generate_enquiry, send_enquiry
+    from app.question_engine import generate_enquiry, send_enquiry
 
     conn = await get_db()
     try:
@@ -242,7 +242,7 @@ async def demand_trigger(
             return {"status": "failed", "reason": "enquiry generation failed"}
 
         # 4. Subject line (see subject_line.py)
-        from subject_line import build_subject
+        from app.subject_line import build_subject
         subject = build_subject(property_address, agency_name)
 
         # 5. Send
