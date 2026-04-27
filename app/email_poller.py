@@ -38,15 +38,36 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # Nester email → nester ID mapping
 NESTER_MAP = {
-    "jam.nguyen73@proton.me":     "N01",
-    "clawson1503@outlook.com":    "N02",
-    "r.haines52@outlook.com":     "N03",
-    "mpark_home@proton.me":       "N04",
-    "awhitfieldnsw@gmail.com":    "N05",
-    "sbrennan93@proton.me":       "N06",
-    "k.daniel@tutamail.com":      "N07",
-    "ktrann75@proton.me":         "N08",
-    "moconnor1403@tutamail.com":  "N09",
+    "james.nguyen@homemailbox.com.au":        "N01",
+    "priya.sharma@homemailbox.com.au":        "N02",
+    "david.chen@homemailbox.com.au":          "N03",
+    "michelle.park@homemailbox.com.au":       "N04",
+    "andrew.whitfield@homemailbox.com.au":    "N05",
+    "sophie.laurent@homemailbox.com.au":      "N06",
+    "marcus.webb@homemailbox.com.au":         "N07",
+    "linda.wu@homemailbox.com.au":            "N08",
+    "kevin.zhang@homemailbox.com.au":         "N09",
+    "emma.thompson@homemailbox.com.au":       "N10",
+    "lachlan.reid@homemailbox.com.au":        "N11",
+    "aisha.mohamed@homemailbox.com.au":       "N12",
+    "tom.gallagher@homemailbox.com.au":       "N13",
+    "mei.lin@homemailbox.com.au":             "N14",
+    "james.fairfax@homemailbox.com.au":       "N15",
+    "catherine.moore@homemailbox.com.au":     "N16",
+    "robert.kim@homemailbox.com.au":          "N17",
+    "helen.nguyen@homemailbox.com.au":        "N18",
+    "paul.anderson@homemailbox.com.au":       "N19",
+    "grace.liu@homemailbox.com.au":           "N20",
+    "raj.patel@homemailbox.com.au":           "N21",
+    "sarah.johnson@homemailbox.com.au":       "N22",
+    "michael.tran@homemailbox.com.au":        "N23",
+    "olivia.burns@homemailbox.com.au":        "N24",
+    "daniel.park@homemailbox.com.au":         "N25",
+    "amy.chen@homemailbox.com.au":            "N26",
+    "george.papadopoulos@homemailbox.com.au": "N27",
+    "lily.nguyen@homemailbox.com.au":         "N28",
+    "steven.ho@homemailbox.com.au":           "N29",
+    "natalie.cross@homemailbox.com.au":       "N30",
 }
 
 # Pilot corridors — used to detect off-corridor emails (Type J)
@@ -644,6 +665,32 @@ async def store_outbound(conn, msg: dict, extracted: dict, email_type: str) -> b
     except asyncpg.UniqueViolationError:
         return False
 
+async def maybe_promote_agent_email(conn, property_address: str, suburb: str, agent_email: str):
+    """
+    If a property record exists with a matching address and has no listing_agent_email,
+    update it with the real agent email captured from the reply.
+    """
+    if not property_address or not agent_email:
+        return
+
+    result = await conn.fetchrow(
+        """
+        SELECT id, listing_agent_email
+        FROM properties
+        WHERE LOWER(address) = LOWER($1)
+          AND listing_agent_email IS NULL
+        LIMIT 1
+        """,
+        property_address,
+    )
+
+    if result:
+        await conn.execute(
+            "UPDATE properties SET listing_agent_email = $1 WHERE id = $2",
+            agent_email,
+            result["id"],
+        )
+        print(f"[poller] Agent email promoted: {agent_email} → property id {result['id']}")
 
 # ── Main pipeline ─────────────────────────────────────────────────────────────
 
@@ -703,6 +750,12 @@ async def run_poller():
                 ok = await store_reply(conn, msg, extracted)
                 if ok:
                     inserted_cat1 += 1
+                    await maybe_promote_agent_email(
+                        conn,
+                        extracted.get("property_address"),
+                        extracted.get("suburb"),
+                        msg["agent_email"],
+                    )
                     flag = " [ANOMALY]" if extracted.get("anomaly_flag") else ""
                     print(f"[poller] Cat1 stored ({extracted.get('email_type','?')}){flag}: {msg['subject']}")
                 else:
