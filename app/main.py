@@ -156,6 +156,17 @@ async def trigger_outcome_agent():
     result = await run_outcome_agent(pool)
     return result
 
+# — Scheduled trigger (Session 37 — daily cron) ——————————————————
+
+@app.post("/internal/run-scheduled-trigger")
+async def trigger_scheduled_sends():
+    """Called by Render cron daily at 9am AEST. Not buyer-facing."""
+    from app.deployment_trigger import scheduled_trigger
+    results = await scheduled_trigger(limit=10)
+    sent = sum(1 for r in results if r.get("status") == "sent")
+    skipped = sum(1 for r in results if r.get("status") == "skipped")
+    failed = sum(1 for r in results if r.get("status") == "failed")
+    return {"processed": len(results), "sent": sent, "skipped": skipped, "failed": failed, "detail": results}
 
 # — Outcome candidates review (admin) ————————————————————————————
 
