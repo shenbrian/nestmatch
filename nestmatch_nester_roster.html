@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestMatch — Nester Roster</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface-2: #1e2128;
+    --border: #2a2d35;
+    --text: #e8e9ed;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    --accent: #e8c547;
+    --accent-dim: #c9a83a;
+    --green: #4ade80;
+    --green-dim: #166534;
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --coral: #fb923c;
+    --teal: #2dd4bf;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    background: linear-gradient(180deg, #13141a 0%, var(--bg) 100%);
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .project-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(232, 197, 71, 0.08);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    padding: 6px 12px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 300;
+    max-width: 560px;
+  }
+
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: rgba(232,197,71,0.1); border-color: var(--accent); color: var(--accent); }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .count-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+  }
+
+  thead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 12px 14px;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tbody tr { background: var(--surface); transition: background 0.1s; }
+  tbody tr:nth-child(even) { background: var(--surface-2); }
+  tbody tr:hover { background: #22252e; }
+
+  .nid {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .name { font-weight: 400; color: var(--text); white-space: nowrap; }
+
+  .demo { color: var(--text-dim); font-size: 12px; }
+
+  .postcode {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .corridor { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+
+  .suburbs { font-size: 11px; color: var(--text-muted); max-width: 180px; }
+
+  .email {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .b-fhb      { background: rgba(96,165,250,0.12); color: #93c5fd; border: 1px solid rgba(96,165,250,0.2); }
+  .b-upsizer  { background: rgba(74,222,128,0.12); color: #86efac; border: 1px solid rgba(74,222,128,0.2); }
+  .b-investor { background: rgba(232,197,71,0.12); color: #e8c547; border: 1px solid rgba(232,197,71,0.2); }
+  .b-downsizer{ background: rgba(167,139,250,0.12); color: #c4b5fd; border: 1px solid rgba(167,139,250,0.2); }
+  .p-apartment{ background: rgba(45,212,191,0.10); color: #5eead4; border: 1px solid rgba(45,212,191,0.2); }
+  .p-house    { background: rgba(251,146,60,0.10); color: #fdba74; border: 1px solid rgba(251,146,60,0.2); }
+  .p-terrace  { background: rgba(248,113,113,0.10); color: #fca5a5; border: 1px solid rgba(248,113,113,0.2); }
+
+  .note-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .note-block strong { color: var(--accent); font-weight: 500; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .footer-domain { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="project-badge"><span class="dot"></span>NestMatch &mdash; Internal</div>
+    <h1>Nester <em>Roster</em></h1>
+    <p class="subtitle">30 active nesters across 8 higher-value Sydney corridors. All inbound mail routes to buyers@nestmatch.com.au via Cloudflare catch-all. Session 34: personas.json rebuild + Resend API outbound.</p>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">30</div>
+      <div class="stat-label">Total nesters</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Corridors</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-shown">30</div>
+      <div class="stat-label">Shown</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Buyer types</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Property types</div>
+    </div>
+  </div>
+
+  <div class="note-block">
+    <strong>Email infrastructure &mdash; Session 33:</strong> All nester addresses are virtual &mdash; no real mailboxes. Cloudflare Email Routing catch-all on <strong>homemailbox.com.au</strong> forwards all inbound to <strong>buyers@nestmatch.com.au</strong> (Zoho). Email poller reads via IMAP. Outbound sending via <strong>Resend API</strong> (Session 34). Nester personas define: name, demographics, corridor, postcodes, property type lane, communication style only. Budget is a user input at search time &mdash; not a nester attribute (D103).
+  </div>
+
+  <p class="section-title">Filter roster</p>
+  <div class="filters">
+    <span class="filter-label">Type:</span>
+    <button class="filter-btn active" onclick="filter('all', this)">All</button>
+    <button class="filter-btn" onclick="filter('fhb', this)">FHB</button>
+    <button class="filter-btn" onclick="filter('upsizer', this)">Upsizer</button>
+    <button class="filter-btn" onclick="filter('investor', this)">Investor</button>
+    <button class="filter-btn" onclick="filter('downsizer', this)">Downsizer</button>
+    <span class="filter-label" style="margin-left:12px;">Property:</span>
+    <button class="filter-btn" onclick="filter('apartment', this)">Apartment</button>
+    <button class="filter-btn" onclick="filter('house', this)">House</button>
+    <button class="filter-btn" onclick="filter('terrace', this)">Terrace</button>
+  </div>
+
+  <div class="count-label" id="count-label">Showing 30 of 30 nesters</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Demographics</th>
+          <th>Home postcode</th>
+          <th>Corridor</th>
+          <th>Suburbs of responsibility</th>
+          <th>Email (@homemailbox.com.au)</th>
+          <th>Buyer type</th>
+          <th>Property</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-text">NestMatch Nester Roster &mdash; Session 33 &middot; 26 Apr 2026</span>
+  <span class="footer-domain">nestmatch.com.au</span>
+</footer>
+
+<script>
+const nesters = [
+  { id:'N01', name:'Linda Fan',             demo:'Female, 34, finance analyst',    postcode:'2060', corridor:'Lower north shore', suburbs:'Kirribilli, Milsons Point, McMahons Point',       email:'lindal.li72',           type:'fhb',       prop:'apartment' },
+  { id:'N02', name:'Priya Sharma',          demo:'Female, 31, teacher',            postcode:'2060', corridor:'Lower north shore', suburbs:'Neutral Bay, Cremorne, Cammeray',                  email:'p.sharma',          type:'fhb',       prop:'apartment' },
+  { id:'N03', name:'David Chen',            demo:'Male, 45, business owner',       postcode:'2088', corridor:'Lower north shore', suburbs:'Mosman, Balmoral, Beauty Point',                   email:'dchen82',            type:'upsizer',   prop:'house' },
+  { id:'N04', name:'Michelle Park',         demo:'Female, 42, GP',                 postcode:'2089', corridor:'Lower north shore', suburbs:'Cremorne Point, Kurraba Point, North Sydney',      email:'michellepark',         type:'upsizer',   prop:'house' },
+  { id:'N05', name:'Jane Bei',              demo:'Female, 58, semi-retired exec',  postcode:'2088', corridor:'Lower north shore', suburbs:'Mosman, Clifton Gardens, Spit Junction',           email:'jbei',                  type:'downsizer', prop:'apartment' },
+  { id:'N06', name:'Sophie Laurent',        demo:'Female, 29, UX designer',        postcode:'2041', corridor:'Inner west',        suburbs:'Balmain, Rozelle, Lilyfield',                      email:'soph.laurent',        type:'fhb',       prop:'terrace' },
+  { id:'N07', name:'Marcus Webb',           demo:'Male, 36, software engineer',    postcode:'2042', corridor:'Inner west',        suburbs:'Newtown, Erskineville, St Peters',                 email:'m.webb',           type:'fhb',       prop:'terrace' },
+  { id:'N08', name:'Linda Wu',              demo:'Female, 39, accountant',         postcode:'2044', corridor:'Inner west',        suburbs:'Marrickville, Dulwich Hill, Petersham',            email:'lindawu39',              type:'investor',  prop:'house' },
+  { id:'N09', name:'Kevin Zhang',           demo:'Male, 44, IT director',          postcode:'2046', corridor:'Inner west',        suburbs:'Strathfield, Homebush, Burwood',                   email:'kev.zhang',           type:'investor',  prop:'apartment' },
+  { id:'N10', name:'Emma Thompson',         demo:'Female, 33, marketing mgr',      postcode:'2031', corridor:'Eastern suburbs',   suburbs:'Randwick, Kensington, Kingsford',                  email:'emmathompson',         type:'fhb',       prop:'apartment' },
+  { id:'N11', name:'Lachlan Reid',          demo:'Male, 37, lawyer',               postcode:'2026', corridor:'Eastern suburbs',   suburbs:'Bondi, Bondi Junction, Bellevue Hill',             email:'l.reid',          type:'upsizer',   prop:'house' },
+  { id:'N12', name:'Aisha Mohamed',         demo:'Female, 30, nurse',              postcode:'2035', corridor:'Eastern suburbs',   suburbs:'Coogee, Maroubra, Randwick',                       email:'aisha.m',         type:'fhb',       prop:'apartment' },
+  { id:'N13', name:'Tom Gallagher',         demo:'Male, 52, construction MD',      postcode:'2022', corridor:'Eastern suburbs',   suburbs:'Bronte, Waverley, Woollahra',                      email:'tomg',         type:'investor',  prop:'house' },
+  { id:'N14', name:'Mei Lin',               demo:'Female, 41, pharmacist',         postcode:'2025', corridor:'Eastern suburbs',   suburbs:'Edgecliff, Woollahra, Double Bay',                 email:'mei.lin77',               type:'upsizer',   prop:'apartment' },
+  { id:'N15', name:'James Fairfax',         demo:'Male, 61, retired banker',       postcode:'2027', corridor:'Eastern suburbs',   suburbs:'Darling Point, Point Piper, Edgecliff',            email:'jfairfax',         type:'downsizer', prop:'apartment' },
+  { id:'N16', name:'Catherine Moore',       demo:'Female, 47, school principal',   postcode:'2067', corridor:'Upper north shore', suburbs:'Chatswood, Lane Cove, Willoughby',                 email:'cath.moore',       type:'upsizer',   prop:'house' },
+  { id:'N17', name:'Robert Kim',            demo:'Male, 43, surgeon',              postcode:'2075', corridor:'Upper north shore', suburbs:'St Ives, Pymble, Gordon',                          email:'robertk',            type:'upsizer',   prop:'house' },
+  { id:'N18', name:'Helen Nguyen',          demo:'Female, 38, dentist',            postcode:'2073', corridor:'Upper north shore', suburbs:'Killara, Lindfield, Roseville',                    email:'helen.n',          type:'upsizer',   prop:'house' },
+  { id:'N19', name:'Paul Anderson',         demo:'Male, 55, CFO',                  postcode:'2076', corridor:'Upper north shore', suburbs:'Turramurra, Wahroonga, Warrawee',                  email:'p.anderson',         type:'downsizer', prop:'house' },
+  { id:'N20', name:'Grace Liu',             demo:'Female, 35, data scientist',     postcode:'2065', corridor:'Upper north shore', suburbs:'Artarmon, Crows Nest, St Leonards',                email:'grace.liu',             type:'fhb',       prop:'apartment' },
+  { id:'N21', name:'Raj Patel',             demo:'Male, 40, engineer',             postcode:'2150', corridor:'Parramatta / west', suburbs:'Parramatta, Westmead, Northmead',                  email:'rajpatel',             type:'investor',  prop:'apartment' },
+  { id:'N22', name:'Sarah Johnson',         demo:'Female, 28, admin officer',      postcode:'2145', corridor:'Parramatta / west', suburbs:'Wentworthville, Pendle Hill, Toongabbie',          email:'sarah.j',         type:'fhb',       prop:'apartment' },
+  { id:'N23', name:'Michael Tran',          demo:'Male, 33, electrician',          postcode:'2166', corridor:'Parramatta / west', suburbs:'Cabramatta, Canley Vale, Fairfield',               email:'m.tran',          type:'fhb',       prop:'house' },
+  { id:'N24', name:'Olivia Burns',          demo:'Female, 36, HR manager',         postcode:'2153', corridor:'Hills district',    suburbs:'Baulkham Hills, Castle Hill, Kellyville',          email:'olivia.b',          type:'upsizer',   prop:'house' },
+  { id:'N25', name:'Daniel Park',           demo:'Male, 39, project manager',      postcode:'2155', corridor:'Hills district',    suburbs:'Rouse Hill, The Ponds, Kellyville Ridge',          email:'dan.park',           type:'upsizer',   prop:'house' },
+  { id:'N26', name:'Amy Chen',              demo:'Female, 44, business analyst',   postcode:'2154', corridor:'Hills district',    suburbs:'Castle Hill, West Pennant Hills, Cherrybrook',     email:'amyc',              type:'investor',  prop:'house' },
+  { id:'N27', name:'George Papadopoulos',   demo:'Male, 48, restaurant owner',     postcode:'2220', corridor:'St George / south', suburbs:'Hurstville, Penshurst, Mortdale',                  email:'georgeP',   type:'investor',  prop:'apartment' },
+  { id:'N28', name:'Lily Nguyen',           demo:'Female, 32, pharmacy tech',      postcode:'2217', corridor:'St George / south', suburbs:'Kogarah, Rockdale, Arncliffe',                     email:'lily.ng',           type:'fhb',       prop:'apartment' },
+  { id:'N29', name:'Steven Ho',             demo:'Male, 46, import/export',        postcode:'2218', corridor:'St George / south', suburbs:'Blakehurst, Sans Souci, Ramsgate',                 email:'stevenho',             type:'investor',  prop:'house' },
+  { id:'N30', name:'Natalie Cross',         demo:'Female, 53, interior designer',  postcode:'2232', corridor:'St George / south', suburbs:'Sutherland, Cronulla, Caringbah',                  email:'nat.cross',         type:'downsizer', prop:'apartment' },
+];
+
+const typeLabel = { fhb:'FHB', upsizer:'Upsizer', investor:'Investor', downsizer:'Downsizer' };
+const typeCls   = { fhb:'b-fhb', upsizer:'b-upsizer', investor:'b-investor', downsizer:'b-downsizer' };
+const propCls   = { apartment:'p-apartment', house:'p-house', terrace:'p-terrace' };
+
+let activeFilter = 'all';
+
+function render(data) {
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = data.map(n => `
+    <tr>
+      <td class="nid">${n.id}</td>
+      <td class="name">${n.name}</td>
+      <td class="demo">${n.demo}</td>
+      <td class="postcode">${n.postcode}</td>
+      <td class="corridor">${n.corridor}</td>
+      <td class="suburbs">${n.suburbs}</td>
+      <td class="email">${n.email}@homemailbox.com.au</td>
+      <td><span class="badge ${typeCls[n.type]}">${typeLabel[n.type]}</span></td>
+      <td><span class="badge ${propCls[n.prop]}">${n.prop}</span></td>
+    </tr>
+  `).join('');
+  document.getElementById('stat-shown').textContent = data.length;
+  document.getElementById('count-label').textContent = `Showing ${data.length} of ${nesters.length} nesters`;
+}
+
+function filter(f, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = f;
+  const filtered = f === 'all' ? nesters : nesters.filter(n => n.type === f || n.prop === f);
+  render(filtered);
+}
+
+render(nesters);
+</script>
+</body>
+</html>
