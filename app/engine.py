@@ -195,8 +195,10 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
           AND p.bedrooms >= $2
           AND p.listing_status IN ('for_sale', 'agent_sourced')
           AND ($3::text[] = '{}'::text[] OR LOWER(p.suburb) = ANY($3::text[]))
+          AND ($4::text[] = '{}'::text[] OR LOWER(p.suburb) != ALL($4::text[]))
     """, req.budget_max, req.bedrooms_min,
-        [s.lower() for s in req.suburbs])
+        [s.lower() for s in req.suburbs],
+        [s.lower() for s in req.exclusion_suburbs])
     
     # Session 29 — agent_replies lookup (D94: agent contact bypass)
     # Match on street portion only (before first comma) — addresses inconsistent across sources

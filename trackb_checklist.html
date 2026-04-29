@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestMatch — Track B Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface-2: #1e2128;
+    --border: #2a2d35;
+    --text: #e8e9ed;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    --accent: #e8c547;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.08);
+    --blue: #60a5fa;
+    --red: #f87171;
+    --radius: 6px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(232,197,71,0.08);
+    border: 1px solid rgba(232,197,71,0.2);
+    border-radius: 3px;
+    padding: 3px 8px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    margin-bottom: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* Script block */
+  .script-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+
+  .script-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .script-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .script-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Corridor section */
+  .corridor {
+    margin-bottom: 32px;
+  }
+
+  .corridor-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .corridor-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .corridor-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .corridor-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* Agency card */
+  .agency-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 16px;
+    align-items: start;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .agency-card:hover {
+    border-color: #3a3d47;
+  }
+
+  .agency-card.done {
+    background: var(--green-dim);
+    border-color: rgba(74,222,128,0.2);
+  }
+
+  /* Checkbox */
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    background: var(--surface-2);
+  }
+
+  .agency-card.done .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .checkmark {
+    display: none;
+    color: #0e0f11;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .agency-card.done .checkmark { display: block; }
+
+  /* Card body */
+  .card-body {}
+
+  .agency-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .agency-card.done .agency-name {
+    color: var(--green);
+  }
+
+  .office-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .meta-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--surface-2);
+  }
+
+  .meta-pill.nester {
+    color: var(--blue);
+    border-color: rgba(96,165,250,0.2);
+    background: rgba(96,165,250,0.06);
+  }
+
+  .notes {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  /* Action links */
+  .action-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .action-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--surface-2);
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .action-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .action-link.primary {
+    border-color: rgba(232,197,71,0.3);
+    color: var(--accent);
+    background: rgba(232,197,71,0.06);
+  }
+
+  /* Status badge on right */
+  .status-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .agency-card.done .status-badge {
+    color: var(--green);
+    border-color: rgba(74,222,128,0.3);
+    background: rgba(74,222,128,0.08);
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">Track B — Agency Subscriptions</div>
+    <h1>Agency Mailing List Rollout</h1>
+    <div class="subtitle">24 offices · 8 corridors · one nester per office · tick each when registered</div>
+  </div>
+
+  <div class="progress-bar">
+    <span class="progress-label">overall progress</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 24</span>
+  </div>
+
+  <div class="script-block">
+    <div class="script-label">&#9658; What to say when registering</div>
+    <div class="script-text">
+      Use the website form if one exists. If emailing, keep it short:<br><br>
+      <strong>"Hi, I'm an active buyer looking for [property type] in [suburb/area]. Could you please add me to your mailing list for new listings? Happy to provide more detail on my requirements. Thanks."</strong><br><br>
+      Use the assigned nester's name and email. Don't over-explain. One paragraph max. The goal is just to get onto the list — the email poller handles everything after that.
+    </div>
+  </div>
+
+  <!-- LOWER NORTH SHORE -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Lower North Shore</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">4 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">McGrath Estate Agents</div>
+        <div class="office-name">Cremorne / Mosman office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N01</span>
+          <span class="meta-pill">has website form</span>
+          <span class="meta-pill">apartments focus</span>
+        </div>
+        <div class="notes">Dominant lower NS agency. High volume of apartment listings. Use the buyer registration form on their website — fastest path.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.mcgrath.com.au/buy/register-your-interest" target="_blank">&#8599; Register online</a>
+          <a class="action-link" href="mailto:cremorne@mcgrath.com.au">&#9993; cremorne@mcgrath.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge" id="sb-0">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Belle Property</div>
+        <div class="office-name">Neutral Bay office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N02</span>
+          <span class="meta-pill">contact form only</span>
+          <span class="meta-pill">houses focus</span>
+        </div>
+        <div class="notes">Strong for houses. Use contact form, mention you're an active buyer wanting to be added to their new listing notifications.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.belleproperty.com/neutral-bay/contact" target="_blank">&#8599; Contact form</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Mosman office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N03</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">large network</span>
+        </div>
+        <div class="notes">Large network, regular new listing alerts via email. Email the office directly to be added — quicker than navigating their website.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-mosman" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:mosman@raywhite.com.au">&#9993; mosman@raywhite.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Stone Real Estate</div>
+        <div class="office-name">North Shore office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N01</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">apartments focus</span>
+        </div>
+        <div class="notes">Growing presence in LNS. Good for apartments. Visit website and register as a buyer.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.stonerealestaste.com.au" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- UPPER NORTH SHORE -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Upper North Shore</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Richardson &amp; Wrench</div>
+        <div class="office-name">Gordon / Killara office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N04</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">houses focus</span>
+        </div>
+        <div class="notes">Long-established UNS agency. Houses dominate. Visit website to register as a buyer.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://rw.com.au/gordon" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">LJ Hooker</div>
+        <div class="office-name">Chatswood office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N05</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">apartments focus</span>
+        </div>
+        <div class="notes">Apartment focus. Chatswood has high turnover. Email the office directly.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.ljhooker.com.au/chatswood" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:chatswood@ljhooker.com.au">&#9993; chatswood@ljhooker.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">McGrath Estate Agents</div>
+        <div class="office-name">Gordon office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N06</span>
+          <span class="meta-pill">has website form</span>
+          <span class="meta-pill">family homes</span>
+        </div>
+        <div class="notes">Strong for family homes. Buyer registration form on website.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.mcgrath.com.au/buy/register-your-interest" target="_blank">&#8599; Register online</a>
+          <a class="action-link" href="mailto:gordon@mcgrath.com.au">&#9993; gordon@mcgrath.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- INNER WEST -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Inner West</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">BresicWhitney</div>
+        <div class="office-name">Balmain / Inner West office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N07</span>
+          <span class="meta-pill">contact form</span>
+          <span class="meta-pill">IW specialist</span>
+        </div>
+        <div class="notes">Inner West specialist. High volume, strong agent relationships. Pre-market notifications common here.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.bresicwhitney.com.au/contact" target="_blank">&#8599; Contact form</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Newtown office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N08</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">terraces &amp; semis</span>
+        </div>
+        <div class="notes">Good for terraces and semis. Email list well-maintained.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-newtown" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:newtown@raywhite.com.au">&#9993; newtown@raywhite.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Cobden &amp; Hayson</div>
+        <div class="office-name">Annandale / Leichhardt office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N09</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">boutique</span>
+        </div>
+        <div class="notes">Inner West boutique. Pre-market notifications common. Visit website to register.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.cobdenandhayson.com.au" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- EASTERN SUBURBS -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Eastern Suburbs</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">McGrath Estate Agents</div>
+        <div class="office-name">Edgecliff / Double Bay office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N10</span>
+          <span class="meta-pill">has website form</span>
+          <span class="meta-pill">premium</span>
+        </div>
+        <div class="notes">Premium eastern suburbs. Apartment and terrace focus.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.mcgrath.com.au/buy/register-your-interest" target="_blank">&#8599; Register online</a>
+          <a class="action-link" href="mailto:doublebay@mcgrath.com.au">&#9993; doublebay@mcgrath.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Bondi office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N11</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">high volume</span>
+        </div>
+        <div class="notes">High volume Bondi area. New listing alerts frequent. Register via office page.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-bondi-junction" target="_blank">&#8599; Office page</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">NG Farah</div>
+        <div class="office-name">Randwick / Coogee office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N12</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">SE specialist</span>
+        </div>
+        <div class="notes">South-east specialist. FHB and investor mix.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.ngfarah.com.au" target="_blank">&#8599; Website</a>
+          <a class="action-link" href="mailto:info@ngfarah.com.au">&#9993; info@ngfarah.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- PARRAMATTA / WEST -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Parramatta / West</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Parramatta office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N13</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">investor segment</span>
+        </div>
+        <div class="notes">Largest Parramatta agency. Strong investor segment.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-parramatta" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:parramatta@raywhite.com.au">&#9993; parramatta@raywhite.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">LJ Hooker</div>
+        <div class="office-name">Strathfield office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N14</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">multicultural segment</span>
+        </div>
+        <div class="notes">Strathfield/Burwood corridor. Multicultural buyer segment.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.ljhooker.com.au/strathfield" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">McGrath Estate Agents</div>
+        <div class="office-name">Parramatta office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N15</span>
+          <span class="meta-pill">has website form</span>
+        </div>
+        <div class="notes">Growing McGrath presence west of CBD.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.mcgrath.com.au/buy/register-your-interest" target="_blank">&#8599; Register online</a>
+          <a class="action-link" href="mailto:parramatta@mcgrath.com.au">&#9993; parramatta@mcgrath.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- HILLS DISTRICT -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Hills District</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Professionals</div>
+        <div class="office-name">Castle Hill office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N16</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">houses focus</span>
+        </div>
+        <div class="notes">Strong Hills agency. Houses dominate. Good family home stock.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.professionals.com.au/castle-hill" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Baulkham Hills office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N17</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">regular alerts</span>
+        </div>
+        <div class="notes">Large Hills office. Regular listing alert emails.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-baulkham-hills" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:baulkhamhills@raywhite.com.au">&#9993; baulkhamhills@raywhite.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Raine &amp; Horne</div>
+        <div class="office-name">Castle Hill / Norwest office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N18</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">new builds</span>
+        </div>
+        <div class="notes">Norwest corridor growing. Good for new builds and townhouses.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raineandhorne.com.au/castle-hill" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- ST GEORGE / SOUTH -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">St George / South</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Ray White</div>
+        <div class="office-name">Hurstville office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N19</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">high apartment turnover</span>
+        </div>
+        <div class="notes">St George dominant. High apartment turnover.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.raywhite.com/offices/ray-white-hurstville" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:hurstville@raywhite.com.au">&#9993; hurstville@raywhite.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">McGrath Estate Agents</div>
+        <div class="office-name">St George / Kogarah office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N20</span>
+          <span class="meta-pill">has website form</span>
+        </div>
+        <div class="notes">Growing McGrath presence in St George corridor.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.mcgrath.com.au/buy/register-your-interest" target="_blank">&#8599; Register online</a>
+          <a class="action-link" href="mailto:kogarah@mcgrath.com.au">&#9993; kogarah@mcgrath.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Trow Jones</div>
+        <div class="office-name">Cronulla / Sutherland office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N21</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">Shire specialist</span>
+        </div>
+        <div class="notes">Sutherland Shire specialist. Beachside suburb focus.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.trowjones.com.au" target="_blank">&#8599; Website</a>
+          <a class="action-link" href="mailto:info@trowjones.com.au">&#9993; info@trowjones.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <!-- NORTHERN BEACHES -->
+  <div class="corridor">
+    <div class="corridor-header">
+      <span class="corridor-name">Northern Beaches</span>
+      <div class="corridor-line"></div>
+      <span class="corridor-count">3 offices</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">LJ Hooker</div>
+        <div class="office-name">Manly office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N22</span>
+          <span class="meta-pill">email preferred</span>
+          <span class="meta-pill">apt &amp; house mix</span>
+        </div>
+        <div class="notes">Manly and surrounds. Strong apartment and house mix.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.ljhooker.com.au/manly" target="_blank">&#8599; Office page</a>
+          <a class="action-link" href="mailto:manly@ljhooker.com.au">&#9993; manly@ljhooker.com.au</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Cunninghams Real Estate</div>
+        <div class="office-name">Dee Why / Collaroy office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N23</span>
+          <span class="meta-pill">website</span>
+          <span class="meta-pill">NB specialist</span>
+        </div>
+        <div class="notes">Northern Beaches specialist. Long-term agency with loyal agent base.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.cunninghams.com.au" target="_blank">&#8599; Website</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+
+    <div class="agency-card" onclick="toggle(this)">
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <div class="card-body">
+        <div class="agency-name">Belle Property</div>
+        <div class="office-name">Manly / Northern Beaches office</div>
+        <div class="card-meta">
+          <span class="meta-pill nester">N24</span>
+          <span class="meta-pill">contact form</span>
+          <span class="meta-pill">premium</span>
+        </div>
+        <div class="notes">Premium northern beaches. Good for upsizers and downsizers.</div>
+        <div class="action-links">
+          <a class="action-link primary" href="https://www.belleproperty.com/northern-beaches/contact" target="_blank">&#8599; Contact form</a>
+        </div>
+      </div>
+      <span class="status-badge">pending</span>
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-text">NestMatch · Track B checklist · Session 36 · 27 Apr 2026</span>
+    <span class="footer-text">tick each card when registered</span>
+  </footer>
+
+</div>
+
+<script>
+  const TOTAL = 24;
+
+  function toggle(card) {
+    card.classList.toggle('done');
+    const sb = card.querySelector('.status-badge');
+    if (card.classList.contains('done')) {
+      sb.textContent = 'subscribed';
+    } else {
+      sb.textContent = 'pending';
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.agency-card.done').length;
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = done + ' / ' + TOTAL;
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

@@ -2260,35 +2260,301 @@
     <div class="decision-card"><span class="decision-num">D98</span><div class="decision-content"><div class="decision-q">Should Component 3 auto-send nester enquiries or require human review?</div><div class="decision-a">Enquiries are generated automatically on every /search but Brian reviews and approves before send via review_queue.py. Full automation (auto-send without review) deferred to Session 32 once the queue has proven reliable and agent email data is clean. Human-in-the-loop is the correct architecture at this stage — the queue compounds intelligence without compounding errors. <strong>Decision: human-in-the-loop review retained for Session 31. Auto-send deferred to Session 32 after agent email data gap is resolved and queue reliability proven.</strong></div></div></div>
     <div class="decision-card"><span class="decision-num">D99</span><div class="decision-content"><div class="decision-q">How should the trajectory badge render on mobile?</div><div class="decision-a">Full badge ("Rising +14.0% YoY · CoreLogic · Q1 2026") wraps across multiple lines at 400px viewport, breaking the card layout. Source and year are secondary data — they add credibility on desktop where space exists but create noise on mobile. Simplified badge ("Rising +14.0%") fits on one line, retains the signal that matters (direction + magnitude), and keeps the card scannable on mobile. <strong>Decision: trajectory badge simplified to label + percentage only. Source and year dropped from badge render. No data loss — source and year remain in the DB and can surface in a detail view post-pilot.</strong></div></div></div>
 
+  <!-- Session 32 -->
+  <div class="session-entry">
+    <div class="session-header">
+      <span class="session-num">Session 32</span>
+      <span class="session-date">26 Apr 2026</span>
+    </div>
+    <div class="session-title">D100 listing_agent_email column live &middot; agent naming convention standardised &middot; core listing strategy decided (D101) &middot; commits 0771c33 + Proton filter fix</div>
+    <div class="session-body">
+      Three items completed. Agent email data gap resolved: <code>listing_agent_email</code> column added to properties table, 8 real agent emails populated (Cremorne, Mosman, Neutral Bay, North Sydney). Agent naming convention standardised to <code>listing_agent_</code> prefix across DB, models, engine, and demand_trigger — future <code>buyers_agent_</code> prefix reserved for buyer-side agents. Pydantic field aliases retain backward-compatible API response keys (<code>agent_name</code>, <code>agent_phone</code>, <code>agent_email</code>) so frontend required no changes. Demand trigger updated to read <code>listing_agent_email</code> from properties table directly, with fallback to <code>agent_replies</code> for properties not yet updated. Proton/Zoho alias filter added — demand trigger skips properties where agent email is a NestMatch alias. Deploy confirmed clean on Render. Core listing acquisition strategy decided (D101) — REA/Domain used only as cold-contact directory in Phase 1; permanent backbone is direct agent relationships + agency mailing list subscriptions. Reddit pilot recruitment paused — resumes Session 33.
+      <ul class="log-list" style="margin-top: 16px;">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Agent email data gap &mdash; <code>listing_agent_email</code> column added, 8 real emails populated, demand trigger reads correctly.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Naming convention &mdash; <code>listing_agent_</code> prefix standardised across DB, models, engine, demand_trigger. Pydantic aliases preserve frontend contract.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Proton/Zoho filter &mdash; demand trigger skips NestMatch alias emails, queues real agent emails only.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Core listing strategy &mdash; D101 decided and recorded. REA/Domain as cold-contact only. Direct agent + agency mailing lists as permanent backbone.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Reddit pilot recruitment &mdash; paused during Session 32. Resume Session 33.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>listing_agent_email promotion &mdash; currently manual. Future: email poller auto-promotes real agent emails from agent_replies into properties.listing_agent_email on reply capture.</li>
+        <li class="log-item pending-item"><span class="icon">&#9711;</span>Agency mailing list subscriptions &mdash; nesters to subscribe to Ray White, McGrath, Belle Property, LJ Hooker et al. Email poller extended to parse new listing alerts and auto-ingest properties. Session 33+.</li>
+      </ul>
+    </div>
+    <div class="session-code-block">
+<span class="comment"># Session 32 &mdash; state after completion</span>
+<span class="highlight">properties.listing_agent_email</span>   column live &middot; 8 real emails populated &middot; demand trigger reads correctly &#10003;
+<span class="highlight">naming convention</span>                 listing_agent_ prefix across stack &middot; Pydantic aliases preserve API contract &#10003;
+<span class="highlight">Proton/Zoho filter</span>               demand trigger skips aliases &middot; real emails only &#10003;
+<span class="highlight">Core listing strategy</span>            D101 decided &middot; REA/Domain cold-contact only &middot; direct agent + mailing lists = backbone &#10003;
+<span class="success">Agent email gap closed. Naming convention standardised. Core listing acquisition strategy locked. Machine operational.</span>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 32 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 32</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D100</span><div class="decision-content"><div class="decision-q">How should agent contact fields be named across the stack?</div><div class="decision-a">Mixed naming (<code>sales_agent</code>, <code>agent_phone</code>, <code>agent_email</code>) created ambiguity as buyer-side agent fields approach. Standardised to <code>listing_agent_</code> prefix for all listing-side agent fields: <code>listing_agent_name</code>, <code>listing_agent_phone</code>, <code>listing_agent_email</code>. Future buyer-side fields will use <code>buyers_agent_</code> prefix. Pydantic field aliases retain <code>agent_name</code>, <code>agent_phone</code>, <code>agent_email</code> as API response keys — frontend requires no changes. DB column <code>agent_email</code> renamed to <code>listing_agent_email</code> at creation (column was new, zero migration risk). <code>sales_agent</code> and <code>agent_phone</code> DB columns deferred to clean-up session. <strong>Decision: listing_agent_ prefix adopted. Pydantic aliases preserve API contract. Full DB rename deferred.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D101</span><div class="decision-content"><div class="decision-q">What is NestMatch&rsquo;s core listing acquisition strategy?</div><div class="decision-a">REA and Domain control the portal layer and prohibit scraping. NestMatch&rsquo;s strategy is to build a direct listing intelligence layer underneath them via two permanent sources: (1) Direct agent relationships &mdash; nesters send enquiries through REA/Domain portals in Phase 1 purely as a cold-contact mechanism to obtain listing agent real emails from replies. Once captured, all future contact is direct &mdash; bypassing portals entirely. Agents benefit from pre-qualified buyer interest before public listing. (2) Agency mailing list subscriptions &mdash; nesters subscribe to agency newsletters and new listing alerts (Ray White, McGrath, Belle Property, LJ Hooker et al.). Email poller captures and parses these inbound emails, auto-ingesting new properties into the database. Both sources feed <code>properties</code> and <code>agent_replies</code> simultaneously. Over time NestMatch sees listings earlier than REA/Domain, with direct agent contact already established. The compound effect: REA and Domain cannot replicate this without destroying their own portal business model. <strong>Decision: REA/Domain used only as cold-contact directory in Phase 1. Permanent backbone is direct agent relationships + agency mailing list subscriptions. Portal dependency eliminated as agent roster grows.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D102</span><div class="decision-content"><div class="decision-q">How should the demand trigger handle NestMatch nester alias emails?</div><div class="decision-a">agent_replies captured Proton and Zoho alias emails (jam.nguyen73@proton.me, mpark_home@proton.me) as agent_email values — these are NestMatch&rsquo;s own outbound addresses, not real listing agent emails. Demand trigger was queuing these incorrectly. Fix: explicit filter added — skip any property where listing_agent_email contains &lsquo;proton.me&rsquo; or &lsquo;zoho.com&rsquo;. Only real external agent emails trigger queue entries. <strong>Decision: Proton/Zoho alias filter permanent in demand trigger. listing_agent_email must be a real external address to qualify for queue.</strong></div></div></div>
+  </div>
+
+  <!-- Session 33 -->
+  <p class="section-title" style="margin-top: 40px;">Session 33</p>
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 33</span>
+        <span class="session-date">26 Apr 2026</span>
+      </div>
+      <div class="session-title">Nester army designed (30 nesters &middot; 8 corridors) &middot; homemailbox.com.au live &middot; Cloudflare Email Routing + catch-all active &middot; pipeline architecture clarified &middot; D103&ndash;D106</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Strategic and infrastructure session. Three items completed in order. Item 1: nester army designed &mdash; 30 personas across 8 higher-value Sydney corridors, names reflecting corridor demographics, each assigned a property type lane for enquiry coherence. Budget removed from nester persona definition (D103) &mdash; budget is a user input, not a nester attribute. Item 2: email infrastructure built end-to-end. Domain strategy decided: homemailbox.com.au selected as nester sending domain &mdash; neutral, untraceable to NestMatch, professional (D104). homemailbox.com.au and homemailbox.au registered on Crazy Domains. homemailbox.com.au pointed to Cloudflare, Email Routing enabled, catch-all rule activated: all mail to *@homemailbox.com.au forwards to buyers@nestmatch.com.au. No per-nester mailbox provisioning ever required. Item 3: pipeline readiness audit completed &mdash; four gaps identified for Session 34 code build. Two architectural principles clarified and recorded (D105, D106).
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Nester army designed &mdash; 30 personas, 8 corridors (lower north shore, inner west, eastern suburbs, upper north shore, Parramatta/west, Hills district, St George/south). Names reflect corridor demographics. Each nester assigned one property type lane (apartment/house/terrace) for enquiry coherence. Full roster saved as <code>nestmatch_nester_roster.html</code> &mdash; filterable by buyer type and property type, all emails @homemailbox.com.au.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Budget removed from nester persona definition (D103). Budget is a user input at search time, not a nester attribute. Nester persona defines: name, demographics, corridor, postcodes, property type, communication style only.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Email domain strategy decided (D104). homemailbox.com.au selected &mdash; neutral, untraceable to NestMatch, professional. nestmail.com.au rejected (&#39;nest&#39; traceable). homemailbox.com.au + homemailbox.au registered on Crazy Domains. homemailbox.au defensive registration only &mdash; no infrastructure.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>homemailbox.com.au pointed to Cloudflare (nameservers: chase.ns.cloudflare.com + samara.ns.cloudflare.com). Titan Email trial removed. DNS records cleared.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Cloudflare Email Routing enabled on homemailbox.com.au. MX + SPF + DKIM records auto-added. buyers@nestmatch.com.au verified as destination.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Catch-all rule live: *@homemailbox.com.au &rarr; buyers@nestmatch.com.au. Active. All 30 nester addresses operational for inbound with zero individual setup.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Pipeline readiness audit completed. Four gaps identified for Session 34: personas.json rebuild (30 nesters, homemailbox.com.au addresses), Resend API integration in question_engine.py, listing_agent_email auto-promotion in email_poller.py, nester address tracking (To: field extraction).</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Two-loop architecture clarified (D105): Loop 1 (data supply, background) &mdash; nesters send enquiries, agents reply, emails captured, database enriched. Loop 2 (buyer experience, real-time) &mdash; buyer searches, NestMatch queries its own database, matched properties returned instantly. Loops run in parallel, independently.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Feynman explanation recorded (D106): nester army = thirty normal-looking people knocking on doors with reasonable questions. Agent answers, writes return address on envelope. That return address is the prize. All thirty people share one letterbox (catch-all). Address book fills over time. One day agents write first.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Resend API integration &mdash; outbound sending from @homemailbox.com.au. Completed Session 34.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>personas.json rebuild &mdash; 30 nesters, homemailbox.com.au addresses, corridors, property types. Completed Session 34.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>listing_agent_email auto-promotion &mdash; poller captures real agent email, auto-updates properties record. Completed Session 34.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Nester address tracking &mdash; NESTER_MAP rebuilt with all 30 homemailbox.com.au addresses. To: field identification operational. Completed Session 34.</li>
+      </ul>
+      <div class="session-code-block">
+<span class="comment"># Session 33 &mdash; state after completion</span>
+<span class="highlight">Nester army</span>             30 personas &middot; 8 corridors &middot; property type lanes assigned &#10003;
+<span class="highlight">homemailbox.com.au</span>      registered &middot; Cloudflare DNS active &#10003;
+<span class="highlight">homemailbox.au</span>          registered &middot; defensive only &#10003;
+<span class="highlight">Email Routing</span>           catch-all *@homemailbox.com.au &rarr; buyers@nestmatch.com.au &middot; Active &#10003;
+<span class="highlight">Pipeline audit</span>          4 gaps mapped &middot; Session 34 build plan ready &#10003;
+<span class="highlight">Two-loop architecture</span>   D105 &middot; Loop 1 = data supply &middot; Loop 2 = buyer experience &#10003;
+<span class="success">Email infrastructure complete. 30 nester addresses operational. Session 34: code build.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 33 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 33</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D103</span><div class="decision-content"><div class="decision-q">Should nester personas include a budget range?</div><div class="decision-a">Budget was initially proposed as a nester persona attribute, corridor by corridor. Rejected: different property types in the same corridor have vastly different price ranges, and hardcoded budgets age badly as markets move. More fundamentally, the nester&rsquo;s job is to obtain listing agent emails and subscribe to mailing lists &mdash; not to simulate a fully-formed buyer. Budget belongs to the real buyer&rsquo;s search input, not the nester definition. Nester persona defines only: name, demographics, corridor, postcodes, property type lane, communication style. <strong>Decision: budget removed from nester persona definition permanently. Budget is a user input at search time.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D104</span><div class="decision-content"><div class="decision-q">What domain should nester outbound emails use, and why not nestmatch.com.au?</div><div class="decision-a">Using nestmatch.com.au as the nester sending domain creates direct traceability: any agent who Googles the domain lands on the product and realises the enquiry came from a platform, not a real buyer. Multiple domain candidates evaluated. nestmail.com.au rejected &mdash; &lsquo;nest&rsquo; prefix creates same traceability risk. homemailbox.com.au selected: neutral, professional, completely unremarkable to a receiving agent. An agent seeing james.nguyen@homemailbox.com.au thinks &ldquo;this person uses a home-focused mail service&rdquo; &mdash; no thread to pull. homemailbox.au registered defensively. Cloudflare Email Routing catch-all on homemailbox.com.au means zero per-nester mailbox provisioning. Resend API handles programmatic outbound sending from any @homemailbox.com.au address. <strong>Decision: homemailbox.com.au is the permanent nester sending domain. homemailbox.au defensive only. nestmail.com.au and nestmail.au not registered.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D105</span><div class="decision-content"><div class="decision-q">How does the nester enquiry pipeline relate to the buyer search experience &mdash; are they the same loop?</div><div class="decision-a">Architectural clarification: two independent loops run in parallel. Loop 1 (data supply, background) &mdash; nesters send enquiries to listing agents via REA/Domain as cold-contact directory; agents reply; email poller captures real agent emails; properties.listing_agent_email auto-promoted; database enriched over time. Loop 2 (buyer experience, real-time) &mdash; buyer searches NestMatch; matching engine queries the existing properties database; matched properties returned instantly. The demand trigger fires after a buyer search as part of Loop 1 &mdash; it queues an enquiry to harvest the agent&rsquo;s real email for future direct contact, not to fetch listing data for the current search result. Database size is the binding constraint: Loop 1 must fill the database fast enough that Loop 2 returns meaningful results. <strong>Decision: two-loop architecture confirmed. Loop 1 feeds the database. Loop 2 serves buyers from it. They run in parallel and independently.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D106</span><div class="decision-content"><div class="decision-q">How should the nester pipeline strategy be understood in plain language?</div><div class="decision-a">Feynman explanation adopted as the canonical plain-language description of the nester strategy: &ldquo;Thirty normal-looking people knock on doors with perfectly reasonable questions. The agent answers and writes their return address on the envelope. That return address is the prize. All thirty people share one letterbox. The address book fills over time. One day the agents write first.&rdquo; The catch-all inbox is the shared letterbox. The nester personas are the thirty normal-looking people. The listing agent&rsquo;s real email is the return address. The compound effect: as the address book fills, NestMatch gains direct agent relationships that REA and Domain cannot replicate without destroying their own portal model. <strong>Decision: Feynman explanation is the canonical description of the nester strategy for onboarding, documentation, and future team communication.</strong></div></div></div>
+  </div>
+
+  <!-- Session 34 -->
+  <p class="section-title" style="margin-top: 40px;">Session 34</p>
+  <div class="session-entry">
+    <div class="session-header">
+      <div class="session-meta">
+        <span class="session-num">Session 34</span>
+        <span class="session-date">27 Apr 2026</span>
+      </div>
+      <div class="session-title">Resend domain verified &middot; personas.json rebuilt (30 nesters) &middot; Resend API integrated &middot; listing_agent_email auto-promotion &middot; NESTER_MAP rebuilt &middot; post-session Q&amp;A: two tasks scoped</div>
+    </div>
+    <div class="session-body">
+      <p class="session-summary">
+        Pure code build session. All four pipeline gaps identified in Session 33 closed. Infrastructure first: Resend.com account confirmed, homemailbox.com.au added as sending domain (Tokyo region), four DNS records added to Cloudflare (DKIM, MX, SPF, DMARC), domain verified. RESEND_API_KEY added to Render environment. Then four code tasks in order. Task 1: personas.json rebuilt from scratch &mdash; 30 nesters N01&ndash;N30, all homemailbox.com.au addresses, corridors, postcodes, buyer-type-consistent writing styles and sign-offs, empty question_history arrays. Task 2: send_enquiry() function added to question_engine.py &mdash; fires programmatically via Resend API from correct nester address, replaces manual copy-paste flow entirely. Task 3: maybe_promote_agent_email() added to email_poller.py &mdash; after every successful Cat 1 store, auto-updates properties.listing_agent_email if null and address matches. Eliminates manual population permanently. Task 4: NESTER_MAP rebuilt with all 30 homemailbox.com.au addresses &mdash; To: field nester identification now works for full nester team. Post-session Q&amp;A identified two important tasks for upcoming sessions: narrative search AI interpretation (Session 35) and nester deployment strategy (Session 36, higher priority).
+      </p>
+      <ul class="log-items">
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Resend.com account confirmed (shen.baiping). homemailbox.com.au added as sending domain &mdash; Tokyo (ap-northeast-1) region. Four DNS records added to Cloudflare: DKIM TXT (resend._domainkey), MX (send, priority 10), SPF TXT (send), DMARC TXT (_dmarc). Domain verified. Enable Receiving left off &mdash; Cloudflare catch-all handles inbound.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>RESEND_API_KEY created (nestmatch-prod, full access) and added to Render environment variables. Service rebuilt and deployed.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>personas.json rebuilt &mdash; 30 nesters N01&ndash;N30. All homemailbox.com.au addresses. Fields: full_name, email, life_stage, property_target, budget_min, budget_max, style, sign_off, corridor, postcodes, property_type, buyer_type, question_history. Writing styles and sign-offs calibrated by buyer type (FHB, upsizer, investor, downsizer). Committed to GitHub.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>send_enquiry() added to question_engine.py &mdash; takes result from generate_enquiry(), fires via Resend API POST to /emails, from field set to nester name + homemailbox.com.au address, returns success/resend_id/error dict. RESEND_API_KEY loaded from environment.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>maybe_promote_agent_email() added to email_poller.py &mdash; called after every successful Cat 1 store. Looks up properties table by address (case-insensitive), updates listing_agent_email if currently null. Prints promotion log line. Eliminates manual agent email population permanently.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>NESTER_MAP in email_poller.py rebuilt &mdash; old 9 Proton/Outlook entries replaced with all 30 homemailbox.com.au addresses mapped to N01&ndash;N30. Three-pass nester identification (subject tag, To: field, sender) now works for full team.</li>
+        <li class="log-item done-item"><span class="icon">&#10003;</span>Post-session Q&amp;A: two tasks scoped. (1) Narrative search AI interpretation &mdash; current matching engine misses lifestyle/view/character requirements not captured in structured fields. Requires AI translation layer + data enrichment. (2) Nester deployment strategy &mdash; trigger logic, corridor-to-property matching, send rate, subject lines. Deployment sequenced before narrative search (database fill is binding constraint).</li>
+      </ul>
+      <div class="session-code-block">
+<span class="comment"># Session 34 &mdash; state after completion</span>
+<span class="highlight">Resend domain</span>           homemailbox.com.au verified &middot; Tokyo region &middot; DKIM+SPF+MX+DMARC &#10003;
+<span class="highlight">RESEND_API_KEY</span>          live on Render &#10003;
+<span class="highlight">personas.json</span>           30 nesters &middot; N01&ndash;N30 &middot; homemailbox.com.au &middot; styles + sign-offs &#10003;
+<span class="highlight">send_enquiry()</span>          Resend API integration in question_engine.py &#10003;
+<span class="highlight">maybe_promote_agent_email()</span>  auto-promotion in email_poller.py &#10003;
+<span class="highlight">NESTER_MAP</span>              30 homemailbox.com.au entries &middot; To: tracking operational &#10003;
+<span class="success">Pipeline end-to-end: nesters can send programmatically. Agent replies captured + auto-promote. Two tasks scoped for Sessions 35&ndash;36.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions — Session 34 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 34</p>
+  <div class="decisions">
+    <div class="decision-card"><span class="decision-num">D107</span><div class="decision-content"><div class="decision-q">Should the narrative search input be treated as a structured query or does it require an AI interpretation layer?</div><div class="decision-a">Testing revealed that natural language input (&ldquo;small apartment with Harbour Bridge view as holiday pad, $1.5M&rdquo;) returned properties matching budget and type but completely ignoring lifestyle and view requirements. The current matching engine operates on structured fields only &mdash; it has no mechanism to interpret unstructured buyer intent. Two coupled problems identified: (1) AI translation layer needed to convert natural language into structured criteria including lifestyle flags, view requirements, character descriptors; (2) data enrichment problem &mdash; even perfect intent extraction fails if the properties table lacks the relevant fields (e.g. harbour_bridge_view). Both must be addressed together. <strong>Decision: narrative search requires a dedicated AI interpretation layer. Implementation deferred to Session 35. Data enrichment strategy to be designed in the same session.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D108</span><div class="decision-content"><div class="decision-q">What is the sequencing priority between narrative search and nester deployment?</div><div class="decision-a">Two significant tasks identified in post-session Q&amp;A. Nester deployment strategy (trigger logic, corridor matching, send rate, subject lines) sequenced before narrative search AI interpretation. Rationale: database size is the binding constraint on the entire platform &mdash; Loop 2 (buyer search experience) only returns meaningful results when Loop 1 (data supply) has filled the properties table sufficiently. Deploying nesters fills the database. Improving the search experience before the database has meaningful volume serves no one. Narrative search is a buyer-facing product improvement; nester deployment is infrastructure that makes the product viable. <strong>Decision: nester deployment strategy is Session 35 priority. Narrative search AI interpretation is Session 36.</strong></div></div></div>
+  </div>
+
+  <!-- Session 35 -->
+  <p class="section-title" style="margin-top: 40px;">Session 35</p>
+  <div class="session-block">
+    <div class="session-header">
+      <span class="session-num">Session 35</span>
+      <span class="session-status status-complete">Complete</span>
+    </div>
+    <div class="session-title">Nester deployment strategy &middot; two-track architecture clarified &middot; nester_router.py &middot; deployment_trigger.py &middot; subject_line.py &middot; agency_targets.py &middot; send_log table &middot; D109&ndash;D113</div>
+    <p class="session-summary">
+      Strategy session + code build. Session opened with an important objective clarification: nesters exist to trigger and capture listing agents&rsquo; and agencies&rsquo; ongoing listing feeds, not just one-off email addresses. Three ranked objectives confirmed (D109): #1 capture agent&rsquo;s direct email; #2 get onto individual agent&rsquo;s active buyer list for continuous updates; #3 get onto agency-level automated mailing list (highest leverage, one-time action per agency, automatic feed thereafter). This reframed the deployment strategy into two parallel tracks. Track A: portal enquiries via question_engine (property-by-property, demand and scheduled triggers). Track B: agency subscription outreach (one-time registration per agency office, nester becomes recipient of continuous new listing alerts). Track B ranked highest by leverage because agency mailing lists are automated and scale without further nester action. Nester refresh cadence identified: every 3&ndash;4 months per agent relationship, every 6 months per agency subscription. Four files built and committed: nester_router.py (suburb &rarr; corridor &rarr; nester routing, pick_nester() with property_type preference and random rotation), deployment_trigger.py (demand_trigger() and scheduled_trigger(), all safety gates: daily cap 3/nester, 30-min gap, D74 agency lockout 7-day rolling, ±10-min jitter), subject_line.py (cold and warm portal patterns, Track B subscription subjects keyed by buyer_type), agency_targets.py (24 target agency offices across 8 corridors, 2&ndash;3 per corridor, one nester assigned per office). send_log table DDL written (create_send_log.sql) &mdash; run in Neon before first send. Session 36: first live sends + Neon send_log table creation + narrative search AI layer.
+    </p>
+    <ul class="log-items">
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Nester objective clarified (D109) &mdash; three ranked goals: #1 agent direct email capture; #2 individual agent buyer list; #3 agency automated mailing list. #3 highest leverage. Deployment strategy reframed into Track A (portal enquiries) and Track B (agency subscriptions).</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Two-track architecture decided (D110) &mdash; Track A: question_engine sends portal enquiries property-by-property, demand and scheduled triggers. Track B: nesters subscribe directly to agency mailing lists, one-time per office, continuous inbound feed thereafter. Tracks run in parallel.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Nester refresh cadence identified (D111) &mdash; 3&ndash;4 months per agent relationship heartbeat; 6 months per agency subscription re-engagement. Prevents agents and agency CRMs from dropping nesters as cold contacts.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>nester_router.py built &mdash; SUBURB_CORRIDOR_MAP covers ~100 Sydney suburbs across 8 corridors. get_nesters_for_suburb() returns all corridor matches. pick_nester() returns single best nester: property_type preferred, random rotation among eligible, exclude_ids for D74 and daily-cap enforcement.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>deployment_trigger.py built &mdash; demand_trigger() fires after buyer search on uncontacted property: routes nester, checks safety gates, generates enquiry, builds subject, sends via Resend, logs to send_log. scheduled_trigger() cron variant: cycles through properties with agent emails, oldest-last-sent first, with jitter. Safety gates: 3 sends/nester/day, 30-min minimum gap, D74 7-day agency/corridor lockout.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>subject_line.py built (D112) &mdash; cold pattern bank (5 variants), warm follow-up bank (4 variants). Address abbreviated automatically (Street&rarr;St etc). Track B subscription subjects keyed by buyer_type (fhb/upsizer/investor/downsizer). Never uses &ldquo;Re:&rdquo;, never rigid template, rotates randomly.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>agency_targets.py built (D113) &mdash; 24 target agency offices mapped across 8 corridors. 2&ndash;3 offices per corridor. Agencies: McGrath, Ray White, Belle Property, LJ Hooker, BresicWhitney, Cobden &amp; Hayson, Richardson &amp; Wrench, NG Farah, Professionals, Raine &amp; Horne, Cunninghams, Stone, Trow Jones. Each assigned one nester. Status field: pending/subscribed/confirmed/paused.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>send_log table DDL written (create_send_log.sql) &mdash; tracks nester_id, property_id, agent_email, agency_name, corridor, suburb, sent_at, resend_id, trigger_type, status. Two indexes: nester+sent_at, agency+corridor+sent_at. Run in Neon before first live send.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>send_log table created in Neon &mdash; create_send_log.sql run successfully. Table and two indexes live.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>First live send confirmed end-to-end &mdash; N01 James Nguyen &rarr; John Wills (WILLS PROPERTY, Cremorne). Resend status: Delivered. send_log row 1 written: nester_id N01, corridor Lower North Shore, agency WILLS PROPERTY. Subject: &ldquo;Question about 9/68-70 Gerard St, Cremorne&rdquo;. Commit abfd74a.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Track B agency subscription outreach &mdash; trackb_checklist.html generated: 24 offices &middot; 8 corridors &middot; nester assigned per office &middot; direct links + registration script. Manual rollout ongoing between sessions.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Wire demand_trigger() into main.py &mdash; auto-send live (Session 36, commit 4d3c160). demand_trigger.py updated: manual review step retired, demand_trigger() in deployment_trigger.py called directly. import paths in deployment_trigger.py fixed (app.nester_router, app.question_engine, app.subject_line). Verified end-to-end: buyer search &rarr; N01 &rarr; John@willsproperty.com.au &middot; Cremorne &middot; status: sent &middot; send_log row written. Deployed to Render, health check green (182 properties).</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Deploy scheduled_trigger() as Render cron job &mdash; system sends independently of buyer activity. Session 37.</li>
+    </ul>
+  </div>
+
+  <pre class="state-block"><span class="comment"># Session 36 &mdash; state after completion</span>
+<span class="highlight">demand_trigger.py</span>       manual review step retired &middot; auto-send via deployment_trigger.demand_trigger() &#10003;
+<span class="highlight">deployment_trigger.py</span>   import paths fixed (app.nester_router, app.question_engine, app.subject_line) &#10003;
+<span class="highlight">End-to-end verified</span>    buyer search &rarr; N01 &rarr; John@willsproperty.com.au &middot; Cremorne &middot; status: sent &#10003;
+<span class="highlight">send_log</span>                demand trigger row written automatically on buyer search &#10003;
+<span class="highlight">Render deploy</span>          commit 4d3c160 &middot; deploy live &middot; health check ok &middot; 182 properties &#10003;
+<span class="highlight">Track B checklist</span>       trackb_checklist.html &middot; 24 offices &middot; 8 corridors &middot; interactive tick-off &#10003;
+<span class="highlight">Track A</span>                 fully automatic &middot; every buyer search fires nester sends &middot; no manual step &#10003;
+<span class="highlight">Track B</span>                 checklist generated &middot; manual registrations ongoing between sessions &#10003;
+<span class="success">Session 36 fully closed. Session 37: deploy scheduled_trigger() as Render cron job &mdash; final step to near-zero manual involvement.</span></pre>
+
+  <!-- Decisions — Session 36 -->
+  <p class="section-title" style="margin-top: 40px;">Decisions &mdash; Session 36</p>
+  <div class="decisions-block">
+    <div class="decision-card"><span class="decision-num">D116</span><div class="decision-content"><div class="decision-q">How should the demand trigger pipeline be restructured to remove the manual review step?</div><div class="decision-a">Session 31 built a two-stage pipeline: trigger_enquiries() queued rows into enquiry_queue with status &lsquo;pending&rsquo;, then a human reviewed and sent via review_queue.py. This manual gate was identified as the bottleneck preventing full automation. Session 36 replaced the pending/review step with a direct call to deployment_trigger.demand_trigger(), which generates, applies safety gates, sends via Resend, and logs to send_log in one atomic operation. enquiry_queue is retained as an audit record but written post-send with status &lsquo;sent&rsquo; &mdash; no pending state, no human gate. import paths in deployment_trigger.py corrected from bare module names to app.* prefix (app.nester_router, app.question_engine, app.subject_line) to match the app/ package structure. Verified end-to-end locally (send_log row written, status: sent) and on Render (commit 4d3c160, health check green, 182 properties). <strong>Decision: manual review step permanently retired. Auto-send is the production mode from Session 36 forward. Option 1 (manual per-property trigger) retired per D115.</strong></div></div></div>
+    <div class="decision-card"><span class="decision-num">D117</span><div class="decision-content"><div class="decision-q">What is the Track B operational protocol for agency registration?</div><div class="decision-a">trackb_checklist.html generated as the standalone operational tool for Track B rollout. 24 agency offices across 8 corridors, each with: assigned nester ID, preferred registration method (website form or email), direct link, and notes. Interactive tick-off updates a progress bar (0/24). Registration script: one short paragraph in the nester&rsquo;s name, mentioning active buyer status and requesting to be added to new listing notifications. No over-explaining. Lower North Shore is the starting corridor: McGrath Cremorne/Mosman (N01, website form), Belle Property Neutral Bay (N02, contact form), Ray White Mosman (N03, email). After registration, the email poller handles all inbound listing alerts automatically &mdash; no further manual action per office. Registrations are worked through between sessions independently of the build schedule. <strong>Decision: trackb_checklist.html is the canonical Track B operational tool. Lower North Shore first. One paragraph registration script adopted.</strong></div></div></div>
+  </div>
+
+  <!-- Session 37 -->
+  <div class="session-block">
+    <div class="session-header">
+      <span class="session-num">Session 37</span>
+      <span class="session-status status-complete">Complete</span>
+    </div>
+    <div class="session-title">Scheduled trigger cron deployed &middot; wakeup ping added &middot; three-step automation path complete &middot; commit 6fe1f23</div>
+    <p class="session-summary">
+      Infrastructure completion session. Single objective: deploy scheduled_trigger() as a cron job so the system sends nester enquiries independently of buyer activity. POST /internal/run-scheduled-trigger added to main.py &mdash; same pattern as /internal/run-outcome-agent, calls scheduled_trigger(limit=10) and returns a summary dict (processed/sent/skipped/failed). Committed 6fe1f23, deployed to Render (deploy live 6:10 PM). Render free-tier cron UI not suitable (requires full repo deploy, not HTTP call) &mdash; cron-job.org used instead, consistent with existing outcome-agent pattern. nestmatch-scheduled-trigger created: POST https://nestmatch-s3s3.onrender.com/internal/run-scheduled-trigger, daily 11:00 PM Australia/Sydney, save responses on. Cold-start issue diagnosed on nestmatch-outcome-agent (503 at 11pm due to Render free-tier spin-down, outcome_records table confirmed empty). nestmatch-wakeup-ping added: GET /health daily at 10:50 PM &mdash; warms Render 10 minutes before both cron jobs fire. Three-job cron sequence now live. Between-session work noted: N01&ndash;N09 nester migration to homemailbox.com.au addresses (consistency with N10&ndash;N30), Track B agency registrations ongoing.
+    </p>
+    <ul class="log-items">
+      <li class="log-item done-item"><span class="icon">&#10003;</span>POST /internal/run-scheduled-trigger added to main.py &mdash; calls scheduled_trigger(limit=10), returns {processed, sent, skipped, failed, detail}. Commit 6fe1f23, deploy live on Render 6:10 PM.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Render free-tier cron UI bypassed &mdash; requires full Git repo deploy, not suitable for HTTP-only trigger. cron-job.org used (existing account, same pattern as outcome-agent).</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>nestmatch-scheduled-trigger created on cron-job.org &mdash; POST https://nestmatch-s3s3.onrender.com/internal/run-scheduled-trigger &middot; daily 11:00 PM Australia/Sydney &middot; responses saved &middot; first run tonight.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Cold-start issue diagnosed &mdash; outcome_records table empty, nestmatch-outcome-agent failing with 503 (Render free-tier spin-down, 30s cron-job.org timeout). Not a code bug &mdash; Render wakes after 50s but cron-job.org has already timed out.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>nestmatch-wakeup-ping created &mdash; GET https://nestmatch-s3s3.onrender.com/health &middot; daily 10:50 PM Australia/Sydney &middot; warms Render instance 10 minutes before outcome-agent and scheduled-trigger fire at 11:00 PM.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Three-step automation path complete &mdash; Track A demand (buyer search fires send automatically) + Track A scheduled (daily 11pm independent of buyers) + email poller (every 15 min inbound capture). Ongoing manual involvement = Track B nester refresh heartbeat only.</li>
+      <li class="log-item pending-item"><span class="icon">&#9711;</span>Verify tonight's cron run &mdash; check cron-job.org history for nestmatch-scheduled-trigger tomorrow morning. Confirm send_log rows with trigger_type = &lsquo;scheduled&rsquo; appear in Neon.</li>
+      <li class="log-item pending-item"><span class="icon">&#9711;</span>N01&ndash;N09 nester migration to homemailbox.com.au &mdash; replace current mailboxes (Proton, Outlook, Gmail) with homemailbox.com.au addresses for consistency with N10&ndash;N30. Update personas.json and NESTER_MAP. Brian to action between sessions.</li>
+    </ul>
+  </div>
+
+  <pre class="state-block"><span class="comment"># Session 37 &mdash; state after completion</span>
+<span class="highlight">Commit</span>                  6fe1f23 &middot; POST /internal/run-scheduled-trigger &middot; deploy live &#10003;
+<span class="highlight">cron-job.org</span>            3 jobs: wakeup-ping 10:50pm &middot; scheduled-trigger 11:00pm &middot; outcome-agent 11:00pm &#10003;
+<span class="highlight">Track A demand</span>          auto-send on every buyer search &middot; no manual step &#10003;
+<span class="highlight">Track A scheduled</span>       daily 11:00 PM AEST &middot; independent of buyer activity &#10003;
+<span class="highlight">Email poller</span>            every 15 min &middot; Cat1 + Cat2 inbound capture &#10003;
+<span class="highlight">N01&ndash;N09 migration</span>      homemailbox.com.au &middot; pending between sessions
+<span class="highlight">Track B</span>                 registrations ongoing between sessions
+<span class="success">Session 37 fully closed. Three-step automation path complete. Next: verify tonight&rsquo;s cron run, then N01&ndash;N09 nester migration + narrative search AI layer.</span></pre>
+
+  <!-- Session 38 -->
+  <div class="session-block">
+    <div class="session-header">
+      <span class="session-num">Session 38</span>
+      <span class="session-status status-complete">Complete</span>
+    </div>
+    <div class="session-title">Cron verified (tonight) &middot; N01&ndash;N09 migration confirmed complete &middot; narrative search AI layer live &middot; commit 4a76331</div>
+    <p class="session-summary">
+      Three-task session. Task 1: cron verification — wakeup-ping and scheduled-trigger jobs were created 10 minutes into the session (green, not yet run), outcome-agent showed one prior 503 failure from before the wakeup-ping existed. Tonight will be the first proper three-job sequence run; verification deferred to tomorrow morning. Task 2: N01&ndash;N09 nester migration — confirmed already complete. Both personas.json and NESTER_MAP in email_poller.py were already fully on homemailbox.com.au addresses for all 30 nesters including N01&ndash;N09. No code changes needed. Task 3: narrative search AI layer — investigation revealed the Next.js API route app/api/parse-narrative/route.ts was already fully built with a detailed system prompt covering budget shorthand conversion, suburb expansion by region and nickname, buyer_priority detection, sparse keyword handling, and confidence scoring. ANTHROPIC_API_KEY in Vercel was flagged &ldquo;Needs Attention&rdquo; — key value was correct but required a redeploy to be picked up. Redeployed, tested live: input &ldquo;2 bed apartment in Newtown or Erskineville, under $1.1M, close to the train&rdquo; correctly extracted budget $1.1M, 2+ beds, apartment, 20 min commute, inner west suburbs — result returned. Redundant /parse-narrative backend endpoint and NarrativeRequest/NarrativeResponse models added mid-session were removed once the frontend route was discovered. Commit 4a76331. Post-session Q&amp;A: two important discussions recorded below.
+    </p>
+    <ul class="log-items">
+      <li class="log-item pending-item"><span class="icon">&#9711;</span>Verify tonight&rsquo;s cron run &mdash; check cron-job.org history for nestmatch-wakeup-ping and nestmatch-scheduled-trigger tomorrow morning. Confirm send_log rows with trigger_type = &lsquo;scheduled&rsquo; in Neon. First proper three-job sequence run.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>N01&ndash;N09 nester migration confirmed complete &mdash; personas.json and NESTER_MAP already fully on homemailbox.com.au for all 30 nesters. No changes needed.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Narrative search AI layer confirmed live &mdash; Next.js API route app/api/parse-narrative/route.ts already built with detailed system prompt. ANTHROPIC_API_KEY Vercel flag resolved via redeploy. Tested live on nestmatch.com.au &mdash; natural language input correctly extracts budget, beds, type, commute, suburbs.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Redundant backend /parse-narrative endpoint and models removed &mdash; commit 4a76331. Narrative parsing handled entirely by Next.js API route (edge function, keeps API key out of backend).</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Post-session Q&amp;A: inspect-before-building principle reinforced &mdash; backend endpoint was designed and written before checking whether frontend already had the capability. Lesson: check existing files before writing new code.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Post-session Q&amp;A: narrative interpretation stress-test identified as dedicated session priority (Session 39) &mdash; the front door of the product and THE critical differentiator. Test suite to cover: sparse/keyword input, emotionally-driven with vague criteria, conflicted criteria, region-only input, investment framing, overloaded input, missing budget. Also: what happens when confidence is low &mdash; clarifying question, partial results, or buyer flag.</li>
+    </ul>
+  </div>
+
+  <pre class="state-block"><span class="comment"># Session 38 &mdash; state after completion</span>
+<span class="highlight">Commit</span>                  4a76331 &middot; remove redundant parse-narrative backend endpoint &#10003;
+<span class="highlight">Narrative search</span>        live on nestmatch.com.au &middot; Next.js API route &middot; ANTHROPIC_API_KEY verified &#10003;
+<span class="highlight">N01&ndash;N09 migration</span>      confirmed complete &middot; all 30 nesters on homemailbox.com.au &#10003;
+<span class="highlight">Cron sequence</span>           wakeup-ping 10:50pm &middot; scheduled-trigger 11:00pm &middot; first run tonight
+<span class="highlight">Narrative stress-test</span>   dedicated session (Session 39) &middot; critical differentiator
+<span class="success">Session 38 fully closed. Next: verify tonight&rsquo;s cron run, then narrative interpretation stress-test (Session 39).</span></pre>
+
+  <!-- Session 39 -->
+  <div class="session-block">
+    <div class="session-header">
+      <span class="session-num">Session 39</span>
+      <span class="session-status status-complete">Complete</span>
+    </div>
+    <div class="session-title">Cron timing fixed &middot; narrative stress-test (10 cases) &middot; region mappings overhauled &middot; low-confidence clarifying question live &middot; commits 653db38, e9edb5f</div>
+    <p class="session-summary">
+      Three-task session. Task 1: cron timing fix &mdash; scheduled-trigger was firing at 11:00 PM, only 10 minutes after the wakeup-ping, not enough for Render cold-start. Three consecutive 503s confirmed in cron-job.org history. Scheduled-trigger moved to 11:20 PM (23:20 Australia/Sydney) giving 30 minutes of warm-up time. Task 2: narrative interpretation stress-test &mdash; 10 structured test cases run against nestmatch.com.au covering real buyer messiness (structured, school priority, regional language, investment intent, family/space, pure qualitative, negative geography, budget+region, keyword-only, pure intent). Identified three root causes of failure: (a) Sydney region-to-suburb mappings missing from system prompt &mdash; north shore, south side of harbour, western suburbs, Parramatta area, Lane Cove expansion all absent; (b) default 30-min commute cap applied even when buyer had named a specific location, eliminating all results; (c) no low-confidence handling path &mdash; qualitative-only input returned generic results with no guidance. Task 3: fixes implemented across two commits. Commit 653db38: full region mapping library added to system prompt (North Shore, Lower North Shore, Upper North Shore, South Sydney, Western Sydney, Parramatta area, City fringe, St George, Canterbury Bankstown, Lane Cove expansion, negative geography &ldquo;get out of X&rdquo; handling); commute suppression rule added (if suburbs extracted with no commute signal, set commute_max_min to null); clarifying_question field added to API response. Commit e9edb5f: North Shore + train signal correctly routes to Lower North Shore suburbs only (North Sydney, Milsons Point, Kirribilli, Neutral Bay, Cremorne, Crows Nest, Cammeray) &mdash; not Upper North Shore (Pymble, St Ives, Gordon). Frontend updated: low-confidence path shows amber clarifying question box inline, buyer adds detail and re-submits &mdash; no redirect to results on low confidence. Final scorecard: 9/10 tests resolved. Test 7 (negative geographic intent &mdash; &ldquo;get out of eastern suburbs&rdquo; as an exclusion zone) deferred as a future session item.
+    </p>
+    <ul class="log-items">
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Cron timing fixed &mdash; scheduled-trigger moved from 11:00 PM to 11:20 PM (23:20 Australia/Sydney). Three prior 503s confirmed from cold-start gap. 30-minute warm-up window now in place. Tonight&rsquo;s run expected to be first clean three-job sequence.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>10-case narrative stress-test completed &mdash; buyer psychology taxonomy discussed (30 archetypes considered, middle-ground real-buyer messiness identified as correct test scope). Test cases: structured, school priority, north shore + train, investment intent, south side 4-bed, pure qualitative, negative geography, Parramatta/west budget, Lane Cove keyword, pure intent.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Region mapping library added to system prompt (commit 653db38) &mdash; North Shore, Lower North Shore, Upper North Shore, South Sydney/south side of harbour, Western Sydney/further west, Parramatta area, City fringe, St George, Canterbury Bankstown, Lane Cove neighbour expansion, negative geography handler. Never return region names as suburb entries.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Commute suppression rule added &mdash; if buyer names a suburb or region with no commute signal, commute_max_min set to null. Eliminates false 0-result pages caused by default 30-min cap overriding location intent.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>North Shore + train signal fix (commit e9edb5f) &mdash; &ldquo;north shore&rdquo; + any commute/train signal now maps to Lower North Shore only (North Sydney, Milsons Point, Kirribilli, Neutral Bay, Cremorne, Crows Nest, Cammeray). &ldquo;North shore&rdquo; alone maps to full spread. Confirmed via URL inspection: extraction now correct.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>Low-confidence clarifying question live &mdash; clarifying_question field added to parse-narrative API response. Frontend: if confidence = &lsquo;low&rsquo;, amber question box appears inline below textarea, no redirect to results. Buyer adds missing detail, re-submits. Test 6 confirmed: &ldquo;What&rsquo;s your maximum budget for this property?&rdquo; shown correctly for pure qualitative input.</li>
+      <li class="log-item done-item"><span class="icon">&#10003;</span>0-result cases confirmed as data gaps, not extraction failures &mdash; North Shore, South Sydney, Lane Cove suburbs not yet in database. Extraction is correct; inventory does not cover these areas yet.</li>
+      <li class="log-item pending-item"><span class="icon">&#9711;</span>Test 7 deferred &mdash; negative geographic intent (&ldquo;get out of eastern suburbs&rdquo; as an exclusion zone, not just an alternative region) requires exclusion zone logic. Flagged as a dedicated future session item.</li>
+      <li class="log-item pending-item"><span class="icon">&#9711;</span>Verify tonight&rsquo;s cron run &mdash; first run with 11:20 PM scheduled-trigger. Check cron-job.org history tomorrow morning. Confirm send_log rows with trigger_type = &lsquo;scheduled&rsquo; in Neon.</li>
+    </ul>
+  </div>
+
+  <pre class="state-block"><span class="comment"># Session 39 &mdash; state after completion</span>
+<span class="highlight">Commits</span>                 653db38 (region mappings + commute suppression + clarifying_question) &middot; e9edb5f (north shore train fix) &#10003;
+<span class="highlight">Cron timing</span>             wakeup-ping 10:50pm &middot; scheduled-trigger 11:20pm &middot; 30-min warm-up window &#10003;
+<span class="highlight">Narrative extraction</span>   region mappings complete &middot; commute suppression active &middot; 9/10 test cases passing &#10003;
+<span class="highlight">Low confidence</span>          clarifying question shown inline &middot; no redirect on low confidence &#10003;
+<span class="highlight">Test 7</span>                  negative geographic exclusion zone &mdash; deferred to future session
+<span class="highlight">Data gaps</span>               North Shore &middot; South Sydney &middot; Lane Cove &mdash; no properties in database yet
+<span class="success">Session 39 fully closed. Narrative interpretation now robust for real buyer inputs. Next: verify tonight&rsquo;s cron run, then expand data coverage or tackle Test 7 exclusion zone logic.</span></pre>
+
+  <!-- Next Session -->
+  <p class="section-title">Next Session</p>
   <div class="next-up">
-    <div class="next-up-label">&#9658; Session 32 &mdash; start here</div>
-    <p style="color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; margin-bottom: 16px; padding: 0 4px;">PRIMARY FOCUS: Fix agent email data gap so demand trigger queues correctly &middot; pilot cohort recruitment &middot; first real pilot user onboarded.</p>
+    <div class="next-up-label">&#9658; Session 40 &mdash; start here</div>
+    <p style="color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; margin-bottom: 16px; padding: 0 4px;">PRIMARY FOCUS: Verify tonight&rsquo;s cron run (first with 11:20 PM timing). Then: data coverage expansion or Test 7 negative geographic exclusion zone logic.</p>
     <ol class="next-steps">
       <li class="next-step">
         <span class="step-num">01</span>
-        Agent email data gap &mdash; properties table has no agent_email column. Demand trigger is queuing properties with incorrect agent email (nester address from agent_replies join). Fix: add agent_email column to properties table and populate from existing data, or source correctly from agent_replies where available.
+        Verify cron run &mdash; check cron-job.org history for nestmatch-scheduled-trigger (11:20 PM run). Confirm send_log rows with trigger_type = &lsquo;scheduled&rsquo; in Neon. First clean three-job sequence expected.
       </li>
       <li class="next-step">
         <span class="step-num">02</span>
-        Pilot cohort recruitment &mdash; Reddit r/AusPropertyChat active. Post to r/FirstHomeBuyers. Direct outreach to active buyers. Target: first 3 pilot users onboarded and using NestMatch within Session 32.
+        Test 7 &mdash; negative geographic exclusion zone: implement logic so &ldquo;get out of eastern suburbs&rdquo; or &ldquo;leaving X&rdquo; excludes X suburbs from results rather than just routing to alternatives. Requires exclusion_suburbs field in parse-narrative response and filtering logic in results page.
       </li>
       <li class="next-step">
         <span class="step-num">03</span>
-        First testimonial capture &mdash; as soon as first pilot user engages, capture a direct quote for the homepage. One real testimonial is worth more than any feature at this stage.
-      </li>
-      <li class="next-step">
-        <span class="step-num">04</span>
-        Component 3 auto-send &mdash; once agent email data is clean and queue has proven reliable, wire auto-send (no human review required). Demand trigger becomes fully autonomous.
+        Data coverage &mdash; add properties in under-represented areas: North Shore (Neutral Bay, Cremorne, Mosman), South Sydney (Sutherland, Cronulla), Lane Cove area. These are extraction-correct but return 0 results due to data gaps.
       </li>
     </ol>
     <p style="color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px; margin-top: 20px; padding: 0 4px;">
-      Session 33: PMF survey infrastructure &middot; nester corridor expansion &middot; price guide surfacing on result cards from agent_replies<br>
-      Acquisition thesis: all three components operating together &rarr; Domain or REA cannot replicate without destroying agent revenue
+      Ongoing between sessions: Track B agency registrations &middot; cron-job.org history check tomorrow morning.
     </p>
   </div>
 
 <footer>
-  <span class="footer-text">NestMatch Project Log &mdash; updated after Session 31 &middot; 25 Apr 2026</span>
+  <span class="footer-text">NestMatch Project Log &mdash; updated after Session 39 &middot; 28 Apr 2026</span>
   <span class="footer-domain">nestmatch.com.au</span>
 </footer>
 
