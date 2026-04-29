@@ -1,0 +1,42 @@
+name: Render Warm-Up
+
+on:
+  schedule:
+    # 10:30 PM Sydney time = 12:30 PM UTC (AEST is UTC+10, AEDT is UTC+11)
+    # During AEDT (Oct–Apr): 10:30 PM AEDT = 11:30 AM UTC
+    # During AEST (Apr–Oct): 10:30 PM AEST = 12:30 PM UTC
+    # Current season: use 11:30 UTC to cover AEDT
+    - cron: '30 11 * * *'
+  workflow_dispatch: # allow manual trigger for testing
+
+jobs:
+  warmup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+
+    steps:
+      - name: Poll health endpoint until warm
+        run: |
+          URL="https://nestmatch-s3s3.onrender.com/health"
+          MAX_WAIT=1500   # 25 minutes in seconds
+          INTERVAL=30     # poll every 30 seconds
+          elapsed=0
+
+          echo "Starting warm-up poll of $URL"
+          echo "Will retry every ${INTERVAL}s for up to $((MAX_WAIT / 60)) minutes"
+
+          while [ $elapsed -lt $MAX_WAIT ]; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
+            echo "$(date '+%H:%M:%S') — HTTP $STATUS (elapsed: ${elapsed}s)"
+
+            if [ "$STATUS" = "200" ]; then
+              echo "✓ Instance is warm after ${elapsed}s. Done."
+              exit 0
+            fi
+
+            sleep $INTERVAL
+            elapsed=$((elapsed + INTERVAL))
+          done
+
+          echo "✗ Instance did not respond with 200 within $((MAX_WAIT / 60)) minutes."
+          exit 1
