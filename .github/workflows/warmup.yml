@@ -17,26 +17,22 @@ jobs:
     steps:
       - name: Poll health endpoint until warm
         run: |
+          set +e
           URL="https://nestmatch-s3s3.onrender.com/health"
-          MAX_WAIT=1500   # 25 minutes in seconds
-          INTERVAL=30     # poll every 30 seconds
+          MAX_WAIT=1500
+          INTERVAL=30
           elapsed=0
-
           echo "Starting warm-up poll of $URL"
           echo "Will retry every ${INTERVAL}s for up to $((MAX_WAIT / 60)) minutes"
-
           while [ $elapsed -lt $MAX_WAIT ]; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
-            echo "$(date '+%H:%M:%S') — HTTP $STATUS (elapsed: ${elapsed}s)"
-
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$URL")
+            echo "$(date '+%H:%M:%S') - HTTP $STATUS (elapsed: ${elapsed}s)"
             if [ "$STATUS" = "200" ]; then
-              echo "✓ Instance is warm after ${elapsed}s. Done."
+              echo "Instance is warm after ${elapsed}s. Done."
               exit 0
             fi
-
             sleep $INTERVAL
             elapsed=$((elapsed + INTERVAL))
           done
-
-          echo "✗ Instance did not respond with 200 within $((MAX_WAIT / 60)) minutes."
+          echo "Instance did not respond with 200 within $((MAX_WAIT / 60)) minutes."
           exit 1
