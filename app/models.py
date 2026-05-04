@@ -21,6 +21,9 @@ class SearchRequest(BaseModel):
     suburbs: list[str] = []
     exclusion_suburbs: list[str] = []
 
+    # Buyer priority — drives dynamic weight selection in engine
+    buyer_priority: Optional[Literal["commute", "schools", "budget", "land", "trajectory", "any"]] = "any"
+
     # Investment-mode fields
     mode: Literal["residential", "investment"] = "residential"
     investment_priority: Optional[str] = None  # capital_gain | balanced | rental_income

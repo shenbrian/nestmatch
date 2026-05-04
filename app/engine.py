@@ -22,6 +22,7 @@ from app.models import SearchRequest, MatchResult, Property, TradeoffItem, Traje
 from typing import Optional
 
 
+# Base weights — applied when buyer_priority = "any" or unrecognised
 RESIDENTIAL_WEIGHTS = {
     "price_fit":   0.35,
     "trajectory":  0.25,
@@ -39,6 +40,53 @@ INVESTMENT_WEIGHTS = {
     "renovation":  0.08,
 }
 assert abs(sum(INVESTMENT_WEIGHTS.values()) - 1.0) < 0.001
+
+# Dynamic weight overrides by buyer_priority
+# Each set must sum to 1.0. Commute and schools enter as scoring dimensions.
+PRIORITY_WEIGHTS = {
+    "commute": {
+        "price_fit":   0.30,
+        "trajectory":  0.20,
+        "land":        0.10,
+        "renovation":  0.10,
+        "zone":        0.05,
+        "commute":     0.25,
+    },
+    "budget": {
+        "price_fit":   0.50,
+        "trajectory":  0.20,
+        "land":        0.15,
+        "renovation":  0.10,
+        "zone":        0.05,
+        "commute":     0.00,
+    },
+    "land": {
+        "price_fit":   0.30,
+        "trajectory":  0.20,
+        "land":        0.35,
+        "renovation":  0.10,
+        "zone":        0.05,
+        "commute":     0.00,
+    },
+    "trajectory": {
+        "price_fit":   0.25,
+        "trajectory":  0.40,
+        "land":        0.15,
+        "renovation":  0.12,
+        "zone":        0.08,
+        "commute":     0.00,
+    },
+    # schools: deferred — school_rating not yet populated
+    # Falls back to base weights
+}
+
+for priority, w in PRIORITY_WEIGHTS.items():
+    assert abs(sum(w.values()) - 1.0) < 0.001, f"Weights for {priority} don't sum to 1.0"
+
+def score_commute(commute_rating: Optional[int]) -> float:
+    if commute_rating is None:
+        return 0.55  # neutral — don't penalise missing data
+    return round(commute_rating / 10, 2)    
 
 
 def passes_hard_filters(row: dict, req: SearchRequest) -> tuple[bool, str]:
@@ -220,7 +268,15 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             "price_guide": ar["price_guide"],
         }
 
-    weights = INVESTMENT_WEIGHTS if req.mode == "investment" else RESIDENTIAL_WEIGHTS
+    # Select weights: investment mode always uses INVESTMENT_WEIGHTS
+    # Residential uses dynamic weights if buyer_priority is recognised, else base
+    if req.mode == "investment":
+        weights = INVESTMENT_WEIGHTS
+    elif req.buyer_priority and req.buyer_priority in PRIORITY_WEIGHTS:
+        weights = PRIORITY_WEIGHTS[req.buyer_priority]
+    else:
+        weights = RESIDENTIAL_WEIGHTS
+
     results = []
 
     for row in rows:
@@ -245,6 +301,7 @@ async def run_search(conn: asyncpg.Connection, req: SearchRequest) -> list[Match
             "land":       score_land(row.get("land_size_sqm"), req.land_size_sqm_min),
             "renovation": score_renovation(row.get("renovation_status")),
             "zone":       score_zone(row.get("development_zone")),
+            "commute":    score_commute(row.get("commute_rating")),
         }
 
         total = sum(weights.get(k, 0) * v for k, v in scores.items())
